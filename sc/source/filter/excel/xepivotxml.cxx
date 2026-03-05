@@ -148,9 +148,8 @@ void XclExpXmlPivotCaches::SaveXml( XclExpXmlStream& rStrm )
     sax_fastparser::FSHelperPtr& pWorkbookStrm = rStrm.GetCurrentStream();
     bool bStartedPivotCaches = false;
 
-    for (size_t i = 0, n = maCaches.size(); i < n; ++i)
+    for (sal_Int32 nCacheId = 0; const auto& rEntry : maCaches)
     {
-        const Entry& rEntry = maCaches[i];
         const ScDPCache& rCache = *rEntry.mpCache;
 
         size_t nFieldCount = rCache.GetFieldCount() + rCache.GetGroupFieldCount();
@@ -163,7 +162,7 @@ void XclExpXmlPivotCaches::SaveXml( XclExpXmlStream& rStrm )
             pWorkbookStrm->startElement(XML_pivotCaches);
         }
 
-        sal_Int32 nCacheId = i + 1;
+        ++nCacheId;
         OUString aRelId;
         sax_fastparser::FSHelperPtr pPCStrm = rStrm.CreateOutputStream(
             XclXmlUtils::GetStreamName("xl/pivotCache/", "pivotCacheDefinition", nCacheId),
