@@ -349,6 +349,19 @@ CPPUNIT_TEST_FIXTURE(SwMacrosTest, testTdf155780_filename_display_format)
         u"vnd.sun.Star.script:Standard.Module1.testFilenameDisplayFormat?language=Basic&location=document"_ustr);
 }
 
+CPPUNIT_TEST_FIXTURE(SwMacrosTest, testTableCursorMergeMacro)
+{
+    // Given a document with a Basic macro that creates a table, merges cells,
+    // then accesses RangeName on the cursor after merge:
+    loadFromFile(u"odt/tablecursor-merge-macro.odt");
+
+    // When running the macro — must not crash in BigPtrEntry::GetPos():
+    // Without the accompanying fix in place, this would have crashed because
+    // getRangeName() dereferences a stale node after mergeRange().
+    executeMacro(
+        u"vnd.sun.Star.script:Standard.Module1.Main?language=Basic&location=document"_ustr);
+}
+
 CPPUNIT_TEST_FIXTURE(SwMacrosTest, testTdf162431)
 {
     testMacro(u"odt/tdf162431.odt",
