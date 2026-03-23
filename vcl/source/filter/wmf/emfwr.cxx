@@ -107,7 +107,8 @@ enum class EmfPlusRecordType
     SetAntiAliasMode           = 0x401E,
     SetInterpolationMode       = 0x4021,
     SetPixelOffsetMode         = 0x4022,
-    SetCompositingQuality      = 0x4024
+    SetCompositingQuality      = 0x4024,
+    SetPageTransform           = 0x4030
 };
 
 void EMFWriter::ImplBeginCommentRecord( sal_Int32 nCommentType )
@@ -1471,6 +1472,36 @@ void EMFWriter::ImplWrite( const GDIMetaFile& rMtf )
             {
                 MetaCommentAction const*const pCommentAction(
                         static_cast<MetaCommentAction const*>(pAction));
+                SAL_INFO("vcl.filter", "MetaAction Comment: " << pCommentAction->GetComment()
+                                        << " size: " << pCommentAction->GetDataSize());
+                if (pCommentAction->GetComment() == "EMF_PLUS_HEADER_INFO")
+                {
+                    sal_Int32 nFrameLeft;
+                    sal_Int32 nFrameTop;
+                    sal_Int32 nFrameRight;
+                    sal_Int32 nFrameBottom;
+                    sal_Int32 nPixX;
+                    sal_Int32 nPixY;
+                    sal_Int32 nMmX;
+                    sal_Int32 nMmY;
+                    if (pCommentAction->GetDataSize() < 32)
+                        break;
+
+                    SvMemoryStream rMF(const_cast<sal_uInt8 *>(pCommentAction->GetData()), pCommentAction->GetDataSize(), StreamMode::READ);
+
+                    rMF.ReadInt32(nFrameLeft).ReadInt32(nFrameTop).ReadInt32(nFrameRight).ReadInt32(nFrameBottom);
+                    SAL_INFO ("vcl.filter", "EMF+ picture frame: " << nFrameLeft << "," << nFrameTop << " - " << nFrameRight << "," << nFrameBottom);
+                    rMF.ReadInt32(nPixX).ReadInt32(nPixY).ReadInt32(nMmX).ReadInt32(nMmY);
+                    SAL_INFO ("vcl.filter", "EMF+ ref device pixel size: " << nPixX << "x" << nPixY << " mm size: " << nMmX << "x" << nMmY);
+                    if (nMmX == 0)
+                        break;
+                    ImplBeginCommentRecord(WIN_EMR_COMMENT_EMFPLUS);
+                    ImplBeginPlusRecord(EmfPlusRecordType::SetPageTransform, 0x02);
+                    // Calculate the scale factor by comparing current device DPI with original image DPI. 0x02 specifies UnitPixel.
+                    m_rStm.WriteFloat(static_cast<float>(maVDev->GetDPIX()) / (static_cast<float>(nPixX) / static_cast<float>(nMmX) * 25.4f));
+                    ImplEndPlusRecord();
+                    ImplEndCommentRecord();
+                }
                 if (pCommentAction->GetComment() == "EMF_PLUS")
                 {
                     ImplBeginCommentRecord(WIN_EMR_COMMENT_EMFPLUS);
