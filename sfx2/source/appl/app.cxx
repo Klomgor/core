@@ -113,7 +113,7 @@ SfxApplication* SfxApplication::GetOrCreate()
 #if HAVE_FEATURE_XMLHELP
         Application::SetHelp( pSfxHelp );
 #endif
-#if HAVE_FEATURE_XMLHELP || defined(EMSCRIPTEN)
+#if HAVE_FEATURE_XMLHELP || defined(__EMSCRIPTEN__)
         bool bHelpTip = officecfg::Office::Common::Help::Tip::get();
         bool bExtendedHelpTip = officecfg::Office::Common::Help::ExtendedTip::get();
         if (bHelpTip)

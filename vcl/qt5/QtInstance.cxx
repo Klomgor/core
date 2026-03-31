@@ -77,7 +77,7 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QMessageBox>
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 #include <QtCore/QtPlugin>
 Q_IMPORT_PLUGIN(QWasmIntegrationPlugin)
 #if defined DISABLE_DYNLOADING && ENABLE_QT6
@@ -85,7 +85,8 @@ Q_IMPORT_PLUGIN(QWasmIntegrationPlugin)
 #endif
 #endif
 
-#if defined EMSCRIPTEN && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
+#if defined __EMSCRIPTEN__ && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI                                   \
+    && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
 #include <emscripten/promise.h>
 #include <emscripten/proxying.h>
 #include <emscripten/threading.h>
@@ -215,7 +216,8 @@ void QtInstance::RunInMainThread(std::function<void()> func)
         func();
         return;
     }
-#if defined EMSCRIPTEN && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
+#if defined __EMSCRIPTEN__ && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI                                   \
+    && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
     if (pthread_self() == m_emscriptenThreadingData->eventHandlerThread)
     {
         EmscriptenLightweightRunInMainThread(func);
@@ -243,7 +245,8 @@ void QtInstance::RunInMainThread(std::function<void()> func)
 
 void QtInstance::EmscriptenLightweightRunInMainThread_(std::function<void()> func)
 {
-#if defined EMSCRIPTEN && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
+#if defined __EMSCRIPTEN__ && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI                                   \
+    && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
     if (pthread_self() != emscripten_main_runtime_thread_id())
     {
         SolarMutexReleaser release;
@@ -286,7 +289,8 @@ QtInstance::QtInstance()
 {
     m_pQApplication = CreateQApplication();
 
-#if defined EMSCRIPTEN && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
+#if defined __EMSCRIPTEN__ && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI                                   \
+    && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
     m_emscriptenThreadingData = &comphelper::emscriptenthreading::getData();
 #endif
 
@@ -334,7 +338,7 @@ QtInstance::QtInstance()
             &QtInstance::colorSchemeChanged);
 #endif
 
-#ifndef EMSCRIPTEN
+#ifndef __EMSCRIPTEN__
     m_bSupportsOpenGL = true;
 #elif !HAVE_EMSCRIPTEN_JSPI
     ImplGetSVData()->maAppData.m_bUseSystemLoop = true;
@@ -347,7 +351,8 @@ QtInstance::~QtInstance()
     // as it uses references to the provided arguments!
     m_pQApplication.reset();
 
-#if defined EMSCRIPTEN && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
+#if defined __EMSCRIPTEN__ && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI                                   \
+    && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
     comphelper::emscriptenthreading::tearDown();
 #endif
 }
@@ -474,7 +479,8 @@ bool QtInstance::DoYield(bool bWait, bool bHandleAllCurrentEvents)
         if (bWasEvent)
             m_aWaitingYieldCond.set();
     }
-#if defined EMSCRIPTEN && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
+#if defined __EMSCRIPTEN__ && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI                                   \
+    && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
     else if (pthread_self() == m_emscriptenThreadingData->eventHandlerThread)
     {
         SolarMutexReleaser release;
@@ -523,7 +529,7 @@ bool QtInstance::AnyInput(VclInputFlags nType)
 
 void QtInstance::AddToRecentDocumentList(const OUString&, const OUString&, const OUString&) {}
 
-#ifndef EMSCRIPTEN
+#ifndef __EMSCRIPTEN__
 OpenGLContext* QtInstance::CreateOpenGLContext() { return new QtOpenGLContext; }
 #endif
 
@@ -540,7 +546,8 @@ void QtInstance::TriggerUserEventProcessing()
 
 void QtInstance::ProcessEvent(SalUserEvent aEvent)
 {
-#if defined EMSCRIPTEN && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
+#if defined __EMSCRIPTEN__ && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI                                   \
+    && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
     SolarMutexReleaser release;
     (void)emscripten_promise_await(
         emscripten_proxy_promise(m_emscriptenThreadingData->proxyingQueue.queue,
@@ -821,13 +828,13 @@ bool QtInstance::DoExecute(int& nExitCode)
     const bool bIsUseSystemEventLoop = Application::IsUseSystemEventLoop();
     if (bIsUseSystemEventLoop)
     {
-#if defined EMSCRIPTEN
+#if defined __EMSCRIPTEN__
         // For Emscripten, QApplication::exec() will unwind the stack by throwing a JavaScript
         // exception, so we need to manually undo the call of AcquireYieldMutex() done in InitVCL:
         ReleaseYieldMutex(false);
 #endif
         nExitCode = QApplication::exec();
-#if defined EMSCRIPTEN
+#if defined __EMSCRIPTEN__
         O3TL_UNREACHABLE;
 #endif
     }
@@ -984,7 +991,7 @@ QtInstance::CreateColorChooserDialog(weld::Window* pParent, vcl::ColorPickerMode
 
 static void initResources()
 {
-#if defined EMSCRIPTEN && defined DISABLE_DYNLOADING && ENABLE_QT6
+#if defined __EMSCRIPTEN__ && defined DISABLE_DYNLOADING && ENABLE_QT6
     // Make sure the resources from Qt6's plugins/platforms/libqwasm.a are not stripped out of a
     // statically linked binary (and this code cannot be directly in extern "C" create_SalInstance,
     // as the expansion of Q_INIT_RESOURCE contains extern function declarations that would then

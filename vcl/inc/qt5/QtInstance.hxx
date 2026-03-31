@@ -58,7 +58,8 @@ class QApplication;
 class SalYieldMutex;
 class SalFrame;
 
-#if defined EMSCRIPTEN && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
+#if defined __EMSCRIPTEN__ && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI                                   \
+    && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
 namespace comphelper::emscriptenthreading
 {
 struct Data;
@@ -103,7 +104,8 @@ class VCLPLUG_QT_PUBLIC QtInstance : public QObject,
 
     QtFrame* m_pActivePopup;
 
-#if defined EMSCRIPTEN && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
+#if defined __EMSCRIPTEN__ && ENABLE_QT6 && HAVE_EMSCRIPTEN_JSPI                                   \
+    && !HAVE_EMSCRIPTEN_PROXY_TO_PTHREAD
     comphelper::emscriptenthreading::Data* m_emscriptenThreadingData;
 #endif
 
@@ -191,7 +193,7 @@ public:
     CreateColorChooserDialog(weld::Window* pParent, vcl::ColorPickerMode eMode) override;
 
 // so we fall back to the default abort, instead of duplicating it...
-#ifndef EMSCRIPTEN
+#ifndef __EMSCRIPTEN__
     virtual OpenGLContext* CreateOpenGLContext() override;
 #endif
 

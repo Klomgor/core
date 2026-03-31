@@ -367,7 +367,7 @@ DesktopType SalGetDesktopEnvironment()
     return DesktopType::Windows;
 #elif defined(MACOSX)
     return DesktopType::macOS;
-#elif defined(EMSCRIPTEN)
+#elif defined(__EMSCRIPTEN__)
     return DesktopType::WASM;
 #elif defined(ANDROID)
     return DesktopType::Android;
