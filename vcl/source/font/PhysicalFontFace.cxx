@@ -33,6 +33,8 @@
 
 #include <font/FontSelectPattern.hxx>
 #include <font/PhysicalFontFace.hxx>
+#include <vcl/font/Feature.hxx>
+#include <vcl/svapp.hxx>
 #include <o3tl/string_view.hxx>
 #include <comphelper/scopeguard.hxx>
 
@@ -849,6 +851,45 @@ PhysicalFontFace::GetVariations(const LogicalFontInstance&) const
         mxVariations.emplace();
     }
     return *mxVariations;
+}
+
+bool PhysicalFontFace::GetVariationAxes(std::vector<vcl::font::VariationAxis>& rAxes) const
+{
+    if (!mxVariationAxes)
+    {
+        mxVariationAxes.emplace();
+        hb_face_t* pHbFace = GetHbFace();
+
+        unsigned int nAxes = hb_ot_var_get_axis_count(pHbFace);
+        if (nAxes)
+        {
+            std::vector<hb_ot_var_axis_info_t> aAxisInfos(nAxes);
+            hb_ot_var_get_axis_infos(pHbFace, 0, &nAxes, aAxisInfos.data());
+
+            mxVariationAxes->reserve(nAxes);
+            for (unsigned int i = 0; i < nAxes; ++i)
+            {
+                if (aAxisInfos[i].flags & HB_OT_VAR_AXIS_FLAG_HIDDEN)
+                    continue;
+
+                vcl::font::VariationAxis aAxis;
+                aAxis.nTag = aAxisInfos[i].tag;
+                aAxis.fMinValue = aAxisInfos[i].min_value;
+                aAxis.fDefaultValue = aAxisInfos[i].default_value;
+                aAxis.fMaxValue = aAxisInfos[i].max_value;
+
+                const LanguageTag& rUILang = Application::GetSettings().GetUILanguageTag();
+                aAxis.aName = GetName(static_cast<NameID>(aAxisInfos[i].name_id), rUILang);
+                if (aAxis.aName.isEmpty())
+                    aAxis.aName = vcl::font::featureCodeAsString(aAxis.nTag);
+
+                mxVariationAxes->push_back(aAxis);
+            }
+        }
+    }
+
+    rAxes = *mxVariationAxes;
+    return !rAxes.empty();
 }
 }
 

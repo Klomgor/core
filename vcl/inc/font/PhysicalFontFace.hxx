@@ -195,6 +195,8 @@ public:
     virtual const std::vector<vcl::font::Variation>&
     GetVariations(const LogicalFontInstance&) const;
 
+    bool GetVariationAxes(std::vector<vcl::font::VariationAxis>& rAxes) const;
+
 protected:
     mutable hb_face_t* mpHbFace;
     mutable hb_font_t* mpHbUnscaledFont;
@@ -202,6 +204,7 @@ protected:
     mutable std::optional<vcl::FontCapabilities> mxFontCapabilities;
     mutable std::optional<std::vector<ColorPalette>> mxColorPalettes;
     mutable std::optional<std::vector<vcl::font::Variation>> mxVariations;
+    mutable std::optional<std::vector<vcl::font::VariationAxis>> mxVariationAxes;
 
     explicit PhysicalFontFace(const FontAttributes&);
 

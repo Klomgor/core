@@ -173,6 +173,18 @@ bool OutputDevice::GetFontFeatures(std::vector<vcl::font::Feature>& rFontFeature
     return true;
 }
 
+bool OutputDevice::GetFontVariationAxes(std::vector<vcl::font::VariationAxis>& rAxes) const
+{
+    if (!ImplNewFont())
+        return false;
+
+    LogicalFontInstance* pFontInstance = mpFontInstance.get();
+    if (!pFontInstance)
+        return false;
+
+    return pFontInstance->GetFontFace()->GetVariationAxes(rAxes);
+}
+
 FontMetric OutputDevice::GetFontMetric() const
 {
     FontMetric aMetric;

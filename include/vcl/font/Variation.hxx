@@ -27,6 +27,15 @@ struct VCL_DLLPUBLIC Variation
     }
 };
 
+struct VCL_DLLPUBLIC VariationAxis
+{
+    uint32_t nTag = 0;
+    OUString aName;
+    float fMinValue = 0;
+    float fDefaultValue = 0;
+    float fMaxValue = 0;
+};
+
 VCL_DLLPUBLIC std::vector<Variation> VariationsFromString(std::u16string_view rString);
 VCL_DLLPUBLIC OUString VariationsToString(const std::vector<Variation>& rVariations);
 
