@@ -212,6 +212,9 @@ void SAL_CALL SvxDrawPage::add( const uno::Reference< drawing::XShape >& xShape 
         mpPage->InsertObject( pObj.get() );
     }
 
+    if (FmFormObj::GetFormObject(pObj.get()))
+        pObj->MakeNameUnique();
+
     mpModel->SetChanged();
 }
 
