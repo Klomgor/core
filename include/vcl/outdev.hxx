@@ -311,12 +311,11 @@ public:
                                     { return Size( mnOutWidth, mnOutHeight ); }
     tools::Long                        GetOutputWidthPixel() const { return mnOutWidth; }
     tools::Long                        GetOutputHeightPixel() const { return mnOutHeight; }
-    tools::Long                        GetOutOffXPixel() const { return mnOutOffX; }
-    tools::Long                        GetOutOffYPixel() const { return mnOutOffY; }
+    tools::Long                 GetOutOffXPixel() const;
+    tools::Long                 GetOutOffYPixel() const;
     void                        SetOutOffXPixel(tools::Long nOutOffX);
     void                        SetOutOffYPixel(tools::Long nOutOffY);
-    Point                       GetOutputOffPixel() const
-                                    { return Point( mnOutOffX, mnOutOffY ); }
+    Point                       GetOutputOffPixel() const;
     tools::Rectangle            GetOutputRectPixel() const
                                     { return tools::Rectangle(GetOutputOffPixel(), GetOutputSizePixel() ); }
 

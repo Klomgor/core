@@ -30,6 +30,11 @@ private:
     sal_Int32 mnDPIY = 0;
     sal_Int32 mnDPIScalePercentage = 100;
 
+    /// Output offset for device output in pixel (pseudo window offset within window system's frames)
+    tools::Long mnOutOffX;
+    /// Output offset for device output in pixel (pseudo window offset within window system's frames)
+    tools::Long mnOutOffY;
+
 public:
     sal_Int32 GetDPIX() const;
     sal_Int32 GetDPIY() const;
@@ -41,6 +46,14 @@ public:
     void SetDPIScalePercentage(sal_Int32 nPercentage);
 
     float GetDPIScaleFactor() const;
+
+    tools::Long GetOutOffXPixel() const;
+    tools::Long GetOutOffYPixel() const;
+
+    void SetOutOffXPixel(tools::Long nOutOffX);
+    void SetOutOffYPixel(tools::Long nOutOffY);
+
+    Point GetOutputOffPixel() const;
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */
