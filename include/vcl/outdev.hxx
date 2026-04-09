@@ -205,8 +205,6 @@ private:
     tools::Long                            mnOutOffX;
     /// Output offset for device output in pixel (pseudo window offset within window system's frames)
     tools::Long                            mnOutOffY;
-    tools::Long                            mnOutWidth;
-    tools::Long                            mnOutHeight;
     /// font specific text alignment offsets in pixel units
     mutable tools::Long                    mnTextOffX;
     mutable tools::Long                    mnTextOffY;
@@ -307,10 +305,11 @@ public:
 
     virtual sal_uInt16          GetBitCount() const;
 
-    Size                        GetOutputSizePixel() const
-                                    { return Size( mnOutWidth, mnOutHeight ); }
-    tools::Long                        GetOutputWidthPixel() const { return mnOutWidth; }
-    tools::Long                        GetOutputHeightPixel() const { return mnOutHeight; }
+    Size                        GetOutputSizePixel() const;
+    tools::Long                 GetOutputWidthPixel() const;
+    tools::Long                 GetOutputHeightPixel() const;
+    void                        SetOutputWidthPixel(tools::Long nWidth);
+    void                        SetOutputHeightPixel(tools::Long nHeight);
     tools::Long                 GetOutOffXPixel() const;
     tools::Long                 GetOutOffYPixel() const;
     void                        SetOutOffXPixel(tools::Long nOutOffX);

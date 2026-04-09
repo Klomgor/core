@@ -60,4 +60,12 @@ void CoordinateMapper::SetOutOffYPixel(tools::Long nOutOffY) { mnOutOffY = nOutO
 
 Point CoordinateMapper::GetOutputOffPixel() const { return Point(mnOutOffX, mnOutOffY); }
 
+tools::Long CoordinateMapper::GetOutputWidthPixel() const { return mnOutWidth; }
+
+tools::Long CoordinateMapper::GetOutputHeightPixel() const { return mnOutHeight; }
+
+void CoordinateMapper::SetOutputWidthPixel(tools::Long nWidth) { mnOutWidth = nWidth; }
+
+void CoordinateMapper::SetOutputHeightPixel(tools::Long nHeight) { mnOutHeight = nHeight; }
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

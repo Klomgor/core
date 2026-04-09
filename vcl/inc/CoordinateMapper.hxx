@@ -20,6 +20,7 @@
 #pragma once
 
 #include <sal/types.h>
+#include <tools/long.hxx>
 
 #include <vcl/dllapi.h>
 
@@ -34,6 +35,9 @@ private:
     tools::Long mnOutOffX;
     /// Output offset for device output in pixel (pseudo window offset within window system's frames)
     tools::Long mnOutOffY;
+
+    tools::Long mnOutWidth;
+    tools::Long mnOutHeight;
 
 public:
     CoordinateMapper();
@@ -56,6 +60,13 @@ public:
     void SetOutOffYPixel(tools::Long nOutOffY);
 
     Point GetOutputOffPixel() const;
+
+    tools::Long GetOutputWidthPixel() const;
+    tools::Long GetOutputHeightPixel() const;
+    Size GetOutputSizePixel() const;
+
+    void SetOutputWidthPixel(tools::Long nWidth);
+    void SetOutputHeightPixel(tools::Long nHeight);
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */
