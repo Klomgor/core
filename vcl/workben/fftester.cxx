@@ -61,6 +61,7 @@
 #include <filter/DxfReader.hxx>
 #include <filter/WebpReader.hxx>
 #include <filter/XpmReader.hxx>
+#include <font/TrueTypeFont.hxx>
 #include <osl/file.hxx>
 #include <osl/module.hxx>
 #include <osl/process.h>
@@ -261,6 +262,13 @@ SAL_IMPLEMENT_MAIN_WITH_ARGS(argc, argv)
             std::vector<sal_uInt8> aData(aFileStream.remainingSize());
             aFileStream.ReadBytes(aData.data(), aData.size());
             ret = TestEOT(aData.data(), aData.size());
+        }
+        else if (strcmp(argv[2], "sft") == 0)
+        {
+            SvFileStream aFileStream(out, StreamMode::READ);
+            std::vector<sal_uInt8> aData(aFileStream.remainingSize());
+            aFileStream.ReadBytes(aData.data(), aData.size());
+            ret = TestFontParsing(aData.data(), aData.size());
         }
 #ifndef DISABLE_DYNLOADING
         else if ((strcmp(argv[2], "doc") == 0) || (strcmp(argv[2], "ww8") == 0))

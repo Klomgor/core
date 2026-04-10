@@ -20,6 +20,10 @@ $(eval $(call gb_Executable_set_include,fftester,\
     -I$(SRCDIR)/vcl/inc \
 ))
 
+$(eval $(call gb_Executable_use_externals,fftester,\
+	harfbuzz \
+))
+
 $(eval $(call gb_Executable_use_libraries,fftester,\
     tl \
     sal \

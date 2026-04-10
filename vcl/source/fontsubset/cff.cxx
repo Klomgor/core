@@ -1700,6 +1700,15 @@ void CffContext::readDictOp()
         ValType nVal = fReal;
         push(nVal);
     }
+    else
+    {
+        // bytes 22-27, 31 and 255 are reserved in CFF DICT encoding
+        // (Adobe Technical Note #5176, section 4 "DICT Data")
+        // https://adobe-type-tools.github.io/font-tech-notes/pdfs/5176.CFF.pdf
+        // skip to avoid infinite loop
+        SAL_WARN("vcl.fonts.cff", "undefined CFF DICT byte: " << int(c));
+        ++mpReadPtr;
+    }
 }
 
 void CffContext::read2push()
