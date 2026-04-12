@@ -68,10 +68,12 @@ namespace oox
     namespace xls
     {
         class Connection;
+        struct QueryTableModel;
     }
 }
 
 typedef oox::RefVector<oox::xls::Connection> ConnectionVector;
+typedef std::vector<std::shared_ptr<oox::xls::QueryTableModel>> QueryTableModelVector;
 
 class Timer;
 
@@ -115,6 +117,8 @@ class Sparkline;
 class SparklineGroup;
 class SparklineList;
 class SheetViewManager;
+struct RefUpdateDeleteTabContext;
+struct RefUpdateMoveTabContext;
 }
 
 class OutputDevice;
@@ -381,6 +385,21 @@ public:
         return maConnectionVector;
     }
 
+    void setSheetQueryTables(SCTAB nTab, QueryTableModelVector aIn)
+    {
+        maSheetQueryTables[nTab] = std::move(aIn);
+    }
+    const QueryTableModelVector* getSheetQueryTables(SCTAB nTab) const
+    {
+        auto it = maSheetQueryTables.find(nTab);
+        return it == maSheetQueryTables.end() ? nullptr : &it->second;
+    }
+    bool hasAnyQueryTables() const { return !maSheetQueryTables.empty(); }
+
+    void UpdateQueryTables(const sc::RefUpdateInsertTabContext& rCxt);
+    void UpdateQueryTables(const sc::RefUpdateDeleteTabContext& rCxt);
+    void UpdateQueryTables(const sc::RefUpdateMoveTabContext& rCxt);
+
 private:
     rtl::Reference<ScPoolHelper> mxPoolHelper;
 
@@ -477,6 +496,7 @@ private:
     ScGoalSeekSettings maGoalSeekSettings;
 
     ConnectionVector maConnectionVector;
+    std::map<SCTAB, QueryTableModelVector> maSheetQueryTables;
 public:
     /// list of ScInterpreterTableOpParams currently in use
     std::vector<ScInterpreterTableOpParams*> m_TableOpList;
