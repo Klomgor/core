@@ -492,4 +492,12 @@
 #define STR_NEXT_PAGE                                   NC_("STR_NEXT_PAGE", "Next Page")
 #define STR_LAST_PAGE                                   NC_("STR_LAST_PAGE", "Last Page")
 
+#define STR_ADD_SLIDE_SECTION                           NC_("STR_ADD_SLIDE_SECTION", "Add Section")
+#define STR_REMOVE_SLIDE_SECTION                        NC_("STR_REMOVE_SLIDE_SECTION", "Remove Section")
+#define STR_RENAME_SLIDE_SECTION                        NC_("STR_RENAME_SLIDE_SECTION", "Rename Section")
+#define STR_DEFAULT_SLIDE_SECTION_NAME                  NC_("STR_DEFAULT_SLIDE_SECTION_NAME", "Untitled Section")
+#define STR_UNDO_ADD_SLIDE_SECTION                      NC_("STR_UNDO_ADD_SLIDE_SECTION", "Add section")
+#define STR_UNDO_REMOVE_SLIDE_SECTION                   NC_("STR_UNDO_REMOVE_SLIDE_SECTION", "Remove section")
+#define STR_UNDO_RENAME_SLIDE_SECTION                   NC_("STR_UNDO_RENAME_SLIDE_SECTION", "Rename section")
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
