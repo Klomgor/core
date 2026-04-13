@@ -40,6 +40,7 @@
 
 #include <strings.hrc>
 #include <drawdoc.hxx>
+#include <SlideSectionManager.hxx>
 #include <sdmod.hxx>
 #include <sdpage.hxx>
 #include <stlpool.hxx>
@@ -1335,6 +1336,13 @@ SdCustomShowList* SdDrawDocument::GetCustomShowList(bool bCreate)
     }
 
     return mpCustomShowList.get();
+}
+
+sd::SlideSectionManager& SdDrawDocument::GetSectionManager()
+{
+    if (!mpSectionManager)
+        mpSectionManager.reset(new sd::SlideSectionManager(*this));
+    return *mpSectionManager;
 }
 
 // Remove unused master pages and layouts
