@@ -424,13 +424,10 @@ bool SwEditShell::SetCurFootnote( const SwFormatFootnote& rFillFootnote )
 bool SwEditShell::HasFootnotes( bool bEndNotes ) const
 {
     const SwFootnoteIdxs &rIdxs = mxDoc->GetFootnoteIdxs();
-    for ( auto pIdx : rIdxs )
-    {
+    return std::ranges::any_of(rIdxs, [bEndNotes](auto pIdx) {
         const SwFormatFootnote &rFootnote = pIdx->GetFootnote();
-        if ( bEndNotes == rFootnote.IsEndNote() )
-            return true;
-    }
-    return false;
+        return bEndNotes == rFootnote.IsEndNote();
+    });
 }
 
 /// Give a List of all footnotes and their beginning texts

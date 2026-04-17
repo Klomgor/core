@@ -1447,14 +1447,9 @@ bool SwTable::IsTableComplex() const
     // Returns true for complex tables, i.e. tables that contain nestings,
     // like containing boxes not part of the first line, e.g. results of
     // splits/merges which lead to more complex structures.
-    for (size_t n = 0; n < m_TabSortContentBoxes.size(); ++n)
-    {
-        if (m_TabSortContentBoxes[ n ]->GetUpper()->GetUpper())
-        {
-            return true;
-        }
-    }
-    return false;
+    return std::ranges::any_of(m_TabSortContentBoxes, [](const auto* pBoxItem) {
+        return pBoxItem->GetUpper()->GetUpper();
+    });
 }
 
 SwTableLine::SwTableLine( SwTableLineFormat *pFormat, sal_uInt16 nBoxes,

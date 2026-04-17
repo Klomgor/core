@@ -700,14 +700,9 @@ bool SwAccessiblePortionData::IsZeroCorePositionData()
 
 bool SwAccessiblePortionData::IsIndexInFootnode(sal_Int32 nIndex)
 {
-    for (const auto & pairPos : m_vecPairPos)
-    {
-        if(nIndex >= pairPos.first && nIndex < pairPos.second )
-        {
-            return true;
-        }
-    }
-    return false;
+    return std::ranges::any_of(m_vecPairPos, [nIndex](const auto& pairPos) {
+        return nIndex >= pairPos.first && nIndex < pairPos.second;
+    });
 }
 
 bool SwAccessiblePortionData::IsInGrayPortion( sal_Int32 nPos )

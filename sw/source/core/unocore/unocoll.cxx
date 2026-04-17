@@ -1619,17 +1619,10 @@ sal_Bool SwXBookmarks::hasElements()
     SolarMutexGuard aGuard;
 
     IDocumentMarkAccess* const pMarkAccess = GetDoc().getIDocumentMarkAccess();
-    for (auto ppMark =
-            pMarkAccess->getBookmarksBegin();
-         ppMark != pMarkAccess->getBookmarksEnd(); ++ppMark)
-    {
-        if (IDocumentMarkAccess::MarkType::BOOKMARK ==
-                IDocumentMarkAccess::GetType(**ppMark))
-        {
-            return true;
-        }
-    }
-    return false;
+    return std::ranges::any_of(pMarkAccess->getBookmarksBegin(), pMarkAccess->getBookmarksEnd(), [](auto pMark) {
+        return IDocumentMarkAccess::MarkType::BOOKMARK ==
+                IDocumentMarkAccess::GetType(*pMark);
+    });
 }
 
 SwXNumberingRulesCollection::SwXNumberingRulesCollection( SwDoc* _pDoc ) :
