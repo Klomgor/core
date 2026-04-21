@@ -47,6 +47,7 @@
 #include <drawdoc.hxx>
 #include <DrawDocShell.hxx>
 #include <SlideSectionManager.hxx>
+#include <UndoSlideSection.hxx>
 #include <ViewShellBase.hxx>
 #include <ViewShellImplementation.hxx>
 #include <sdpage.hxx>
@@ -1177,7 +1178,13 @@ void SlotManager::AddSection()
     if (!oCtx)
         return;
 
+    SdDrawDocument* pDoc = mrSlideSorter.GetModel().GetDocument();
+    auto pUndo = (pDoc && pDoc->IsUndoEnabled())
+        ? std::make_unique<sd::UndoSlideSection>(*pDoc, SdResId(STR_UNDO_ADD_SLIDE_SECTION))
+        : nullptr;
     oCtx->pMgr->AddSection(oCtx->nPageIndex, SdResId(STR_DEFAULT_SLIDE_SECTION_NAME));
+    if (pUndo)
+        pDoc->AddUndo(std::move(pUndo));
     NotifySectionChange();
 }
 
@@ -1189,7 +1196,13 @@ void SlotManager::RemoveSection()
 
     if (oCtx->nSectionIndex >= 0 && oCtx->pMgr->IsSectionStart(oCtx->nPageIndex))
     {
+        SdDrawDocument* pDoc = mrSlideSorter.GetModel().GetDocument();
+        auto pUndo = (pDoc && pDoc->IsUndoEnabled())
+            ? std::make_unique<sd::UndoSlideSection>(*pDoc, SdResId(STR_UNDO_REMOVE_SLIDE_SECTION))
+            : nullptr;
         oCtx->pMgr->RemoveSection(oCtx->nSectionIndex);
+        if (pUndo)
+            pDoc->AddUndo(std::move(pUndo));
         NotifySectionChange();
     }
 }
@@ -1211,7 +1224,14 @@ void SlotManager::RenameSection()
         OUString aNewName = aNameDlg.GetName();
         if (!aNewName.isEmpty() && aNewName != aOldName)
         {
+            SdDrawDocument* pDoc = mrSlideSorter.GetModel().GetDocument();
+            auto pUndo = (pDoc && pDoc->IsUndoEnabled())
+                ? std::make_unique<sd::UndoSlideSection>(
+                      *pDoc, SdResId(STR_UNDO_RENAME_SLIDE_SECTION))
+                : nullptr;
             oCtx->pMgr->RenameSection(oCtx->nSectionIndex, aNewName);
+            if (pUndo)
+                pDoc->AddUndo(std::move(pUndo));
             NotifySectionChange();
         }
     }
@@ -1223,7 +1243,21 @@ void SlotManager::MoveSectionUp()
     if (!oCtx || oCtx->nSectionIndex <= 0)
         return;
 
+    SdDrawDocument* pDoc = mrSlideSorter.GetModel().GetDocument();
+    const bool bUndo = pDoc && pDoc->IsUndoEnabled();
+    // Group the section metadata undo with the page-reorder undo
+    // recorded by MovePages() inside MoveSection().
+    if (bUndo)
+        pDoc->BegUndo(SdResId(STR_UNDO_MOVE_SLIDE_SECTION));
+    auto pUndo = bUndo
+        ? std::make_unique<sd::UndoSlideSection>(*pDoc, SdResId(STR_UNDO_MOVE_SLIDE_SECTION))
+        : nullptr;
     oCtx->pMgr->MoveSection(oCtx->nSectionIndex, oCtx->nSectionIndex - 1);
+    if (bUndo)
+    {
+        pDoc->AddUndo(std::move(pUndo));
+        pDoc->EndUndo();
+    }
     NotifySectionChange();
 }
 
@@ -1234,7 +1268,19 @@ void SlotManager::MoveSectionDown()
         || oCtx->nSectionIndex >= oCtx->pMgr->GetSectionCount() - 1)
         return;
 
+    SdDrawDocument* pDoc = mrSlideSorter.GetModel().GetDocument();
+    const bool bUndo = pDoc && pDoc->IsUndoEnabled();
+    if (bUndo)
+        pDoc->BegUndo(SdResId(STR_UNDO_MOVE_SLIDE_SECTION));
+    auto pUndo = bUndo
+        ? std::make_unique<sd::UndoSlideSection>(*pDoc, SdResId(STR_UNDO_MOVE_SLIDE_SECTION))
+        : nullptr;
     oCtx->pMgr->MoveSection(oCtx->nSectionIndex, oCtx->nSectionIndex + 1);
+    if (bUndo)
+    {
+        pDoc->AddUndo(std::move(pUndo));
+        pDoc->EndUndo();
+    }
     NotifySectionChange();
 }
 
