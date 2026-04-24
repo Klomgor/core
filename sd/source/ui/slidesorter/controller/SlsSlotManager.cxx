@@ -1168,6 +1168,7 @@ std::optional<SectionContext> GetSelectedSectionContext(SlideSorter& rSlideSorte
 
 void SlotManager::NotifySectionChange()
 {
+    mrSlideSorter.GetModel().GetDocument()->GetDocSh()->SetModified();
     mrSlideSorter.GetView().HandleModelChange();
     mrSlideSorter.GetView().RequestRepaint();
 }
