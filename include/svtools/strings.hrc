@@ -235,7 +235,7 @@
 #define STR_SVT_PRNDLG_JOBCOUNT                 NC_("STR_SVT_PRNDLG_JOBCOUNT", "%d documents")
 
 #define STR_NO_FIELD_SELECTION                  NC_("STR_NO_FIELD_SELECTION", "<none>")
-#define STR_FIELD_COMPANY                       NC_("STR_FIELD_COMPANY", "Company")
+#define STR_FIELD_COMPANY                       NC_("STR_FIELD_COMPANY", "Organization")
 #define STR_FIELD_DEPARTMENT                    NC_("STR_FIELD_DEPARTMENT", "Department")
 #define STR_FIELD_FIRSTNAME                     NC_("STR_FIELD_FIRSTNAME", "First name")
 #define STR_FIELD_LASTNAME                      NC_("STR_FIELD_LASTNAME", "Last name")

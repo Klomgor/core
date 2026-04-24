@@ -45,7 +45,7 @@ const std::pair<TranslateId, int> SA_ADDRESS_HEADER[] =
     { NC_("SA_ADDRESS_HEADER", "Title") ,                 MM_PART_TITLE           },
     { NC_("SA_ADDRESS_HEADER", "First Name") ,            MM_PART_FIRSTNAME       },
     { NC_("SA_ADDRESS_HEADER", "Last Name") ,             MM_PART_LASTNAME        },
-    { NC_("SA_ADDRESS_HEADER", "Company Name") ,          MM_PART_COMPANY         },
+    { NC_("SA_ADDRESS_HEADER", "Organization Name") ,     MM_PART_COMPANY         },
     { NC_("SA_ADDRESS_HEADER", "Address Line 1") ,        MM_PART_ADDRESS_1       },
     { NC_("SA_ADDRESS_HEADER", "Address Line 2") ,        MM_PART_ADDRESS_2       },
     { NC_("SA_ADDRESS_HEADER", "City") ,                  MM_PART_CITY            },

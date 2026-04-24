@@ -1026,7 +1026,7 @@
 /*--------------------------------------------------------------------
     Description: SubType Extuser
  --------------------------------------------------------------------*/
-#define FLD_EU_COMPANY                          NC_("FLD_EU_FIRMA", "Company")
+#define FLD_EU_COMPANY                          NC_("FLD_EU_FIRMA", "Organization")
 #define FLD_EU_GIVENNAME                        NC_("FLD_EU_VORNAME", "First Name")
 #define FLD_EU_SURNAME                          NC_("FLD_EU_NAME", "Last Name")
 #define FLD_EU_INITIALS                         NC_("FLD_EU_ABK", "Initials")
