@@ -17,6 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <algorithm>
+
 #include <sfx2/sidebar/Deck.hxx>
 #include <sidebar/DeckDescriptor.hxx>
 #include <sidebar/DeckLayouter.hxx>
@@ -185,9 +187,8 @@ void Deck::ResetPanels(SharedPanelContainer&& rPanelContainer)
     // First hide old panels we don't need just now.
     for (auto& rpPanel : maPanels)
     {
-        bool bFound = false;
-        for (const auto & i : rPanelContainer)
-            bFound = bFound || (rpPanel.get() == i.get());
+        const bool bFound = std::ranges::any_of(rPanelContainer,
+            [&rpPanel](const auto& rOther) { return rpPanel.get() == rOther.get(); });
         if (!bFound) // this one didn't survive.
         {
             rpPanel->SetLurkMode(true);

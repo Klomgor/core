@@ -17,6 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <algorithm>
+
 #include <cmdid.h>
 #include <init.hxx>
 #include <editeng/lrspitem.hxx>
@@ -880,13 +882,8 @@ void SwDoc::PrtOLENotify( bool bAll )
                         // aName = ????
                 }
 
-                bool bFound = false;
-                for ( std::vector<SvGlobalName>::size_type j = 0;
-                      j < pGlobalOLEExcludeList->size() && !bFound;
-                      ++j )
-                {
-                    bFound = (*pGlobalOLEExcludeList)[j] == aName;
-                }
+                const bool bFound = std::ranges::any_of(*pGlobalOLEExcludeList,
+                    [&aName](const SvGlobalName& rName) { return rName == aName; });
                 if ( bFound )
                     continue;
 

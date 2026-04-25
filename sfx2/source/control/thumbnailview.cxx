@@ -12,6 +12,7 @@
 #include <sfx2/thumbnailview.hxx>
 #include <sfx2/thumbnailviewitem.hxx>
 
+#include <algorithm>
 #include <utility>
 
 #include "thumbnailviewacc.hxx"
@@ -810,17 +811,10 @@ bool ThumbnailView::KeyInput( const KeyEvent& rKEvt )
 void ThumbnailView::MakeItemVisible( sal_uInt16 nItemId )
 {
     // Get the item row
-    size_t nPos = 0;
-    bool bFound = false;
-    for ( size_t i = 0; !bFound && i < mFilteredItemList.size(); ++i )
-    {
-        ThumbnailViewItem* pItem = mFilteredItemList[i];
-        if ( pItem->mnId == nItemId )
-        {
-            nPos = i;
-            bFound = true;
-        }
-    }
+    auto it = std::ranges::find_if(mFilteredItemList,
+        [nItemId](const ThumbnailViewItem* pItem) { return pItem->mnId == nItemId; });
+    size_t nPos = (it != mFilteredItemList.end())
+        ? std::distance(mFilteredItemList.begin(), it) : 0;
     sal_uInt16 nRow = mnCols ? nPos / mnCols : 0;
 
     // Move the visible rows as little as possible to include that one

@@ -27,6 +27,7 @@
 #include <osl/diagnose.h>
 #include <refdata.hxx>
 
+#include <algorithm>
 #include <string.h>
 #include <memory>
 
@@ -175,10 +176,9 @@ void ScConsData::AddFields( const ScDocument* pSrcDoc, SCTAB nTab,
             aTitle = pSrcDoc->GetString(nCol, nRow1, nTab);
             if (!aTitle.isEmpty())
             {
-                bool bFound = false;
-                for (SCSIZE i=0; i<nColCount && !bFound; i++)
-                    if ( maColHeaders[i] == aTitle )
-                        bFound = true;
+                const bool bFound = std::any_of(maColHeaders.begin(),
+                    maColHeaders.begin() + nColCount,
+                    [&aTitle](const OUString& rHeader) { return rHeader == aTitle; });
                 if (!bFound)
                     lcl_AddString( maColHeaders, nColCount, aTitle );
             }
@@ -193,10 +193,9 @@ void ScConsData::AddFields( const ScDocument* pSrcDoc, SCTAB nTab,
         aTitle = pSrcDoc->GetString(nCol1, nRow, nTab);
         if (!aTitle.isEmpty())
         {
-            bool bFound = false;
-            for (SCSIZE i=0; i<nRowCount && !bFound; i++)
-                if ( maRowHeaders[i] == aTitle )
-                    bFound = true;
+            const bool bFound = std::any_of(maRowHeaders.begin(),
+                maRowHeaders.begin() + nRowCount,
+                [&aTitle](const OUString& rHeader) { return rHeader == aTitle; });
             if (!bFound)
                 lcl_AddString( maRowHeaders, nRowCount, aTitle );
         }
@@ -290,14 +289,11 @@ void ScConsData::AddData( ScDocument* pSrcDoc, SCTAB nTab,
             SCCOL nPos = SC_CONS_NOTFOUND;
             if (!aTitle.isEmpty())
             {
-                bool bFound = false;
-                for (SCSIZE i=0; i<nColCount && !bFound; i++)
-                    if ( maColHeaders[i] == aTitle )
-                    {
-                        nPos = static_cast<SCCOL>(i);
-                        bFound = true;
-                    }
-                OSL_ENSURE(bFound, "column not found");
+                auto it = std::find(maColHeaders.begin(),
+                    maColHeaders.begin() + nColCount, aTitle);
+                if (it != maColHeaders.begin() + nColCount)
+                    nPos = static_cast<SCCOL>(std::distance(maColHeaders.begin(), it));
+                OSL_ENSURE(it != maColHeaders.begin() + nColCount, "column not found");
             }
             pDestCols[nCol-nStartCol] = nPos;
         }
@@ -311,14 +307,11 @@ void ScConsData::AddData( ScDocument* pSrcDoc, SCTAB nTab,
             SCROW nPos = SC_CONS_NOTFOUND;
             if (!aTitle.isEmpty())
             {
-                bool bFound = false;
-                for (SCSIZE i=0; i<nRowCount && !bFound; i++)
-                    if ( maRowHeaders[i] == aTitle )
-                    {
-                        nPos = static_cast<SCROW>(i);
-                        bFound = true;
-                    }
-                OSL_ENSURE(bFound, "row not found");
+                auto it = std::find(maRowHeaders.begin(),
+                    maRowHeaders.begin() + nRowCount, aTitle);
+                if (it != maRowHeaders.begin() + nRowCount)
+                    nPos = static_cast<SCROW>(std::distance(maRowHeaders.begin(), it));
+                OSL_ENSURE(it != maRowHeaders.begin() + nRowCount, "row not found");
             }
             pDestRows[nRow-nStartRow] = nPos;
         }

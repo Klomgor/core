@@ -6882,15 +6882,8 @@ void DocxAttributeOutput::OutputFlyFrame_Impl(const ww8::Frame& rFrame, const Po
     }
     else
     {
-        bool bFound = false;
-        for (const auto& i : m_vPostponedFlys)
-        {
-            if (i.RefersToSameFrameAs(rFrame))
-            {
-                bFound = true;
-                break;
-            }
-        }
+        const bool bFound = std::ranges::any_of(m_vPostponedFlys,
+            [&rFrame](const auto& rFly) { return rFly.RefersToSameFrameAs(rFrame); });
         if (!bFound)
         {
             if (auto pParentFly = rFrame.GetContentNode()->GetFlyFormat())
