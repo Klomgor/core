@@ -71,7 +71,7 @@ void SwEditWinUIObject::execute(const OUString& rAction,
 {
     if (rAction == "SET")
     {
-        if (rParameters.find(u"ZOOM"_ustr) != rParameters.end())
+        if (rParameters.contains(u"ZOOM"_ustr))
         {
             auto itr = rParameters.find(u"ZOOM"_ustr);
             OUString aVal = itr->second;
@@ -81,7 +81,7 @@ void SwEditWinUIObject::execute(const OUString& rAction,
     }
     else if (rAction == "GOTO")
     {
-        if (rParameters.find(u"PAGE"_ustr) != rParameters.end())
+        if (rParameters.contains(u"PAGE"_ustr))
         {
             auto itr = rParameters.find(u"PAGE"_ustr);
             OUString aVal = itr->second;
@@ -91,7 +91,7 @@ void SwEditWinUIObject::execute(const OUString& rAction,
     }
     else if (rAction == "SELECT")
     {
-        if (rParameters.find(u"START_POS"_ustr) != rParameters.end())
+        if (rParameters.contains(u"START_POS"_ustr))
         {
             auto itr = rParameters.find(u"START_POS"_ustr);
             OUString aStartPos = itr->second;
@@ -126,8 +126,7 @@ void SwEditWinUIObject::execute(const OUString& rAction,
         SfxViewFrame* pViewFrm = SfxViewFrame::Current();
         assert(pViewFrm && "SwEditWinUIObject::execute: no viewframe");
         pViewFrm->ShowChildWindow(SID_SIDEBAR);
-
-        if (rParameters.find(u"PANEL"_ustr) != rParameters.end())
+        if (rParameters.contains(u"PANEL"_ustr))
         {
             auto itr = rParameters.find(u"PANEL"_ustr);
             OUString aVal = itr->second;
@@ -174,8 +173,7 @@ void CommentUIObject::execute(const OUString& rAction,
 {
     if (rAction == "SELECT")
     {
-        if (rParameters.find(u"FROM"_ustr) != rParameters.end() &&
-                    rParameters.find(u"TO"_ustr) != rParameters.end())
+        if (rParameters.contains(u"FROM"_ustr) && rParameters.contains(u"TO"_ustr))
         {
                 tools::Long nMin = rParameters.find(u"FROM"_ustr)->second.toInt32();
                 tools::Long nMax = rParameters.find(u"TO"_ustr)->second.toInt32();
