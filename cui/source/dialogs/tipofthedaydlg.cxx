@@ -163,16 +163,19 @@ void TipOfTheDayDialog::UpdateTip()
 #ifdef MACOSX
     const OUString aMOD1 = CuiResId(STR_CMD);
     const OUString aMOD2 = CuiResId(STR_Option);
-    const OUString aMOD3 = CuiResId(STR_CTRL);
+    const OUString aMOD3 = CuiResId(STR_CTRL_MAC);
+    const OUString aSHIFT = CuiResId(STR_SHIFT);
 #else
     const OUString aMOD1 = CuiResId(STR_CTRL);
     const OUString aMOD2 = CuiResId(STR_Alt);
     const OUString& aMOD3 = aMOD1;
+    const OUString aSHIFT = CuiResId(STR_SHIFT);
 #endif
     m_pText->set_label(CuiResId(sTip)
                            .replaceAll("%MOD1", aMOD1)
                            .replaceAll("%MOD2", aMOD2)
-                           .replaceAll("%MOD3", aMOD3));
+                           .replaceAll("%MOD3", aMOD3)
+                           .replaceAll("%SHIFT", aSHIFT));
 
     // hyperlink
     if (sLink.isEmpty())

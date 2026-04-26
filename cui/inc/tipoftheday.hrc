@@ -84,7 +84,7 @@ const std::tuple<TranslateId, OUString, OUString, tipModule> TIPOFTHEDAY_STRINGA
      { NC_("RID_CUI_TIPOFTHEDAY", "Want to sort a series in %PRODUCTNAME Calc such as A1, A2, A3, A11, A15, not in alphabetical order but on the number? Enable natural sort in the Options tab."), "modules/scalc/ui/sortoptionspage/SortOptionsPage", "", scalc}, //https://help.libreoffice.org/%PRODUCTVERSION/%LANGUAGENAME/text/scalc/01/12030200.html
      { NC_("RID_CUI_TIPOFTHEDAY", "You can change the default function in the status bar: right click on the area."), "", "statusbar.png", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "Want to add many of the same shapes in Draw/Impress? Double-click a tool in the drawing toolbar to use it for repeated tasks."), "", "", sdraw},
-     { NC_("RID_CUI_TIPOFTHEDAY", "%MOD1+Shift+F9 recalculates all formulas in all spreadsheets."), "", "", scalc},
+     { NC_("RID_CUI_TIPOFTHEDAY", "%MOD1+%SHIFT+F9 recalculates all formulas in all spreadsheets."), "", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "Want to keep a part of an editable document as read-only? Insert ▸ Section. Add text to the section, then right-click “Edit Section” and check “Protect”."), "", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "Use the Backspace key instead of Delete in Calc. You can choose what to delete."), "", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "The best way to fix bad-looking MS Word table cells is via Table ▸ Size ▸ Optimal Row Height / Column Width."), "", "", swriter},
@@ -92,10 +92,10 @@ const std::tuple<TranslateId, OUString, OUString, tipModule> TIPOFTHEDAY_STRINGA
      { NC_("RID_CUI_TIPOFTHEDAY", "Want to quickly insert or delete rows? Select the desired number of rows (or columns) and press %MOD1+Plus sign (+) to add or %MOD1+Minus sign (-) to delete."), "modules/scalc/ui/insertcells/InsertCellsDialog", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "To repeat rows/columns on every pages use Format ▸ Print Ranges ▸ Edit."), "", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "Insert images and photos into shapes in Draw and Impress. Right-click on a shape, choose Area ▸ Image ▸ Add / Import, and use Options to adjust appearance."), "", "", sdraw},
-     { NC_("RID_CUI_TIPOFTHEDAY", "Need to insert the date in a spreadsheet cell? Type %MOD1+; or Shift+%MOD1+; to insert the time."), "", "", scalc},
+     { NC_("RID_CUI_TIPOFTHEDAY", "Need to insert the date in a spreadsheet cell? Type %MOD1+; or %SHIFT+%MOD1+; to insert the time."), "", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "Insert your metadata in your document with Insert ▸ Fields ▸ More Fields… ▸ Document or DocInformation."), "", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "Get help from the community via the Ask portal."), "https://ask.libreoffice.org", "", soffice},
-     { NC_("RID_CUI_TIPOFTHEDAY", "Use Shift+Space to select the current row and %MOD3+Space to select the current column."), "", "", scalc},
+     { NC_("RID_CUI_TIPOFTHEDAY", "Use %SHIFT+Space to select the current row and %MOD3+Space to select the current column."), "", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "You can move an object to another layer by holding it until its edges flash, then drag it to the tab of the layer you want to move it to."), "", "", sdraw},
      { NC_("RID_CUI_TIPOFTHEDAY", "Data ▸ Validity allows you to create drop-down lists where the user selects a value instead of typing."), "https://help.libreoffice.org/%PRODUCTVERSION/%LANGUAGENAME/text/scalc/guide/validity.html", "", scalc}, //local help missing
      { NC_("RID_CUI_TIPOFTHEDAY", "Hold down %MOD1 and turn the mouse wheel to change the zoom factor."), "", "", soffice},
@@ -118,7 +118,7 @@ const std::tuple<TranslateId, OUString, OUString, tipModule> TIPOFTHEDAY_STRINGA
      { NC_("RID_CUI_TIPOFTHEDAY", "Want to find words containing 10 or more characters? Edit ▸ Find and Replace ▸ Search ▸ \\w{10,} ▸ Other Options ▸ check Regular expressions."), "", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "Open a CSV file as a new sheet in the current spreadsheet via Sheet ▸ Sheet from file."), "", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "You can continue writing with the default formatting attributes after manually applying bold, italic or underline by pressing %MOD1+M."), "", "", swriter},
-     { NC_("RID_CUI_TIPOFTHEDAY", "Use %MOD1+%MOD2+Shift+V to paste the contents of the clipboard as unformatted text."), "", "", swriter},
+     { NC_("RID_CUI_TIPOFTHEDAY", "Use %MOD1+%MOD2+%SHIFT+V to paste the contents of the clipboard as unformatted text."), "", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "Customize footnote appearance with Tools ▸ Footnote/Endnote Settings…"), ".uno:FootnoteDialog", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "With Slide Show ▸ Custom Slide Show, reorder and pick slides to fit a slideshow to the needs of your viewers."), "", "", simpress},
      { NC_("RID_CUI_TIPOFTHEDAY", "Want to change spell checking for some part of the text? Click in the language zone of the status bar or better, apply a style."), "", "", swriter},
@@ -138,7 +138,7 @@ const std::tuple<TranslateId, OUString, OUString, tipModule> TIPOFTHEDAY_STRINGA
      { NC_("RID_CUI_TIPOFTHEDAY", "Left-handed? Enable Tools ▸ Options ▸ Languages and Locales ▸ General ▸ Asian and check Tools ▸ Options ▸ %PRODUCTNAME Writer ▸ View ▸ Ruler ▸ Right-aligned, which displays the scrollbar to the left."), "", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "Want headings to always begin a page? Edit the paragraph style applied to the headings. Check “Insert” on the “Text Flow” tab, with Type “Page” and Position “Before”."), "cui/ui/textflowpage/checkInsert", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "Date/time value is just a number of days since a chosen day zero; in the number, integer part represents date, and fractional part is time (elapsed part of a day), with 0.5 representing noon."), "", "", scalc},
-     { NC_("RID_CUI_TIPOFTHEDAY", "Shift+%MOD1+Del deletes from cursor to the end of the current sentence."), "", "", swriter},
+     { NC_("RID_CUI_TIPOFTHEDAY", "%SHIFT+%MOD1+Del deletes from cursor to the end of the current sentence."), "", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "Use column or row labels in formulas. For example, if you have two columns, “Time” and “KM”, use =Time/KM to get minutes per kilometer."), "", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "Annoyed by the “marching ants” around cells in Calc? Press escape to stop them; the copied content will remain available for pasting."), "", "marchingants.gif", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "Want to become a %PRODUCTNAME Ambassador? There are certifications for developers, admins, and trainers."), "https://www.documentfoundation.org/certification/program/", "", soffice},
@@ -174,7 +174,7 @@ const std::tuple<TranslateId, OUString, OUString, tipModule> TIPOFTHEDAY_STRINGA
      { NC_("RID_CUI_TIPOFTHEDAY", "Want to manage the presentation of hyperlinks in a spreadsheet? Insert them with the HYPERLINK function."), "https://help.libreoffice.org/%PRODUCTVERSION/%LANGUAGENAME/text/scalc/01/04060109.html", "", scalc}, //local help missing
      { NC_("RID_CUI_TIPOFTHEDAY", "Uncheck Tools ▸ Options ▸ %PRODUCTNAME Calc ▸ View ▸ Zoom: “Synchronize sheets” so that each sheet in Calc has its own zoom factor."), "", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "You can set a color for each tab: right-click the tab or use Sheet ▸ Sheet Tab Color."), "", "", scalc},
-     { NC_("RID_CUI_TIPOFTHEDAY", "Trace cells used in a formula, precedents (Shift+F9) or dependents (Shift+F5) (or use Tools ▸ Detective). For each hit you go one more step in the chain."), "https://help.libreoffice.org/%PRODUCTVERSION/%LANGUAGENAME/text/scalc/01/06030000.html", "", scalc}, //local help missing
+     { NC_("RID_CUI_TIPOFTHEDAY", "Trace cells used in a formula, precedents (%SHIFT+F9) or dependents (%SHIFT+F5) (or use Tools ▸ Detective). For each hit you go one more step in the chain."), "https://help.libreoffice.org/%PRODUCTVERSION/%LANGUAGENAME/text/scalc/01/06030000.html", "", scalc}, //local help missing
      { NC_("RID_CUI_TIPOFTHEDAY", "Insert and number your formulas in one step: type fn then F3. An AutoText is inserted with formula and number aligned in a table."), "", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "You can create an illustration index from object names, not only from captions."), "cui/ui/objectnamedialog/ObjectNameDialog", "", swriter}, //https://help.libreoffice.org/%PRODUCTVERSION/%LANGUAGENAME/text/shared/01/05190000.html
      { NC_("RID_CUI_TIPOFTHEDAY", "Use your Android or iPhone to remotely control your Impress presentation."), "https://help.libreoffice.org/%PRODUCTVERSION/he/text/simpress/guide/impress_remote.html", "", simpress}, //local help missing
@@ -207,7 +207,7 @@ const std::tuple<TranslateId, OUString, OUString, tipModule> TIPOFTHEDAY_STRINGA
      { NC_("RID_CUI_TIPOFTHEDAY", "You want to start working with Basic macros? Take a look at the examples under Tools ▸ Macros ▸ Edit Macros."), "", "", soffice},
      { NC_("RID_CUI_TIPOFTHEDAY", "Apply Heading paragraph styles in Writer with shortcut keys: %MOD1+1 applies Heading 1, %MOD1+2 applies Heading 2, etc."), "", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "Do not get lost in large documents. Use the Navigator (F5) to find your way through the content."), "", "", swriter},
-     { NC_("RID_CUI_TIPOFTHEDAY", "Edit ▸ Find and Replace lets you insert special characters directly: right click in input fields or press Shift+%MOD1+S."), "", "", soffice},
+     { NC_("RID_CUI_TIPOFTHEDAY", "Edit ▸ Find and Replace lets you insert special characters directly: right click in input fields or press %SHIFT+%MOD1+S."), "", "", soffice},
      { NC_("RID_CUI_TIPOFTHEDAY", "Need custom contents for metadata properties? File ▸ Properties ▸ Custom Properties tab lets you create what you want."), "", "", soffice},
      { NC_("RID_CUI_TIPOFTHEDAY", "Want to see, but not print, an object in Draw? Draw it on a layer for which the “Printable” flag is not set (right-click the layer’s tab and choose “Modify Layer”)."), "", "", sdraw},
      { NC_("RID_CUI_TIPOFTHEDAY", "To insert the current date in your document, use Insert ▸ Field ▸ Date."), "", "", swriter},
@@ -236,7 +236,7 @@ const std::tuple<TranslateId, OUString, OUString, tipModule> TIPOFTHEDAY_STRINGA
      { NC_("RID_CUI_TIPOFTHEDAY", "Want to return to default after applying a list style? Click Bullets or Numbering On/Off tool on the Formatting toolbar."), "", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "Delete all of your printing areas in one step: select all sheets, then Format ▸ Print Ranges ▸ Clear."), "", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "Add background images to spreadsheets via Insert ▸ Image or drag a background from the Gallery, then Format ▸ Arrange ▸ To Background."), "", "", scalc},
-     { NC_("RID_CUI_TIPOFTHEDAY", "Having trouble pasting text from PDF files or webpages into documents? Try to paste as unformatted text (%MOD1+%MOD2+Shift+V)."), "", "", swriter},
+     { NC_("RID_CUI_TIPOFTHEDAY", "Having trouble pasting text from PDF files or webpages into documents? Try to paste as unformatted text (%MOD1+%MOD2+%SHIFT+V)."), "", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "In Calc use TRIMMEAN() to return the mean of a data set excluding the highest and lowest values."), "https://help.libreoffice.org/%PRODUCTVERSION/%LANGUAGENAME/text/scalc/01/04060182.html?DbPAR=CALC#bm_id3152966", "", scalc}, //local help missing
      { NC_("RID_CUI_TIPOFTHEDAY", "The 4th optional parameter of VLOOKUP Calc function indicates whether the first column of data is sorted. If not, enter FALSE or zero."), "", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "Toolbars are contextual—they open depending on the context. If you do not want that, uncheck them from View ▸ Toolbars."), "", "", soffice},
@@ -262,7 +262,7 @@ const std::tuple<TranslateId, OUString, OUString, tipModule> TIPOFTHEDAY_STRINGA
      { NC_("RID_CUI_TIPOFTHEDAY", "Apart from table of contents, %PRODUCTNAME can create Alphabetical, Illustrations, Tables, Objects, Bibliography, User-Defined indexes."), "modules/swriter/ui/tocdialog/TocDialog", "", swriter}, //https://help.libreoffice.org/%PRODUCTVERSION/%LANGUAGENAME/text/swriter/guide/indices_toc.html
      { NC_("RID_CUI_TIPOFTHEDAY", "Unable to modify or delete a custom cell style? Check all sheets, none should be protected."), "", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "You need to fill a series? Select the cell range and Sheet ▸ Fill Cells ▸ Fill Series and choose between Linear, Growth, Date and AutoFill."), "https://help.libreoffice.org/%PRODUCTVERSION/%LANGUAGENAME/text/scalc/guide/calc_series.html", "", scalc}, //local help missing
-     { NC_("RID_CUI_TIPOFTHEDAY", "Want to know if a cell is referred in formulas of other cells? Tools ▸ Detective ▸ Trace Dependents (Shift+F5)."), "", "", scalc},
+     { NC_("RID_CUI_TIPOFTHEDAY", "Want to know if a cell is referred in formulas of other cells? Tools ▸ Detective ▸ Trace Dependents (%SHIFT+F5)."), "", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "In the replace input field of auto correct options you can use the wildcards .*"), "", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "Want to duplicate the above line? Press %MOD1+D or use Sheet ▸ Fill Cells ▸ Fill Down."), "", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "To search in several spreadsheets, select them before you start the search."), "", "", scalc},
@@ -273,10 +273,10 @@ const std::tuple<TranslateId, OUString, OUString, tipModule> TIPOFTHEDAY_STRINGA
      { NC_("RID_CUI_TIPOFTHEDAY", "Drag a formatted object to the Styles and Formatting window. A dialog box opens, just enter the name of the new style."), "", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "New versions of %PRODUCTNAME provide new features, bug fixes, and security patches. Keep your software updated!"), "SFX2_HID_DLG_CHECKFORONLINEUPDATE", "", soffice},
      { NC_("RID_CUI_TIPOFTHEDAY", "Developing new XSLT and XML filters?"), "https://fridrich.blogspot.com/2013/08/extending-swiss-army-knife-overview.html", "", soffice},
-     { NC_("RID_CUI_TIPOFTHEDAY", "Press Shift+F1 to see any available extended tooltips in dialog boxes, when \"Extended tips\" is not enabled in Tools ▸ Options ▸ %PRODUCTNAME ▸ General."), "https://help.libreoffice.org/%PRODUCTVERSION/%LANGUAGENAME/text/shared/05/00000120.html", "", soffice},
+     { NC_("RID_CUI_TIPOFTHEDAY", "Press %SHIFT+F1 to see any available extended tooltips in dialog boxes, when \"Extended tips\" is not enabled in Tools ▸ Options ▸ %PRODUCTNAME ▸ General."), "https://help.libreoffice.org/%PRODUCTVERSION/%LANGUAGENAME/text/shared/05/00000120.html", "", soffice},
      { NC_("RID_CUI_TIPOFTHEDAY", "Never use certain arrow styles? Remove them by using the Delete button on the Format ▸ Text Box and Shape ▸ Line ▸ Arrow Styles tab."), "cui/ui/lineendstabpage/BTN_MODIFY", "", sdraw},
      { NC_("RID_CUI_TIPOFTHEDAY", "Don’t like the position of some icons on your toolbar? Change it with Tools ▸ Customize ▸ Toolbars tab ▸ Target."), "CUI_HID_SVX_CONFIG_TOOLBAR", "", soffice},
-     { NC_("RID_CUI_TIPOFTHEDAY", "Can’t find a command in the menus? Try Shift+ESC."), ".uno:CommandPopup", "", soffice},
+     { NC_("RID_CUI_TIPOFTHEDAY", "Can’t find a command in the menus? Try %SHIFT+ESC."), ".uno:CommandPopup", "", soffice},
 };
 
 #define STR_HELP_LINK                   NC_("STR_HELP_LINK", "%PRODUCTNAME Help")
@@ -284,7 +284,9 @@ const std::tuple<TranslateId, OUString, OUString, tipModule> TIPOFTHEDAY_STRINGA
 #define STR_UNO_LINK                    NC_("STR_UNO_LINK", "Run this action now...")
 #define STR_TITLE                       NC_("STR_TITLE", "Tip of the Day: %CURRENT/%TOTAL")
 #define STR_CMD                         NC_("STR_CMD", "⌘ Cmd") //use narrow no-break space U+202F here
+#define STR_CTRL_MAC                    NC_("STR_CTRL_MAC", "⌃ Ctrl")
 #define STR_CTRL                        NC_("STR_CTRL", "Ctrl")
+#define STR_SHIFT                       NC_("STR_SHIFT", "⇧ Shift") //use narrow no-break space U+202F here
 #define STR_Alt                         NC_("STR_CMD", "Alt")
 #define STR_Option                      NC_("STR_CTRL", "⌥ Opt") //use narrow no-break space U+202F here
 
