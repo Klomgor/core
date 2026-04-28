@@ -239,9 +239,9 @@ private:
                         const MovedData& rMD1, const MovedData& rMD2 );
     };
 
-    static void CountDifference( const CompareData& rData, sal_uLong* pCounts );
+    static void CountDifference( const CompareData& rData, size_t* pCounts );
     static void SetDiscard( const CompareData& rData,
-                            char* pDiscard, const sal_uLong* pCounts );
+                            char* pDiscard, const size_t* pCounts );
     static void CheckDiscard( size_t nLen, char* pDiscard );
     static void ShiftBoundaries( CompareData& rData1, CompareData& rData2 );
 
@@ -581,10 +581,10 @@ Compare::Compare( sal_uLong nDiff, CompareData& rData1, CompareData& rData2 )
         std::unique_ptr<char[]> pDiscard1( new char[ rData1.GetLineCount() ] );
         std::unique_ptr<char[]> pDiscard2( new char[ rData2.GetLineCount() ] );
 
-        std::unique_ptr<sal_uLong[]> pCount1(new sal_uLong[ nDiff ]);
-        std::unique_ptr<sal_uLong[]> pCount2(new sal_uLong[ nDiff ]);
-        memset( pCount1.get(), 0, nDiff * sizeof( sal_uLong ));
-        memset( pCount2.get(), 0, nDiff * sizeof( sal_uLong ));
+        std::unique_ptr<size_t[]> pCount1(new size_t[ nDiff ]);
+        std::unique_ptr<size_t[]> pCount2(new size_t[ nDiff ]);
+        memset( pCount1.get(), 0, nDiff * sizeof( size_t ));
+        memset( pCount2.get(), 0, nDiff * sizeof( size_t ));
 
         // find indices in CompareData which have been assigned multiple times
         CountDifference( rData1, pCount1.get() );
@@ -609,30 +609,30 @@ Compare::Compare( sal_uLong nDiff, CompareData& rData1, CompareData& rData2 )
     ShiftBoundaries( rData1, rData2 );
 }
 
-void Compare::CountDifference( const CompareData& rData, sal_uLong* pCounts )
+void Compare::CountDifference( const CompareData& rData, size_t* pCounts )
 {
-    sal_uLong nLen = rData.GetLineCount();
-    for( sal_uLong n = 0; n < nLen; ++n )
+    size_t nLen = rData.GetLineCount();
+    for( size_t n = 0; n < nLen; ++n )
     {
-        sal_uLong nIdx = rData.GetIndex( n );
+        size_t nIdx = rData.GetIndex( n );
         ++pCounts[ nIdx ];
     }
 }
 
 void Compare::SetDiscard( const CompareData& rData,
-                            char* pDiscard, const sal_uLong* pCounts )
+                            char* pDiscard, const size_t* pCounts )
 {
-    const sal_uLong nLen = rData.GetLineCount();
+    const size_t nLen = rData.GetLineCount();
 
     // calculate Max with respect to the line count
-    sal_uLong nMax = 5;
+    size_t nMax = 5;
 
-    for( sal_uLong n = nLen / 64; ( n = n >> 2 ) > 0; )
+    for( size_t n = nLen / 64; ( n = n >> 2 ) > 0; )
         nMax <<= 1;
 
-    for( sal_uLong n = 0; n < nLen; ++n )
+    for( size_t n = 0; n < nLen; ++n )
     {
-        sal_uLong nIdx = rData.GetIndex( n );
+        size_t nIdx = rData.GetIndex( n );
         if( nIdx )
         {
             nIdx = pCounts[ nIdx ];
