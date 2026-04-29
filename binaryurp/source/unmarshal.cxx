@@ -19,6 +19,7 @@
 
 #include <sal/config.h>
 
+#include <algorithm>
 #include <cassert>
 #include <cstdlib>
 #include <new>
@@ -317,13 +318,9 @@ BinaryAny Unmarshal::readValue(css::uno::TypeDescription const & type) {
             type.makeComplete();
             typelib_EnumTypeDescription * etd =
                 reinterpret_cast< typelib_EnumTypeDescription * >(type.get());
-            bool bFound = false;
-            for (sal_Int32 i = 0; i != etd->nEnumValues; ++i) {
-                if (etd->pEnumValues[i] == v) {
-                    bFound = true;
-                    break;
-                }
-            }
+            bool bFound = std::any_of(
+                etd->pEnumValues, etd->pEnumValues + etd->nEnumValues,
+                [v](sal_Int32 nValue) { return nValue == v; });
             if (!bFound) {
                 throw css::io::IOException(
                     u"binaryurp::Unmarshal: unknown enum value"_ustr);
