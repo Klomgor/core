@@ -31,7 +31,6 @@ public:
     int  getValue() const { return mnValue; }
 
     bool operator==( const cow_wrapper_client2_impl& rRHS ) const { return mnValue == rRHS.mnValue; }
-    bool operator!=( const cow_wrapper_client2_impl& rRHS ) const { return mnValue != rRHS.mnValue; }
     bool operator<( const cow_wrapper_client2_impl& rRHS ) const { return mnValue < rRHS.mnValue; }
 
 private:
@@ -105,10 +104,6 @@ void cow_wrapper_client2::swap( cow_wrapper_client2& r )
 bool cow_wrapper_client2::operator==( const cow_wrapper_client2& rRHS ) const
 {
     return maImpl == rRHS.maImpl;
-}
-bool cow_wrapper_client2::operator!=( const cow_wrapper_client2& rRHS ) const
-{
-    return maImpl != rRHS.maImpl;
 }
 bool cow_wrapper_client2::operator<( const cow_wrapper_client2& rRHS ) const
 {
@@ -184,10 +179,6 @@ bool cow_wrapper_client3::operator==( const cow_wrapper_client3& rRHS ) const
 {
     return maImpl == rRHS.maImpl;
 }
-bool cow_wrapper_client3::operator!=( const cow_wrapper_client3& rRHS ) const
-{
-    return maImpl != rRHS.maImpl;
-}
 bool cow_wrapper_client3::operator<( const cow_wrapper_client3& rRHS ) const
 {
     return maImpl < rRHS.maImpl;
@@ -231,10 +222,6 @@ bool cow_wrapper_client4::is_default() const
 bool cow_wrapper_client4::operator==( const cow_wrapper_client4& rRHS ) const
 {
     return maImpl == rRHS.maImpl;
-}
-bool cow_wrapper_client4::operator!=( const cow_wrapper_client4& rRHS ) const
-{
-    return maImpl != rRHS.maImpl;
 }
 bool cow_wrapper_client4::operator<( const cow_wrapper_client4& rRHS ) const
 {
@@ -285,10 +272,6 @@ cow_wrapper_client5& cow_wrapper_client5::operator=(cow_wrapper_client5&& rSrc) 
 
 bool cow_wrapper_client5::operator==( const cow_wrapper_client5& rSrc ) const {
     return maImpl == rSrc.maImpl;
-}
-
-bool cow_wrapper_client5::operator!=( const cow_wrapper_client5& rSrc ) const {
-    return maImpl != rSrc.maImpl;
 }
 
 } // namespace o3tltests

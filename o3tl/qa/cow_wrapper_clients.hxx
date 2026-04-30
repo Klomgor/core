@@ -49,7 +49,6 @@ public:
     void swap( cow_wrapper_client1& r ) { o3tl::swap(maImpl, r.maImpl); }
 
     bool operator==( const cow_wrapper_client1& rRHS ) const { return maImpl == rRHS.maImpl; }
-    bool operator!=( const cow_wrapper_client1& rRHS ) const { return maImpl != rRHS.maImpl; }
     bool operator<( const cow_wrapper_client1& rRHS ) const { return maImpl < rRHS.maImpl; }
 
 private:
@@ -83,7 +82,6 @@ public:
     void swap( cow_wrapper_client2& r );
 
     bool operator==( const cow_wrapper_client2& rRHS ) const;
-    bool operator!=( const cow_wrapper_client2& rRHS ) const;
     bool operator<( const cow_wrapper_client2& rRHS ) const;
 
 private:
@@ -114,7 +112,6 @@ public:
     void swap( cow_wrapper_client3& r );
 
     bool operator==( const cow_wrapper_client3& rRHS ) const;
-    bool operator!=( const cow_wrapper_client3& rRHS ) const;
     bool operator<( const cow_wrapper_client3& rRHS ) const;
 
 private:
@@ -138,7 +135,6 @@ public:
     bool is_default() const;
 
     bool operator==( const cow_wrapper_client4& rRHS ) const;
-    bool operator!=( const cow_wrapper_client4& rRHS ) const;
     bool operator<( const cow_wrapper_client4& rRHS ) const;
 
 private:
@@ -191,7 +187,6 @@ public:
     sal_uInt32 use_count() const { return maImpl.use_count(); }
 
     bool operator==( const cow_wrapper_client5& rRHS ) const;
-    bool operator!=( const cow_wrapper_client5& rRHS ) const;
 
 private:
     o3tl::cow_wrapper< int, BogusRefCountPolicy > maImpl;
