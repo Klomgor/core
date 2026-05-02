@@ -205,7 +205,7 @@ namespace
 
 namespace
 {
-    enum PackageRepository { USER, SHARED, BUNDLED };
+    enum class PackageRepository: sal_uInt32 { USER, SHARED, BUNDLED };
 
     class ExtensionInfoEntry
     {
@@ -216,21 +216,21 @@ namespace
 
     public:
         ExtensionInfoEntry()
-        :   maRepository(USER),
+        :   maRepository(PackageRepository::USER),
             mbEnabled(false)
         {
         }
 
         ExtensionInfoEntry(OString aName, bool bEnabled)
         :   maName(std::move(aName)),
-            maRepository(USER),
+            maRepository(PackageRepository::USER),
             mbEnabled(bEnabled)
         {
         }
 
         ExtensionInfoEntry(const uno::Reference< deployment::XPackage >& rxPackage)
         :   maName(OUStringToOString(rxPackage->getName(), RTL_TEXTENCODING_ASCII_US)),
-            maRepository(USER),
+            maRepository(PackageRepository::USER),
             mbEnabled(false)
         {
             // check maRepository
@@ -238,11 +238,11 @@ namespace
 
             if (aRepName == "shared")
             {
-                maRepository = SHARED;
+                maRepository = PackageRepository::SHARED;
             }
             else if (aRepName == "bundled")
             {
-                maRepository = BUNDLED;
+                maRepository = PackageRepository::BUNDLED;
             }
 
             // check mbEnabled
@@ -327,7 +327,7 @@ namespace
             }
 
             // write maRepository
-            sal_uInt32 nState(maRepository);
+            sal_uInt32 nState(static_cast<sal_uInt32>(maRepository));
 
             if (!write_sal_uInt32(rHandle, nState))
             {
