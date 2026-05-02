@@ -49,9 +49,9 @@ const OUString& IndexEntryResource::GetTranslation(const OUString &r_Algorithm)
         aLocaleFreeAlgorithm = r_Algorithm.copy(nIndex);
     }
 
-    for (size_t i = 0; i < m_aData.size(); ++i)
-        if (aLocaleFreeAlgorithm == m_aData[i].GetAlgorithm())
-            return m_aData[i].GetTranslation();
+    for (const auto& rData : m_aData)
+        if (aLocaleFreeAlgorithm == rData.GetAlgorithm())
+            return rData.GetTranslation();
     return r_Algorithm;
 }
 

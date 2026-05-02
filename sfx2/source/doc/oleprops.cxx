@@ -326,8 +326,8 @@ void SfxOleStringHelper::ImplSaveString16( SvStream& rStrm, std::u16string_view 
     sal_Int32 nSize = static_cast< sal_Int32 >( rValue.size() + 1 );
     rStrm.WriteInt32( nSize );
     // write character array with trailing NUL character
-    for( size_t nIdx = 0; nIdx < rValue.size(); ++nIdx )
-        rStrm.WriteUInt16( rValue[ nIdx ] );
+    for( char16_t c : rValue )
+        rStrm.WriteUInt16( c );
     rStrm.WriteUInt16( 0 );
     // stream is always padded to 32-bit boundary, add 2 bytes on odd character count
     if( (nSize & 1) == 1 )

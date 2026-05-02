@@ -51,12 +51,13 @@ HDDEDATA CALLBACK DdeInternal::CliCallback( UINT nCode, UINT nCbType,
 
     const DdeInstData& rInst = ImpGetInstData();
 
-    for ( size_t i = 0; i < rAll.size(); ++i)
+    for ( DdeConnection* pConn : rAll )
     {
-        self = rAll[i];
-
-        if ( self->pImp->hConv == hConv )
+        if ( pConn->pImp->hConv == hConv )
+        {
+            self = pConn;
             break;
+        }
     }
 
     if( self )
