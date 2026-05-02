@@ -52,6 +52,8 @@ public:
     void testMSOLockFileLongUserName();
     void testMSOLockFileUnicodeUsername();
     void testMSOLockFileOverwrite();
+    void testFormatDateTimeShortInput();
+    void testFormatDateTimeLocaleOutput();
 
 private:
     CPPUNIT_TEST_SUITE(LockfileTest);
@@ -72,6 +74,8 @@ private:
     CPPUNIT_TEST(testMSOLockFileLongUserName);
     CPPUNIT_TEST(testMSOLockFileUnicodeUsername);
     CPPUNIT_TEST(testMSOLockFileOverwrite);
+    CPPUNIT_TEST(testFormatDateTimeShortInput);
+    CPPUNIT_TEST(testFormatDateTimeLocaleOutput);
     CPPUNIT_TEST_SUITE_END();
 };
 
@@ -696,6 +700,49 @@ void LockfileTest::testMSOLockFileOverwrite()
                          aRTEntry[LockFileComponent::OOOUSERNAME]);
 
     aLockFile2.RemoveFileDirectly();
+}
+
+void LockfileTest::testFormatDateTimeShortInput()
+{
+    // Check that input shorter than "DD.MM.YYYY HH:MM" is returned unchanged
+    CPPUNIT_ASSERT_EQUAL(u""_ustr, svt::LockFileCommon::FormatDateTime(u""_ustr, LANGUAGE_SYSTEM));
+    CPPUNIT_ASSERT_EQUAL(u"07.05.2026 15:0"_ustr, svt::LockFileCommon::FormatDateTime(
+                                                      u"07.05.2026 15:0"_ustr, LANGUAGE_SYSTEM));
+}
+
+void LockfileTest::testFormatDateTimeLocaleOutput()
+{
+    struct TestCase
+    {
+        LanguageType eLang;
+        const char* pLocale;
+        const char16_t* pExpected;
+    };
+    // Expected values were obtained by calling FormatDateTime() and capturing its output
+    static const TestCase aCases[] = {
+        // LTR
+        { LANGUAGE_ENGLISH_US, "en-US", u"05/07/26 03:00 PM" },
+        { LANGUAGE_GERMAN, "de-DE", u"07.05.26 15:00" },
+        { LANGUAGE_FRENCH, "fr-FR", u"07/05/26 15:00" },
+        { LANGUAGE_ITALIAN, "it-IT", u"07/05/2026 15:00" },
+        // RTL
+        { LANGUAGE_FARSI, "fa-IR", u"۷ مرداد ۲۰۲۶، ساعت ۱۵:۰۰" },
+        { LANGUAGE_HEBREW, "he-IL", u"07/05/26 15:00" },
+        // CJK
+        { LANGUAGE_CHINESE_SIMPLIFIED, "zh-CN", u"2026/05/07 15:00:00" },
+        { LANGUAGE_JAPANESE, "ja-JP", u"2026/5/7 15:00" },
+        { LANGUAGE_KOREAN, "ko-KR", u"2026년 5월 7일 15시 0분 0초" },
+        // CTL
+        { LANGUAGE_HINDI, "hi-IN", u"07-05-26 15:00" },
+    };
+
+    // Check exact datetime output for each locale
+    for (const auto& rCase : aCases)
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE(
+            rCase.pLocale, OUString(rCase.pExpected),
+            svt::LockFileCommon::FormatDateTime(u"07.05.2026 15:00"_ustr, rCase.eLang));
+    }
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(LockfileTest);

@@ -212,7 +212,7 @@ private:
             sLockUserData = rLockData[LockFileComponent::SYSUSERNAME];
 
         if (!sLockUserData.isEmpty() && !rLockData[LockFileComponent::EDITTIME].isEmpty())
-            sLockUserData += " ( " + rLockData[LockFileComponent::EDITTIME] + " )";
+            sLockUserData += " ( " + svt::LockFileCommon::FormatDateTime(rLockData[LockFileComponent::EDITTIME]) + " )";
 
         if (!sLockUserData.isEmpty())
             sLockUserData = "\n\n" + sLockUserData + "\n";

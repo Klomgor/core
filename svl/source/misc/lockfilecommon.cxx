@@ -28,13 +28,18 @@
 #include <osl/file.hxx>
 #include <o3tl/enumrange.hxx>
 #include <o3tl/sprintf.hxx>
+#include <o3tl/string_view.hxx>
 
 #include <rtl/ustring.hxx>
 #include <rtl/strbuf.hxx>
 #include <rtl/ustrbuf.hxx>
 
+#include <tools/date.hxx>
 #include <tools/urlobj.hxx>
 #include <unotools/bootstrap.hxx>
+#include <comphelper/processfactory.hxx>
+#include <svl/numformat.hxx>
+#include <svl/zforlist.hxx>
 
 #include <unotools/useroptions.hxx>
 
@@ -237,6 +242,35 @@ LockFileEntry LockFileCommon::GenerateOwnEntry()
 
 
     return aResult;
+}
+
+OUString LockFileCommon::FormatDateTime(const OUString& aTimeStr, LanguageType eLang)
+{
+    // The stored format is the fixed "DD.MM.YYYY HH:MM"
+    if (aTimeStr.getLength() < 16)
+        return aTimeStr;
+
+    sal_uInt16 nDay   = sal::static_int_cast<sal_uInt16>(o3tl::toInt32(aTimeStr.subView(0, 2)));
+    sal_uInt16 nMonth = sal::static_int_cast<sal_uInt16>(o3tl::toInt32(aTimeStr.subView(3, 2)));
+    sal_Int16  nYear  = sal::static_int_cast<sal_Int16> (o3tl::toInt32(aTimeStr.subView(6, 4)));
+    sal_uInt16 nHours = sal::static_int_cast<sal_uInt16>(o3tl::toInt32(aTimeStr.subView(11, 2)));
+    sal_uInt16 nMins  = sal::static_int_cast<sal_uInt16>(o3tl::toInt32(aTimeStr.subView(14, 2)));
+
+    try
+    {
+        SvNumberFormatter aFormatter(comphelper::getProcessComponentContext(), eLang);
+        sal_uInt32 nFormat = aFormatter.GetStandardFormat(SvNumFormatType::DATETIME, eLang);
+        double fValue = static_cast<double>(Date(nDay, nMonth, nYear) - aFormatter.GetNullDate())
+                        + (nHours * 3600.0 + nMins * 60.0) / 86400.0;
+        OUString aResult;
+        const Color* pColor = nullptr;
+        aFormatter.GetOutputString(fValue, nFormat, aResult, &pColor);
+        return aResult;
+    }
+    catch (const uno::Exception&)
+    {
+        return aTimeStr;
+    }
 }
 
 } // namespace svt

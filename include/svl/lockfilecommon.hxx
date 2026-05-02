@@ -24,6 +24,7 @@
 
 #include <rtl/ustring.hxx>
 #include <o3tl/enumarray.hxx>
+#include <i18nlangtag/lang.h>
 
 #include <mutex>
 #include <string_view>
@@ -67,6 +68,8 @@ public:
     static OUString GetOOOUserName();
     static OUString GetCurrentLocalTime();
     static LockFileEntry GenerateOwnEntry();
+    static OUString FormatDateTime(const OUString& aTimeStr,
+                                   LanguageType eLang = LANGUAGE_SYSTEM);
 
     static INetURLObject ResolveLinks( const INetURLObject& aDocURL );
 };

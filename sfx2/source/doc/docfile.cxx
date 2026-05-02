@@ -1131,7 +1131,7 @@ SfxMedium::ShowLockResult SfxMedium::ShowLockedDocumentDialog(const LockFileEntr
 
         if ( bOwnLock )
         {
-            aInfo = aData[LockFileComponent::EDITTIME];
+            aInfo = svt::LockFileCommon::FormatDateTime(aData[LockFileComponent::EDITTIME]);
 
             xInteractionRequestImpl = new ::ucbhelper::InteractionRequest( uno::Any(
                 document::OwnLockOnDocumentRequest( OUString(), uno::Reference< uno::XInterface >(), aDocumentURL, aInfo, !bIsLoading ) ) );
@@ -1154,7 +1154,7 @@ SfxMedium::ShowLockResult SfxMedium::ShowLockedDocumentDialog(const LockFileEntr
                     GetURLObject().GetMainURL(INetURLObject::DecodeMechanism::NONE));
 
             if ( !aInfo.isEmpty() && !aData[LockFileComponent::EDITTIME].isEmpty() )
-                aInfo += " ( " + aData[LockFileComponent::EDITTIME] + " )";
+                aInfo += " ( " + svt::LockFileCommon::FormatDateTime(aData[LockFileComponent::EDITTIME]) + " )";
 
             if (!bIsLoading) // so, !bHandleSysLocked
             {
