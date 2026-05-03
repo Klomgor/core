@@ -17,8 +17,7 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#ifndef INCLUDED_COMPHELPER_ANYCOMPARE_HXX
-#define INCLUDED_COMPHELPER_ANYCOMPARE_HXX
+#pragma once
 
 #include <comphelper/comphelperdllapi.h>
 
@@ -212,8 +211,5 @@ namespace comphelper
     bool COMPHELPER_DLLPUBLIC anyLess( css::uno::Any const & lhs, css::uno::Any const & rhs);
 
 } // namespace comphelper
-
-
-#endif // INCLUDED_COMPHELPER_ANYCOMPARE_HXX
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -17,8 +17,7 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#ifndef INCLUDED_COMPHELPER_ANYTOHASH_HXX
-#define INCLUDED_COMPHELPER_ANYTOHASH_HXX
+#pragma once
 
 #include <comphelper/comphelperdllapi.h>
 
@@ -42,7 +41,5 @@ namespace comphelper
 */
 COMPHELPER_DLLPUBLIC std::optional<size_t> anyToHash(css::uno::Any const& value);
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
