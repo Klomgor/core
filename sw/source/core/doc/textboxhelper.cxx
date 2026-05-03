@@ -1885,11 +1885,11 @@ SwFrameFormat* SwTextBoxNode::GetTextBox(const SdrObject* pDrawObject) const
 
     if (!m_pTextBoxes.empty())
     {
-        for (auto it = m_pTextBoxes.begin(); it != m_pTextBoxes.end(); it++)
+        for (const auto& rBox : m_pTextBoxes)
         {
-            if (it->m_pDrawObject == pDrawObject)
+            if (rBox.m_pDrawObject == pDrawObject)
             {
-                return it->m_pTextBoxFormat;
+                return rBox.m_pTextBoxFormat;
             }
         }
         SAL_WARN("sw.core", "SwTextBoxNode::GetTextBox(): Not found!");

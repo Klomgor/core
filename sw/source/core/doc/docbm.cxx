@@ -1642,9 +1642,8 @@ namespace sw::mark
         {
             // Check whether we have any drop down fieldmark at all.
             bool bDropDownFieldExist = false;
-            for (auto aIter = m_vFieldmarks.begin(); aIter != m_vFieldmarks.end(); ++aIter)
+            for (const auto& pMark : m_vFieldmarks)
             {
-                Fieldmark *pMark = *aIter;
                 if (pMark && pMark->GetFieldname() == ODF_FORMDROPDOWN)
                 {
                     bDropDownFieldExist = true;
@@ -1943,8 +1942,8 @@ static void dumpContainerAsXml(xmlTextWriterPtr pWriter,
     if (!rContainer.empty())
     {
         (void)xmlTextWriterStartElement(pWriter, BAD_CAST(pName));
-        for (auto it = rContainer.begin(); it != rContainer.end(); ++it)
-            (*it)->dumpAsXml(pWriter);
+        for (const auto& pMark : rContainer)
+            pMark->dumpAsXml(pWriter);
         (void)xmlTextWriterEndElement(pWriter);
     }
 }
