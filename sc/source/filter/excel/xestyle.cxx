@@ -3395,9 +3395,9 @@ XclExpXmlTableStyles::XclExpXmlTableStyles( const XclExpRoot& rRoot):
     if (!pTableStyles)
         return;
 
-    for (auto itr = rDBs.begin(); itr != rDBs.end(); ++itr)
+    for (const auto& rDB : rDBs)
     {
-        const ScTableStyleParam* pParam = itr->get()->GetTableStyleInfo();
+        const ScTableStyleParam* pParam = rDB->GetTableStyleInfo();
         if (pParam && pTableStyles->GetTableStyle(pParam->maStyleID))
         {
             aTableStyleNames.insert(pParam->maStyleID);
