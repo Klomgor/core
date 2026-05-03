@@ -739,8 +739,8 @@ ParagraphObj::~ParagraphObj()
 
 void ParagraphObj::Write( SvStream* pStrm )
 {
-    for ( std::vector<std::unique_ptr<PortionObj> >::iterator it = mvPortions.begin(); it != mvPortions.end(); ++it )
-        (*it)->Write( pStrm, mbLastParagraph );
+    for (const auto& pPortion : mvPortions)
+        pPortion->Write(pStrm, mbLastParagraph);
 }
 
 void ParagraphObj::ImplClear()
@@ -1200,8 +1200,8 @@ void ParagraphObj::ImplConstruct( const ParagraphObj& rParagraphObj )
     mbForbiddenRules = rParagraphObj.mbForbiddenRules;
     mnBiDi = rParagraphObj.mnBiDi;
 
-    for ( std::vector<std::unique_ptr<PortionObj> >::const_iterator it = rParagraphObj.begin(); it != rParagraphObj.end(); ++it )
-        mvPortions.push_back( std::make_unique<PortionObj>( **it ) );
+    for (const auto& pPortion : rParagraphObj)
+        mvPortions.push_back(std::make_unique<PortionObj>(*pPortion));
 
     maTabStop = rParagraphObj.maTabStop;
     bExtendedParameters = rParagraphObj.bExtendedParameters;
@@ -1229,8 +1229,8 @@ void ParagraphObj::ImplConstruct( const ParagraphObj& rParagraphObj )
 sal_uInt32 ParagraphObj::ImplCalculateTextPositions( sal_uInt32 nCurrentTextPosition )
 {
     mnTextSize = 0;
-    for ( std::vector<std::unique_ptr<PortionObj> >::iterator it = mvPortions.begin(); it != mvPortions.end(); ++it )
-        mnTextSize += (*it)->ImplCalculateTextPositions( nCurrentTextPosition + mnTextSize );
+    for (const auto& pPortion : mvPortions)
+        mnTextSize += pPortion->ImplCalculateTextPositions(nCurrentTextPosition + mnTextSize);
     return mnTextSize;
 }
 
