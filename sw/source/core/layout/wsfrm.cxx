@@ -448,7 +448,8 @@ void SwSectionFrame::CheckDirection( bool bVert )
     if( pFormat )
     {
         const SwViewShell *pSh = getRootFrame()->GetCurrShell();
-        const bool bBrowseMode = pSh && pSh->GetViewOptions()->getBrowseMode();
+        const bool bBrowseMode = pSh && pSh->GetViewOptions()->getBrowseMode() &&
+                                        !pSh->GetViewOptions()->getDraftView();
         CheckDir(pFormat->GetFormatAttr(RES_FRAMEDIR).GetValue(),
                     bVert, true, bBrowseMode );
     }
@@ -462,7 +463,8 @@ void SwFlyFrame::CheckDirection( bool bVert )
     if( pFormat )
     {
         const SwViewShell *pSh = getRootFrame()->GetCurrShell();
-        const bool bBrowseMode = pSh && pSh->GetViewOptions()->getBrowseMode();
+        const bool bBrowseMode = pSh && pSh->GetViewOptions()->getBrowseMode() &&
+                                        !pSh->GetViewOptions()->getDraftView();
         CheckDir(pFormat->GetFormatAttr(RES_FRAMEDIR).GetValue(),
                     bVert, false, bBrowseMode );
     }
@@ -476,7 +478,8 @@ void SwTabFrame::CheckDirection( bool bVert )
     if( pFormat )
     {
         const SwViewShell *pSh = getRootFrame()->GetCurrShell();
-        const bool bBrowseMode = pSh && pSh->GetViewOptions()->getBrowseMode();
+        const bool bBrowseMode = pSh && pSh->GetViewOptions()->getBrowseMode() &&
+                                        !pSh->GetViewOptions()->getDraftView();
         CheckDir(pFormat->GetFormatAttr(RES_FRAMEDIR).GetValue(),
                     bVert, true, bBrowseMode );
     }
@@ -494,7 +497,8 @@ void SwCellFrame::CheckDirection( bool bVert )
     if( pFormat && (pFrameDirItem = pFormat->GetItemIfSet( RES_FRAMEDIR ) ) )
     {
         const SwViewShell *pSh = getRootFrame()->GetCurrShell();
-        const bool bBrowseMode = pSh && pSh->GetViewOptions()->getBrowseMode();
+        const bool bBrowseMode = pSh && pSh->GetViewOptions()->getBrowseMode() &&
+                                        !pSh->GetViewOptions()->getDraftView();
         CheckDir( pFrameDirItem->GetValue(), bVert, false, bBrowseMode );
     }
     else
@@ -504,7 +508,8 @@ void SwCellFrame::CheckDirection( bool bVert )
 void SwTextFrame::CheckDirection( bool bVert )
 {
     const SwViewShell *pSh = getRootFrame()->GetCurrShell();
-    const bool bBrowseMode = pSh && pSh->GetViewOptions()->getBrowseMode();
+    const bool bBrowseMode = pSh && pSh->GetViewOptions()->getBrowseMode() &&
+                                    !pSh->GetViewOptions()->getDraftView();
     CheckDir(GetTextNodeForParaProps()->GetSwAttrSet().GetFrameDir().GetValue(),
              bVert, true, bBrowseMode);
 }
@@ -1674,7 +1679,8 @@ SwTwips SwFrame::AdjustNeighbourhood( SwTwips nDiff, bool bTst )
         return 0;
 
     const SwViewShell *pSh = getRootFrame()->GetCurrShell();
-    const bool bBrowse = pSh && pSh->GetViewOptions()->getBrowseMode();
+    const bool bBrowse = pSh && pSh->GetViewOptions()->getBrowseMode() &&
+                                !pSh->GetViewOptions()->getDraftView();
 
     //The (Page-)Body only changes in BrowseMode, but only if it does not
     //contain columns.
@@ -2167,7 +2173,8 @@ SwTwips SwContentFrame::GrowFrame(SwTwips nDist, SwResizeLimitReason& reason, bo
         nDist = LONG_MAX - nFrameHeight;
 
     const SwViewShell *pSh = getRootFrame()->GetCurrShell();
-    const bool bBrowse = pSh && pSh->GetViewOptions()->getBrowseMode();
+    const bool bBrowse = pSh && pSh->GetViewOptions()->getBrowseMode() &&
+                                !pSh->GetViewOptions()->getDraftView();
     SwFrameType nTmpType = SwFrameType::Cell | SwFrameType::Column;
     if (bBrowse)
         nTmpType |= SwFrameType::Body;
@@ -2732,7 +2739,8 @@ SwTwips SwLayoutFrame::InnerHeight() const
 SwTwips SwLayoutFrame::GrowFrame(SwTwips nDist, SwResizeLimitReason& reason, bool bTst, bool bInfo)
 {
     const SwViewShell *pSh = getRootFrame()->GetCurrShell();
-    const bool bBrowse = pSh && pSh->GetViewOptions()->getBrowseMode();
+    const bool bBrowse = pSh && pSh->GetViewOptions()->getBrowseMode() &&
+                                !pSh->GetViewOptions()->getDraftView();
     SwFrameType nTmpType = SwFrameType::Cell | SwFrameType::Column;
     if (bBrowse)
         nTmpType |= SwFrameType::Body;
@@ -2944,7 +2952,8 @@ SwTwips SwLayoutFrame::GrowFrame(SwTwips nDist, SwResizeLimitReason& reason, boo
 SwTwips SwLayoutFrame::ShrinkFrame( SwTwips nDist, bool bTst, bool bInfo )
 {
     const SwViewShell *pSh = getRootFrame()->GetCurrShell();
-    const bool bBrowse = pSh && pSh->GetViewOptions()->getBrowseMode();
+    const bool bBrowse = pSh && pSh->GetViewOptions()->getBrowseMode() &&
+                                !pSh->GetViewOptions()->getDraftView();
     SwFrameType nTmpType = SwFrameType::Cell | SwFrameType::Column;
     if (bBrowse)
         nTmpType |= SwFrameType::Body;
@@ -3803,7 +3812,8 @@ tools::Long SwLayoutFrame::CalcRel( const SwFormatFrameSize &rSz ) const
         const SwFrame *pRel = GetUpper();
         tools::Long nRel = LONG_MAX;
         const SwViewShell *pSh = getRootFrame()->GetCurrShell();
-        const bool bBrowseMode = pSh && pSh->GetViewOptions()->getBrowseMode();
+        const bool bBrowseMode = pSh && pSh->GetViewOptions()->getBrowseMode() &&
+                                        !pSh->GetViewOptions()->getDraftView();
         if( pRel->IsPageBodyFrame() && pSh && bBrowseMode && pSh->VisArea().Width() )
         {
             nRel = pSh->GetBrowseWidth();

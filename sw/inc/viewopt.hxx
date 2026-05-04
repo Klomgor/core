@@ -306,6 +306,7 @@ class SwViewOption
     bool              m_bSelectionInReadonly : 1;   // Determines whether selection is switched on in readonly documents.
     bool              mbFormView : 1;
     bool              mbBrowseMode : 1;
+    bool              mbDraftView : 1;              // Draft View
     bool              mbBookView : 1;               // View mode for page preview.
     bool              mbViewLayoutBookMode : 1;     // Book view mode for edit view.
     bool              mbHideWhitespaceMode : 1;     // Hide header, footer, and pagebreak.
@@ -690,6 +691,8 @@ public:
 
     bool  getBrowseMode() const { return mbBrowseMode; }
     void  setBrowseMode(bool bSet) { mbBrowseMode = bSet; }
+    bool  getDraftView() const { return mbDraftView; }
+    void  setDraftView(bool bSet) { mbDraftView = bSet; }
     bool  IsPagePrevBookview() const { return mbBookView; }
     void  SetPagePrevBookview(bool bSet) { mbBookView = bSet; }
 

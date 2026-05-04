@@ -51,6 +51,7 @@
 #include <svx/fontworkbar.hxx>
 #include <dialoghelp.hxx>
 #include <frmfmt.hxx>
+#include <fmtclds.hxx>
 #include <fmtftn.hxx>
 #include <fmthdft.hxx>
 #include <fmtpdsc.hxx>
@@ -2940,6 +2941,76 @@ void SwWrtShell::CountWordsBeforeAfterCursor(SwDocStat& rBefore, SwDocStat& rAft
 
     SwDoc::CountWords(aBefore, rBefore);
     SwDoc::CountWords(aAfter, rAfter);
+}
+
+// Draft View: Browse Mode yet, but showing multi-column
+// sections as single-column sections focusing on text editing.
+// To enable the single-column view, remove all the multi-column
+// section frames, and make them back only with a single column
+// in SwSectionFrame::Init().
+void SwWrtShell::UpdateMultiColumnSectionsForBrowseModeChange()
+{
+    SwDoc* pDoc = GetDoc();
+    SwSectionFormats const& rFormats = pDoc->GetSections();
+
+    // check multi-column sections
+    size_t i = 0;
+    for (; i < rFormats.size(); ++i)
+    {
+        if ( rFormats[i]->GetCol().GetNumCols() > 1 )
+            break;
+    }
+
+    // no multi-column sections
+    if ( i == rFormats.size() )
+        return;
+
+    // check normal document sections only
+    const SwSection* rFirstSection = rFormats[i]->GetSection();
+
+    const SwNodes& rNodes = GetNodes();
+    SwNode* pSttNd = rNodes[SwNodeOffset(0)];
+    SwNode* pEndNd = &rNodes.GetEndOfContent();
+    SwNodeIndex aIdx(*pSttNd, +1);
+
+    bool bStartFrameDeletion = false;
+
+    while (aIdx != *pEndNd)
+    {
+        SwNode* pNd = &aIdx.GetNode();
+        if ( !bStartFrameDeletion && pNd->IsSectionNode() &&
+            static_cast<SwSectionNode*>(pNd)->GetSection().GetFormat() ==
+                                                                    rFirstSection->GetFormat() )
+        {
+            bStartFrameDeletion = true;
+        }
+
+        if ( bStartFrameDeletion && pNd->IsSectionNode() &&
+            // update multi-column sections only
+            static_cast<SwSectionNode*>(pNd)->GetSection().GetFormat()->GetCol().GetNumCols() > 1 )
+        {
+            // insert a dummy paragraph to avoid of crashing at removing page frames unnecessarily
+            {
+                ::sw::UndoGuard const undoGuard(GetDoc()->GetIDocumentUndoRedo());
+                SwNodeIndex aDummyIdx( *pNd, -1 );
+                SwPosition aDummyPos( aDummyIdx );
+                getIDocumentContentOperations().AppendTextNode(aDummyPos);
+            }
+
+            // remove and make section frames to update their columns
+            pNd->GetSectionNode()->DelFrames(nullptr);
+            static_cast<SwSectionNode*>(pNd)->GetSection().GetFormat()->MakeFrames();
+
+            // remove the dummy paragraph
+            {
+                ::sw::UndoGuard const undoGuard(GetDoc()->GetIDocumentUndoRedo());
+                SwNodeIndex aDelIdx( *pNd, -1 );
+                SwPaM aDelPam(aDelIdx);
+                getIDocumentContentOperations().DelFullPara(aDelPam);
+            }
+        }
+        ++aIdx;
+    }
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

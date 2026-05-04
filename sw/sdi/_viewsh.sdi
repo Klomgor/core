@@ -137,6 +137,11 @@ interface BaseTextEditView
         ExecMethod = ExecViewOptions ;
         StateMethod = StateViewOptions ;
     ]
+    FN_DRAFT_VIEW
+    [
+        ExecMethod = ExecViewOptions ;
+        StateMethod = StateViewOptions ;
+    ]
 
     FN_SINGLE_PAGE_PER_ROW
     [

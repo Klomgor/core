@@ -385,6 +385,14 @@ void SwAccessibleParagraph::UpdatePortionData()
     // obtain the text frame
     const SwTextFrame* pFrame = GetTextFrame();
     assert(pFrame && "The text frame has vanished!");
+
+    // FIXME: there was a single assertion after changing
+    // to Draft View (removing all the multi-column section frames),
+    // and scrolling immediately. It seems, it's very hard to
+    // reproduce it, but it's better to avoid of crashing.
+    if ( !pFrame )
+        return;
+
     // build new portion data
     m_pPortionData.reset(
         new SwAccessiblePortionData(*pFrame, GetMap()->GetShell().GetViewOptions()));

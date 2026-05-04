@@ -128,24 +128,46 @@ void SwSectionFrame::Init()
     SwRectFnSet aRectFnSet(*this);
     tools::Long nWidth = aRectFnSet.GetWidth(GetUpper()->getFramePrintArea());
 
-    {
-        SwFrameAreaDefinition::FrameAreaWriteAccess aFrm(*this);
-        aRectFnSet.SetWidth( aFrm, nWidth );
-        aRectFnSet.SetHeight( aFrm, 0 );
-    }
-
     // #109700# LRSpace for sections
     const SvxLRSpaceItem& rLRSpace = GetFormat()->GetLRSpace();
+
+    // in Draft View, use a decreased section width to get the same column width
+    // in single-column (no column) mode, than in the original multi-column section
+    tools::Long nColLRWidth = 0;
+    const SwFormatCol &rCol = GetFormat()->GetCol();
+    const SwViewShell *pSh = getRootFrame()->GetCurrShell();
+    bool bDraftView = pSh && pSh->GetViewOptions()->getDraftView();
+    sal_Int16 nCols = rCol.GetNumCols();
+    if ( bDraftView && nCols > 1 )
+    {
+        for ( int i = 0; i < nCols; ++i )
+        {
+            const SwColumn *pC = &rCol.GetColumns()[i];
+            nColLRWidth += pC->GetLeft() + pC->GetRight();
+        }
+    }
+
+    {
+        SwFrameAreaDefinition::FrameAreaWriteAccess aFrm(*this);
+        aRectFnSet.SetWidth( aFrm, ( bDraftView && nCols > 1 )
+                        ? ( nWidth - nColLRWidth ) / nCols
+                        : nWidth );
+        aRectFnSet.SetHeight( aFrm, 0 );
+    }
 
     {
         SwFrameAreaDefinition::FramePrintAreaWriteAccess aPrt(*this);
         aRectFnSet.SetLeft(aPrt, rLRSpace.ResolveLeft());
-        aRectFnSet.SetWidth(aPrt, nWidth - rLRSpace.ResolveLeft() - rLRSpace.ResolveRight({}));
+        nWidth = nWidth - rLRSpace.ResolveLeft() - rLRSpace.ResolveRight({});
+        aRectFnSet.SetWidth( aPrt, ( bDraftView && nCols > 1 )
+                        ? ( nWidth - nColLRWidth ) / nCols
+                        : nWidth );
         aRectFnSet.SetHeight( aPrt, 0 );
     }
 
-    const SwFormatCol &rCol = GetFormat()->GetCol();
-    if( ( rCol.GetNumCols() > 1 || IsAnyNoteAtEnd() ) && !IsInFootnote() )
+    if( ( nCols > 1 || IsAnyNoteAtEnd() ) && !IsInFootnote() &&
+        // disable multi-column sections in Draft View
+        !bDraftView )
     {
         if (Lower())
         {
@@ -915,7 +937,9 @@ void SwSectionFrame::MakeAll(vcl::RenderContext* pRenderContext)
     if (IsInTab() && GetUpper())
         bCanContainSplitSection = CanContainSplitSection(GetUpper());
 
-    if( pSh && (pSh->GetViewOptions()->getBrowseMode() || bCanContainSplitSection) &&
+    if( pSh && ( ( pSh->GetViewOptions()->getBrowseMode() &&
+                        !pSh->GetViewOptions()->getDraftView() ) ||
+                                                    bCanContainSplitSection ) &&
          ( Grow( LONG_MAX, true ) > 0 ) )
     {
         while( GetFollow() )
@@ -1525,26 +1549,42 @@ void SwSectionFrame::Format( vcl::RenderContext* pRenderContext, const SwBorderA
 
     if( GetUpper() )
     {
-        const tools::Long nWidth = aRectFnSet.GetWidth(GetUpper()->getFramePrintArea());
+        tools::Long nWidth = aRectFnSet.GetWidth(GetUpper()->getFramePrintArea());
+        const SwViewShell *pSh = getRootFrame()->GetCurrShell();
+        bool bDraftView = pSh && pSh->GetViewOptions()->getDraftView();
+        const SwFormatCol &rCol = GetFormat()->GetCol();
+        sal_Int16 nCols = rCol.GetNumCols();
+        tools::Long nColLRWidth = 0;
+        if ( bDraftView && nCols > 1 )
+        {
+            for ( int i = 0; i < nCols; ++i )
+            {
+                const SwColumn *pC = &rCol.GetColumns()[i];
+                nColLRWidth += pC->GetLeft() + pC->GetRight();
+            }
+        }
 
         {
             SwFrameAreaDefinition::FrameAreaWriteAccess aFrm(*this);
-            aRectFnSet.SetWidth( aFrm, nWidth );
+            aRectFnSet.SetWidth( aFrm, ( bDraftView && nCols > 1 )
+                            ? ( nWidth - nColLRWidth ) / nCols
+                            : nWidth );
         }
 
         // #109700# LRSpace for sections
         {
             const SvxLRSpaceItem& rLRSpace = GetFormat()->GetLRSpace();
             SwFrameAreaDefinition::FramePrintAreaWriteAccess aPrt(*this);
-            aRectFnSet.SetWidth(aPrt,
-                                nWidth - rLRSpace.ResolveLeft() - rLRSpace.ResolveRight({}));
+            nWidth = nWidth - rLRSpace.ResolveLeft() - rLRSpace.ResolveRight({});
+            aRectFnSet.SetWidth( aPrt, ( bDraftView && nCols > 1 )
+                            ? ( nWidth - nColLRWidth ) / nCols
+                            : nWidth );
         }
 
         // OD 15.10.2002 #103517# - allow grow in online layout
         // Thus, set <..IsBrowseMode()> as parameter <bGrow> on calling
         // method <CheckClipping(..)>.
-        const SwViewShell *pSh = getRootFrame()->GetCurrShell();
-        CheckClipping( pSh && pSh->GetViewOptions()->getBrowseMode(), bMaximize );
+        CheckClipping( pSh && pSh->GetViewOptions()->getBrowseMode() && !bDraftView, bMaximize );
         bMaximize = ToMaximize( false );
         setFrameAreaSizeValid(true);
     }
@@ -2313,7 +2353,7 @@ SwTwips SwSectionFrame::Grow_(SwTwips nDist, SwResizeLimitReason& reason, bool b
     if( !bGrow )
     {
          const SwViewShell *pSh = getRootFrame()->GetCurrShell();
-         bGrow = pSh && pSh->GetViewOptions()->getBrowseMode();
+         bGrow = pSh && pSh->GetViewOptions()->getBrowseMode() && !pSh->GetViewOptions()->getDraftView();
     }
     if (!bGrow)
     {

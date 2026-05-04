@@ -1010,6 +1010,58 @@ CPPUNIT_TEST_FIXTURE(SwLayoutWriter3, testTdf38159_limited)
                 u"pellentesque, non ");
 }
 
+CPPUNIT_TEST_FIXTURE(SwLayoutWriter3, testTdf168705)
+{
+    createSwDoc("tdf168705.fodt");
+    SwDoc* pDoc(getSwDoc());
+    SwRootFrame* pLayout(pDoc->getIDocumentLayoutAccess().GetCurrentLayout());
+    CPPUNIT_ASSERT(!pLayout->IsHideRedlines());
+
+    xmlDocUniquePtr pXmlDoc = parseLayoutDump();
+    // check multi-column section in Normal View
+    assertXPath(pXmlDoc, "/root/page/body/section/column", 3);
+
+    // set Draft View and check single-column section
+    dispatchCommand(mxComponent, u".uno:DraftView"_ustr, {});
+    calcLayout();
+    pXmlDoc = parseLayoutDump();
+
+    // check single-column sections in Draft View
+    assertXPath(pXmlDoc, "/root/page/body/section", 1);
+    assertXPath(pXmlDoc, "/root/page/body/section/column", 0);
+
+    // set Normal View again and check multi-column section
+    dispatchCommand(mxComponent, u".uno:PrintLayout"_ustr, {});
+    calcLayout();
+    pXmlDoc = parseLayoutDump();
+
+    // check multi-column section in Normal View
+    assertXPath(pXmlDoc, "/root/page/body/section/column", 3);
+
+    // set Web View and check multi-column section
+    dispatchCommand(mxComponent, u".uno:BrowseView"_ustr, {});
+    calcLayout();
+    pXmlDoc = parseLayoutDump();
+    assertXPath(pXmlDoc, "/root/page/body/section/column", 3);
+
+    // set Draft View again and check single-column section
+    dispatchCommand(mxComponent, u".uno:DraftView"_ustr, {});
+    calcLayout();
+    pXmlDoc = parseLayoutDump();
+
+    // check single-column sections in Draft View
+    assertXPath(pXmlDoc, "/root/page/body/section", 1);
+    assertXPath(pXmlDoc, "/root/page/body/section/column", 0);
+
+    // set Web View again and check multi-column section
+    dispatchCommand(mxComponent, u".uno:BrowseView"_ustr, {});
+    calcLayout();
+    pXmlDoc = parseLayoutDump();
+
+    // check multi-column section in Normal View
+    assertXPath(pXmlDoc, "/root/page/body/section/column", 3);
+}
+
 CPPUNIT_TEST_FIXTURE(SwLayoutWriter3, testTdf169168_scaling)
 {
     createSwDoc("tdf169168_scaling.fodt");

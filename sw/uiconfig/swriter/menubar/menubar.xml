@@ -182,6 +182,7 @@
     <menu:menupopup>
       <menu:menuitem menu:id=".uno:PrintLayout" menu:style="radio"/>
       <menu:menuitem menu:id=".uno:BrowseView" menu:style="radio"/>
+      <menu:menuitem menu:id=".uno:DraftView" menu:style="radio"/>
       <menu:menu menu:id=".uno:PagesLayout">
         <menu:menupopup>
           <menu:menuitem menu:id=".uno:SinglePagePerRow" menu:style="radio"/>

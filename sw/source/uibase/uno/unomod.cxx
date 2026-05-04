@@ -678,11 +678,18 @@ void SwXViewSettings::_setSingleValue( const comphelper::PropertyInfo & rInfo, c
                 if (!bVal != !aOpt.getBrowseMode())
                 {
                     aOpt.setBrowseMode( bVal );
+                    if ( !bVal )
+                        aOpt.setDraftView( false );
+
                     m_pView->GetWrtShell().ApplyViewOptions( aOpt );
 
                     // must be set in mpViewOption as this will overwrite settings in _post!
                     if(mpViewOption)
+                    {
                         mpViewOption->setBrowseMode(bVal);
+                        if ( !bVal )
+                            mpViewOption->setDraftView( false );
+                    }
 
                     m_pView->GetDocShell()->ToggleLayoutMode(m_pView);
                 }

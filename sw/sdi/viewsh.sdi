@@ -444,6 +444,11 @@ interface TextPrintPreview
         ExecMethod = Execute;
         StateMethod = GetState;
     ]
+    FN_DRAFT_VIEW
+    [
+        ExecMethod = Execute;
+        StateMethod = GetState;
+    ]
     FN_SINGLE_PAGE_PER_ROW
     [
         ExecMethod = Execute;

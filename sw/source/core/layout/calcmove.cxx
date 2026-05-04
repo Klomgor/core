@@ -154,7 +154,8 @@ bool SwContentFrame::ShouldBwdMoved( SwLayoutFrame *pNewUpper, bool & )
             nSpace = fnRectX.GetHeight(aRect);
             const SwViewShell *pSh = pNewUpper->getRootFrame()->GetCurrShell();
             if ( IsInFootnote() ||
-                 (pSh && pSh->GetViewOptions()->getBrowseMode()) ||
+                 (pSh && pSh->GetViewOptions()->getBrowseMode() &&
+                         !pSh->GetViewOptions()->getDraftView() ) ||
                  pNewUpper->IsCellFrame() ||
                  ( pNewUpper->IsInSct() && ( pNewUpper->IsSctFrame() ||
                    ( pNewUpper->IsColBodyFrame() &&
@@ -862,7 +863,9 @@ void SwPageFrame::MakeAll(vcl::RenderContext* pRenderContext)
 
                 SwRootFrame* pRootFrame = getRootFrame();
                 SwViewShell* pSh = pRootFrame->GetCurrShell();
-                if (pSh && pSh->GetViewOptions()->getBrowseMode())
+                if (pSh && pSh->GetViewOptions()->getBrowseMode() &&
+                           // keep the original margin and page width in Draft View
+                           !pSh->GetViewOptions()->getDraftView())
                 {
                     // In BrowseView, we use fixed settings
                     const Size aBorder = pRenderContext->PixelToLogic( pSh->GetBrowseBorder() );
@@ -952,6 +955,13 @@ void SwPageFrame::MakeAll(vcl::RenderContext* pRenderContext)
                         SwFrameAreaDefinition::FramePrintAreaWriteAccess aPrt(*this);
                         aPrt.Top(0);
                         aPrt.Height(height);
+                        // Draft View: hide left margin to avoid of different left
+                        // text position of mirrored page layout
+                        if ( pSh->GetViewOptions()->getDraftView() )
+                        {
+                            aPrt.Width ( aPrt.Width() - aPrt.Left() );
+                            aPrt.Left ( 0 );
+                        }
                         setFrameAreaSizeValid(true);
                         setFramePrintAreaValid(true);
                         continue;
@@ -1196,7 +1206,8 @@ void SwContentFrame::MakePrtArea( const SwBorderAttrs &rAttrs )
         SwTwips nWidthArea;
         if( pSh && 0!=(nWidthArea=aRectFnSet.GetWidth(pSh->VisArea())) &&
             GetUpper()->IsPageBodyFrame() && // but not for BodyFrames in Columns
-            pSh->GetViewOptions()->getBrowseMode() )
+            pSh->GetViewOptions()->getBrowseMode() &&
+            !pSh->GetViewOptions()->getDraftView() )
         {
             // Do not protrude the edge of the visible area. The page may be
             // wider, because there may be objects with excess width

@@ -544,6 +544,10 @@ typedef bool (SwWrtShell::*FNSimpleMove)();
 
     SW_DLLPUBLIC void CountWordsBeforeAfterCursor(SwDocStat& rBefore, SwDocStat& rAfter);
 
+    // delete and make frames of multicolumn sections to change between
+    // single and multi-column view of multi-column sections in Web and Normal Views
+    void UpdateMultiColumnSectionsForBrowseModeChange();
+
 private:
 
     void  OpenMark();

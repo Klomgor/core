@@ -214,7 +214,8 @@ SwPageFrame::SwPageFrame( SwFrameFormat *pFormat, SwFrame* pSib, SwPageDesc *pPg
     m_bInvalidFlyLayout = m_bInvalidFlyContent = m_bInvalidFlyInCnt = m_bFootnotePage = m_bEndNotePage = false;
 
     SwViewShell *pSh = getRootFrame()->GetCurrShell();
-    const bool bBrowseMode = pSh && pSh->GetViewOptions()->getBrowseMode();
+    const bool bBrowseMode = pSh && pSh->GetViewOptions()->getBrowseMode() &&
+                                                !pSh->GetViewOptions()->getDraftView();
     vcl::RenderContext* pRenderContext = pSh ? pSh->GetOut() : nullptr;
 
     {
@@ -248,6 +249,19 @@ SwPageFrame::SwPageFrame( SwFrameFormat *pFormat, SwFrame* pSib, SwPageDesc *pPg
     }
 
     Calc(pRenderContext); // so that the PrtArea is correct
+
+    // Draft View in hidden white space mode:
+    // hide left margin to avoid of different left
+    // text position of mirrored page layout
+    if ( pSh && pSh->GetViewOptions()->getDraftView() &&
+                    pSh->GetViewOptions()->IsWhitespaceHidden() )
+    {
+        SwFrameAreaDefinition::FramePrintAreaWriteAccess aPrt(*this);
+        aPrt.Width ( aPrt.Width() - aPrt.Left() );
+        aPrt.Left ( 0 );
+        setFramePrintAreaValid(true);
+    }
+
     SwBodyFrame *pBodyFrame = new SwBodyFrame( rDoc.GetDfltFrameFormat(), this );
     pBodyFrame->ChgSize( getFramePrintArea().SSize() );
     pBodyFrame->Paste( this );

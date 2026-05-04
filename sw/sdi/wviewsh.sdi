@@ -153,6 +153,10 @@ interface WebSourceView
     [
         StateMethod = GetState;
     ]
+    FN_DRAFT_VIEW
+    [
+        StateMethod = GetState;
+    ]
     FN_SINGLE_PAGE_PER_ROW
     [
         StateMethod = GetState;

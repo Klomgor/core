@@ -791,6 +791,8 @@ class SwUINumRuleItem;
 #define FN_MULTIPLE_PAGES_PER_ROW   (FN_SELECTION + 99)   /*Show Multiple Page per row*/
 #define FN_BOOKVIEW                 (FN_SELECTION + 100)   /*Show in Bookview*/
 
+#define FN_DRAFT_VIEW               (FN_SELECTION + 101)  /* Draft View */
+
 // QUERY-Block
 #define FN_TXTATR_INET              (FN_QUERY +29)      /* INet-Attribute */
 

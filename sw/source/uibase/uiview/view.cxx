@@ -208,7 +208,8 @@ void SwView::GotFocus() const
         SwWrtShell& rWrtShell = GetWrtShell();
         rWrtShell.GetDoc()->getIDocumentLayoutAccess().SetCurrentViewShell( pWrtShell );
         rWrtShell.GetDoc()->getIDocumentSettingAccess().set( DocumentSettingId::BROWSE_MODE,
-                                 rWrtShell.GetViewOptions()->getBrowseMode() );
+                                 rWrtShell.GetViewOptions()->getBrowseMode() &&
+                                 !rWrtShell.GetViewOptions()->getDraftView() );
     }
 }
 
@@ -903,6 +904,8 @@ SwView::SwView(SfxViewFrame& _rFrame, SfxViewShell* pOldSh)
             aUsrPref.setBrowseMode( true );
         else
             aUsrPref.setBrowseMode( rDoc.getIDocumentSettingAccess().get(DocumentSettingId::BROWSE_MODE) );
+
+        aUsrPref.setDraftView( false );
 
         //For the BrowseMode we do not assume a factor.
         if( aUsrPref.getBrowseMode() && aUsrPref.GetZoomType() != SvxZoomType::PERCENT )

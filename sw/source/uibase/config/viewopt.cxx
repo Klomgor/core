@@ -139,6 +139,7 @@ bool SwViewOption::IsEqualFlags( const SwViewOption &rOpt ) const
             && m_aRetouchColor == rOpt.GetRetoucheColor()
             && mbFormView == rOpt.IsFormView()
             && mbBrowseMode == rOpt.getBrowseMode()
+            && mbDraftView == rOpt.getDraftView()
             && mbViewLayoutBookMode == rOpt.mbViewLayoutBookMode
             && mbHideWhitespaceMode == rOpt.mbHideWhitespaceMode
             && m_bShowPlaceHolderFields == rOpt.m_bShowPlaceHolderFields
@@ -236,6 +237,7 @@ SwViewOption::SwViewOption() :
     m_bSelectionInReadonly(false),
     mbFormView(false),
     mbBrowseMode(false),
+    mbDraftView(false),
     mbBookView(false),
     mbViewLayoutBookMode(false),
     mbHideWhitespaceMode(false),
@@ -315,6 +317,7 @@ SwViewOption::SwViewOption(const SwViewOption& rVOpt)
     m_bStarOneSetting = rVOpt.m_bStarOneSetting;
     mbBookView      = rVOpt.mbBookView;
     mbBrowseMode    = rVOpt.mbBrowseMode;
+    mbDraftView     = rVOpt.mbDraftView;
     mbViewLayoutBookMode = rVOpt.mbViewLayoutBookMode;
     mbHideWhitespaceMode = rVOpt.mbHideWhitespaceMode;
     m_bShowPlaceHolderFields = rVOpt.m_bShowPlaceHolderFields;
@@ -363,6 +366,7 @@ SwViewOption& SwViewOption::operator=( const SwViewOption &rVOpt )
     m_bStarOneSetting = rVOpt.m_bStarOneSetting;
     mbBookView      = rVOpt.mbBookView;
     mbBrowseMode    = rVOpt.mbBrowseMode;
+    mbDraftView     = rVOpt.mbDraftView;
     mbViewLayoutBookMode = rVOpt.mbViewLayoutBookMode;
     mbHideWhitespaceMode = rVOpt.mbHideWhitespaceMode;
     m_bShowPlaceHolderFields = rVOpt.m_bShowPlaceHolderFields;

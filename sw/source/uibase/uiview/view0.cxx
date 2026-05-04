@@ -200,6 +200,7 @@ void SwView::RecheckBrowseMode()
             FN_SINGLE_PAGE_PER_ROW, /**/
             FN_MULTIPLE_PAGES_PER_ROW, /**/
             FN_BOOKVIEW, /**/
+            FN_DRAFT_VIEW, /**/
             0
         };
     // the view must not exist!
@@ -246,10 +247,16 @@ void SwView::StateViewOptions(SfxItemSet &rSet)
             break;
             case SID_BROWSER_MODE:
             case FN_PRINT_LAYOUT:
+            case FN_DRAFT_VIEW:
             {
                 bool bState = pOpt->getBrowseMode();
-                if(FN_PRINT_LAYOUT == nWhich)
+                bool bDraftState = pOpt->getDraftView();
+                if(SID_BROWSER_MODE == nWhich)
+                    bState = bState && !bDraftState;
+                else if(FN_PRINT_LAYOUT == nWhich)
                     bState = !bState;
+                else
+                    bState = bDraftState;
                 aBool.SetValue( bState );
             }
             break;
@@ -412,6 +419,7 @@ void SwView::ExecViewOptions(SfxRequest &rReq)
     int eState = STATE_TOGGLE;
     bool bSet = false;
     bool bBrowseModeChanged = false;
+    bool bDraftViewChanged = false;
 
     const SfxItemSet *pArgs = rReq.GetArgs();
     sal_uInt16 nSlot = rReq.GetSlot();
@@ -487,12 +495,23 @@ void SwView::ExecViewOptions(SfxRequest &rReq)
 
     case SID_BROWSER_MODE:
         bBrowseModeChanged = !pOpt->getBrowseMode();
+        bDraftViewChanged = pOpt->getDraftView();
         pOpt->setBrowseMode(true );
+        pOpt->setDraftView( false );
         break;
 
     case FN_PRINT_LAYOUT:
         bBrowseModeChanged = pOpt->getBrowseMode();
+        bDraftViewChanged = pOpt->getDraftView();
         pOpt->setBrowseMode( false );
+        pOpt->setDraftView( false );
+        break;
+
+    case FN_DRAFT_VIEW:
+        bBrowseModeChanged = pOpt->getBrowseMode();
+        bDraftViewChanged = !pOpt->getDraftView();
+        pOpt->setBrowseMode( true );
+        pOpt->setDraftView( true );
         break;
 
     case SID_TOGGLE_NOTES:
@@ -851,10 +870,26 @@ void SwView::ExecViewOptions(SfxRequest &rReq)
     SwModule* pModule = SwModule::get();
     if( *rSh.GetViewOptions() != *pOpt )
     {
+        // hide/show whitespace at changing Draft View
+        if ( bDraftViewChanged &&
+             rSh.GetViewOptions()->CanHideWhitespace() &&
+             ( ( pOpt->getDraftView() && !pOpt->IsHideWhitespaceMode() ) ||
+               ( !pOpt->getDraftView() && pOpt->IsHideWhitespaceMode() ) ) )
+        {
+            pOpt->SetHideWhitespaceMode(!pOpt->IsHideWhitespaceMode());
+        }
+
         rSh.ApplyViewOptions( *pOpt );
-        if( bBrowseModeChanged )
+
+        if( bBrowseModeChanged && !bDraftViewChanged )
         {
             GetDocShell()->ToggleLayoutMode(this);
+        }
+
+        // set single column section view for Web View
+        if( bDraftViewChanged )
+        {
+            rSh.UpdateMultiColumnSectionsForBrowseModeChange();
         }
 
         // The UsrPref must be marked as modified.
@@ -883,7 +918,7 @@ void SwView::ExecViewOptions(SfxRequest &rReq)
     const bool bLockedView = rSh.IsViewLocked();
     rSh.LockView( true );    //lock visible section
     GetWrtShell().EndAction();
-    if( bBrowseModeChanged && !bFlag )
+    if( ( bBrowseModeChanged || bDraftViewChanged ) && !bFlag )
         CalcVisArea( GetEditWin().GetOutputSizePixel() );
     rSh.LockView( bLockedView );
 

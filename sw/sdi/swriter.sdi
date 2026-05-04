@@ -5312,6 +5312,24 @@ SfxBoolItem PrintLayout FN_PRINT_LAYOUT
     GroupId = SfxGroupId::View;
 ]
 
+SfxBoolItem DraftView FN_DRAFT_VIEW
+
+[
+    AutoUpdate = TRUE,
+    FastCall = FALSE,
+    ReadOnlyDoc = TRUE,
+    Toggle = FALSE,
+    Container = FALSE,
+    RecordAbsolute = FALSE,
+    RecordPerSet;
+
+
+    AccelConfig = TRUE,
+    MenuConfig = TRUE,
+    ToolBoxConfig = TRUE,
+    GroupId = SfxGroupId::View;
+]
+
 SfxVoidItem PrintPagePreview FN_PRINT_PAGEPREVIEW
 ()
 [

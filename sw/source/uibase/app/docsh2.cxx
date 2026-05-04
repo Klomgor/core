@@ -163,7 +163,9 @@ void SwDocShell::ToggleLayoutMode(SwView* pView)
     const SwViewOption& rViewOptions = *pView->GetWrtShell().GetViewOptions();
 
     //TODO: Should HideWhitespace flag be saved in the document settings?
-    GetDoc()->getIDocumentSettingAccess().set(DocumentSettingId::BROWSE_MODE, rViewOptions.getBrowseMode());
+    //TODO: Should DraftView flag be saved in the document settings?
+    GetDoc()->getIDocumentSettingAccess().set(DocumentSettingId::BROWSE_MODE,
+                    rViewOptions.getBrowseMode() && !rViewOptions.getDraftView() );
     UpdateFontList();  // Why is this necessary here?
 
     pView->GetViewFrame().GetBindings().Invalidate(FN_SHADOWCURSOR);
@@ -744,6 +746,7 @@ void SwDocShell::Execute(SfxRequest& rReq)
                 rViewFrame.GetBindings().Invalidate( SID_NEWWINDOW );
                 rViewFrame.GetBindings().Invalidate( SID_BROWSER_MODE );
                 rViewFrame.GetBindings().Invalidate( FN_PRINT_LAYOUT );
+                rViewFrame.GetBindings().Invalidate( FN_DRAFT_VIEW );
             }
             break;
             case SID_GET_COLORLIST:
