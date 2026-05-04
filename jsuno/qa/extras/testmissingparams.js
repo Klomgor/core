@@ -6,28 +6,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-function assertError(code, exceptionMessage)
-{
-    try
-    {
-        code();
-    }
-    catch (error)
-    {
-        if (error != exceptionMessage)
-        {
-            console.log("Exception message mismatch:\n" +
-                        "Expected: " + exceptionMessage + "\n" +
-                        "Actual:   " + error);
-        }
-        console.assert(error == exceptionMessage);
-        return;
-    }
-
-    console.log("exception expected but none was thrown");
-    console.assert(false);
-}
-
 assertError(function() { console.assert() },
             "Error: missing argument to console.assert");
 assertError(function() { uno.type.sequence() },
