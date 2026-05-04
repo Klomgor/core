@@ -62,6 +62,7 @@
 #include <typelib/typedescription.hxx>
 
 #include "jsvalue.hxx"
+#include "rhinocompatibility.hxx"
 
 namespace
 {
@@ -590,6 +591,25 @@ JSValue wrapUnoObject(JSContext* ctx, css::uno::Reference<css::uno::XInterface> 
     return val;
 }
 
+JSValue importClassNameFromFullName(JSContext* ctx, std::u16string_view fullName)
+{
+    std::size_t lastDot = fullName.find_last_of(u'.');
+    std::u16string_view shortName
+        = lastDot == std::u16string_view::npos ? fullName : fullName.substr(lastDot + 1);
+    return JS_NewStringUTF16(ctx, reinterpret_cast<std::uint16_t const*>(shortName.data()),
+                             shortName.length());
+}
+
+JSValue interfaceGetImportClassName(JSContext* ctx, JSValueConst this_val, int, JSValueConst*)
+{
+    typelib_TypeDescriptionReference* typeRef = static_cast<typelib_TypeDescriptionReference*>(
+        JS_GetOpaque2(ctx, this_val, getRuntimeData(ctx)->interfaceClassId));
+    if (typeRef == nullptr)
+        return JS_EXCEPTION;
+
+    return importClassNameFromFullName(ctx, OUString(typeRef->pTypeName));
+}
+
 struct EnumeratorData
 {
     css::uno::Type type;
@@ -853,6 +873,16 @@ JSValue unoTypeInterface(JSContext* ctx, JSValueConst, int argc, JSValueConst* a
 #endif
         return val.release();
     });
+}
+
+JSValue enumGetImportClassName(JSContext* ctx, JSValueConst this_val, int, JSValueConst*)
+{
+    typelib_TypeDescriptionReference* typeRef = static_cast<typelib_TypeDescriptionReference*>(
+        JS_GetOpaque2(ctx, this_val, getRuntimeData(ctx)->enumClassId));
+    if (typeRef == nullptr)
+        return JS_EXCEPTION;
+
+    return importClassNameFromFullName(ctx, OUString(typeRef->pTypeName));
 }
 
 void enumFinalizer(JSRuntime* rt, JSValueConst val)
@@ -1213,6 +1243,16 @@ JSValue getSingleton(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv,
     });
 }
 
+JSValue moduleGetImportClassName(JSContext* ctx, JSValueConst this_val, int, JSValueConst*)
+{
+    ModuleData* moduleData = static_cast<ModuleData*>(
+        JS_GetOpaque2(ctx, this_val, getRuntimeData(ctx)->moduleClassId));
+    if (moduleData == nullptr)
+        return JS_EXCEPTION;
+
+    return importClassNameFromFullName(ctx, moduleData->name);
+}
+
 void moduleGCMark(JSRuntime* rt, JSValueConst val, JS_MarkFunc* markFunc)
 {
     ModuleData* moduleData
@@ -1234,6 +1274,10 @@ void moduleFinalizer(JSRuntime* rt, JSValueConst val)
 
 ValueRef moduleGetOwnPropertyUncached(JSContext* ctx, const OUString& id)
 {
+    // Special hack for rhino compatibility
+    if (id == u"com.sun.star.uno.UnoRuntime")
+        return jsuno::rhino_compatibility::createUnoRuntime(ctx);
+
     css::uno::Reference<css::container::XHierarchicalNameAccess> mgr(
         comphelper::getProcessComponentContext()->getValueByName(
             u"/singletons/com.sun.star.reflection.theTypeDescriptionManager"_ustr),
@@ -2584,6 +2628,18 @@ void initializeTypePrototype(JSContext* ctx)
     JS_SetClassProto(ctx, getRuntimeData(ctx)->typeClassId, proto.release());
 }
 
+void initializeEnumPrototype(JSContext* ctx)
+{
+    static const JSCFunctionListEntry functions[] = {
+        JS_CFUNC_DEF("getImportClassName", 0, enumGetImportClassName),
+    };
+
+    ValueRef proto(ctx, JS_NewObject(ctx));
+    JS_SetPropertyFunctionList(ctx, proto, functions, SAL_N_ELEMENTS(functions));
+
+    JS_SetClassProto(ctx, getRuntimeData(ctx)->enumClassId, proto.release());
+}
+
 void initializeEnumeratorPrototype(JSContext* ctx)
 {
     static const JSCFunctionListEntry functions[] = {
@@ -2606,6 +2662,30 @@ void initializeWrapperPrototype(JSContext* ctx)
     JS_SetPropertyFunctionList(ctx, proto, functions, SAL_N_ELEMENTS(functions));
 
     JS_SetClassProto(ctx, getRuntimeData(ctx)->wrapperClassId, proto.release());
+}
+
+void initializeInterfacePrototype(JSContext* ctx)
+{
+    static const JSCFunctionListEntry functions[] = {
+        JS_CFUNC_DEF("getImportClassName", 0, interfaceGetImportClassName),
+    };
+
+    ValueRef proto(ctx, JS_NewObject(ctx));
+    JS_SetPropertyFunctionList(ctx, proto, functions, SAL_N_ELEMENTS(functions));
+
+    JS_SetClassProto(ctx, getRuntimeData(ctx)->interfaceClassId, proto.release());
+}
+
+void initializeModulePrototype(JSContext* ctx)
+{
+    static const JSCFunctionListEntry functions[] = {
+        JS_CFUNC_DEF("getImportClassName", 0, moduleGetImportClassName),
+    };
+
+    ValueRef proto(ctx, JS_NewObject(ctx));
+    JS_SetPropertyFunctionList(ctx, proto, functions, SAL_N_ELEMENTS(functions));
+
+    JS_SetClassProto(ctx, getRuntimeData(ctx)->moduleClassId, proto.release());
 }
 }
 
@@ -2676,7 +2756,10 @@ OUString jsuno::execute(OUString const& script, VariableList aGlobalVariables)
     auto const ctx = JS_NewContext(rt);
     initializeTypePrototype(ctx);
     initializeEnumeratorPrototype(ctx);
+    initializeEnumPrototype(ctx);
     initializeWrapperPrototype(ctx);
+    initializeInterfacePrototype(ctx);
+    initializeModulePrototype(ctx);
     std::optional<ExceptionData> exc;
     OUString result;
     {
@@ -2733,6 +2816,7 @@ OUString jsuno::execute(OUString const& script, VariableList aGlobalVariables)
         JS_SetPropertyStr(ctx, uno, "componentContext",
                           wrapUnoObject(ctx, comphelper::getProcessComponentContext()));
         JS_SetPropertyStr(ctx, global, "uno", uno.release());
+        rhino_compatibility::setUp(ctx);
 
         for (const auto& rVariable : aGlobalVariables)
             JS_SetPropertyStr(ctx, global, rVariable.first, wrapUnoObject(ctx, rVariable.second));

@@ -13,6 +13,7 @@ $(eval $(call gb_Library_add_defs,jsuno,-DLO_DLLIMPLEMENTATION_JSUNO))
 
 $(eval $(call gb_Library_add_exception_objects,jsuno, \
     jsuno/source/jsuno \
+    jsuno/source/rhinocompatibility \
 ))
 
 $(eval $(call gb_Library_use_externals,jsuno, \
