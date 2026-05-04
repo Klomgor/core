@@ -15,6 +15,7 @@ $(eval $(call gb_Module_add_targets,jsuno, \
 
 $(eval $(call gb_Module_add_check_targets,jsuno, \
     $(if $(ENABLE_EMBINDTEST_UNO),CppunitTest_jsuno_testuno) \
+    CppunitTest_jsuno_execute \
 ))
 
 # vim: set noet sw=4 ts=4:
