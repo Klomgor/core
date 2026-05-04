@@ -39,8 +39,8 @@ void TestUno::appendFileContents(std::u16string_view sFilename, std::string& sOu
     OUString sSrcPath = o3tl::getEnvironment(u"SRC_ROOT"_ustr);
     CPPUNIT_ASSERT_MESSAGE("SRC_ROOT env variable not set", !sSrcPath.isEmpty());
 
-    if (sSrcPath.endsWith("/"))
-        sSrcPath = sSrcPath.copy(0, sSrcPath.getLength() - 1);
+    // Remove any trailing slash
+    sSrcPath.endsWith('/', &sSrcPath);
 
     OUString sPath = sSrcPath + "/jsuno/qa/extras/" + sFilename;
     OString sPathUtf8 = OUStringToOString(sPath, RTL_TEXTENCODING_UTF8);
