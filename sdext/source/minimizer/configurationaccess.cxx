@@ -26,7 +26,7 @@
 #include <com/sun/star/lang/XSingleServiceFactory.hpp>
 #include <comphelper/propertysequence.hxx>
 #include <comphelper/propertyvalue.hxx>
-#include <sal/macros.h>
+#include <iterator>
 #include <sal/log.hxx>
 #include <comphelper/diagnose_ex.hxx>
 
@@ -116,7 +116,7 @@ void OptimizerSettings::SaveSettingsToConfiguration( const Reference< XNameRepla
 //          Any( maFilterName ),
         Any( mbOpenNewDocument ) };
 
-    for ( int i = 0; i < int(SAL_N_ELEMENTS( pNames )); i++ )
+    for ( int i = 0; i < static_cast<int>(std::size( pNames )); i++ )
     {
         try
         {

@@ -18,6 +18,7 @@
  */
 
 
+#include <iterator>
 #include <sal/macros.h>
 #include "lngopt.hxx"
 #include <linguistic/misc.hxx>
@@ -125,7 +126,7 @@ OUString LinguOptions::GetName( sal_Int32 nWID )
 
     OUString aRes;
 
-    if (0 <= nWID && o3tl::make_unsigned(nWID) < SAL_N_ELEMENTS(aWID_Name)
+    if (0 <= nWID && o3tl::make_unsigned(nWID) < std::size(aWID_Name)
         && aWID_Name[ nWID ].nWID == nWID)
         aRes = aWID_Name[nWID].aPropertyName;
     else

@@ -17,6 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <iterator>
+
 #include <com/sun/star/uno/XComponentContext.hpp>
 #include <controls/animatedimages.hxx>
 #include <comphelper/diagnose_ex.hxx>
@@ -62,7 +64,7 @@ protected:
                 {
                     Throbber::ImageSet::N16px, Throbber::ImageSet::N32px, Throbber::ImageSet::N64px
                 };
-                for ( size_t i=0; i < SAL_N_ELEMENTS(aImageSets); ++i )
+                for ( size_t i=0; i < std::size(aImageSets); ++i )
                 {
                     const ::std::vector< OUString > aDefaultURLs( Throbber::getDefaultImageURLs( aImageSets[i] ) );
                     const Sequence< OUString > aImageURLs( aDefaultURLs.data(), aDefaultURLs.size() );

@@ -38,6 +38,7 @@
 #include <unotools/ucbstreamhelper.hxx>
 #include <unotools/streamwrap.hxx>
 #include <sax/fastattribs.hxx>
+#include <iterator>
 #include <stack>
 #include <string_view>
 #include <deque>
@@ -360,7 +361,7 @@ void XMLImportTest::setUp()
                             uno::UNO_QUERY_THROW);
     xInit->initialize({ uno::Any(xTokenHandler) });
 
-    sal_Int32 nNamespaceCount = SAL_N_ELEMENTS(DummyTokenHandler::namespaceURIs);
+    sal_Int32 nNamespaceCount = static_cast<sal_Int32>(std::size(DummyTokenHandler::namespaceURIs));
     uno::Sequence<uno::Any> namespaceArgs( nNamespaceCount + 1 );
     auto p_namespaceArgs = namespaceArgs.getArray();
     p_namespaceArgs[0] <<= u"registerNamespaces"_ustr;
