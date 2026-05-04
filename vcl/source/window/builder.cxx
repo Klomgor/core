@@ -227,7 +227,7 @@ void Application::UICoverageReport(tools::JsonWriter& rJson,
             sAppName = "Unknown";
             SAL_WARN("vcl", "Impress coverage not implemented");
             break;
-    };
+    }
 
     rJson.put("Complete" + sAppName + "DialogCoverage", missingAppDialogUIs.empty());
     if (!missingAppDialogUIs.empty())
