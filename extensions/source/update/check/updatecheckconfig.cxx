@@ -28,6 +28,7 @@
 #include <osl/time.h>
 #include <osl/diagnose.h>
 #include <osl/file.hxx>
+#include <iterator>
 #include <sal/macros.h>
 #include <o3tl/char16_t2wchar_t.hxx>
 
@@ -74,7 +75,7 @@ const char * const aUpdateEntryProperties[] = {
     OLD_VERSION
 };
 
-const sal_uInt32 nUpdateEntryProperties = SAL_N_ELEMENTS(aUpdateEntryProperties);
+const sal_uInt32 nUpdateEntryProperties = static_cast<sal_uInt32>(std::size(aUpdateEntryProperties));
 
 css::uno::Any NamedValueByNameAccess::getValue(const char * pName)
 {

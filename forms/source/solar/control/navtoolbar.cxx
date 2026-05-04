@@ -29,11 +29,10 @@
 
 #include <svx/labelitemwindow.hxx>
 
+#include <iterator>
 #include <utility>
 #include <vcl/commandinfoprovider.hxx>
 #include <vcl/toolbox.hxx>
-
-#include <sal/macros.h>
 #include <osl/diagnose.h>
 #include <tools/debug.hxx>
 
@@ -271,7 +270,7 @@ namespace frm
         };
 
         FeatureDescription const * pSupportedFeatures = aSupportedFeatures;
-        FeatureDescription const * pSupportedFeaturesEnd = aSupportedFeatures + SAL_N_ELEMENTS( aSupportedFeatures );
+        FeatureDescription const * pSupportedFeaturesEnd = aSupportedFeatures + std::size( aSupportedFeatures );
         for ( ; pSupportedFeatures < pSupportedFeaturesEnd; ++pSupportedFeatures )
         {
             if ( pSupportedFeatures->nId )

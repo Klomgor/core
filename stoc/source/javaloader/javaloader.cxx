@@ -67,6 +67,7 @@
 // this one is header-only
 #include <comphelper/sequence.hxx>
 
+#include <iterator>
 #include <mutex>
 #include <thread>
 #include <utility>
@@ -92,7 +93,7 @@ OUString generateRandomPipeId()
     // compute some good pipe id:
     sal_uInt8 bytes[ 32 ];
     if (rtl_random_getBytes(
-            nullptr, bytes, SAL_N_ELEMENTS(bytes) ) != rtl_Random_E_None) {
+            nullptr, bytes, std::size(bytes) ) != rtl_Random_E_None) {
         throw RuntimeException( u"random pool error!?"_ustr, nullptr );
     }
     OUStringBuffer buf;

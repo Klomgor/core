@@ -82,7 +82,7 @@ FilterCache::FilterCache()
         css::uno::Sequence< OUString >(sStandardProps, 3);
     m_aStandardProps[E_READ_ALL] =
         css::uno::Sequence< OUString >(sStandardProps,
-                                       SAL_N_ELEMENTS(sStandardProps));
+                                       std::size(sStandardProps));
 
     i = 0;
     OUString sTypeProps[7];
@@ -103,7 +103,7 @@ FilterCache::FilterCache()
         css::uno::Sequence< OUString >(sTypeProps, 1);
     m_aTypeProps[E_READ_ALL] =
         css::uno::Sequence< OUString >(sTypeProps,
-                                       SAL_N_ELEMENTS(sTypeProps));
+                                       std::size(sTypeProps));
 }
 
 

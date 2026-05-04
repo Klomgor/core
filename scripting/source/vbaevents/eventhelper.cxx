@@ -18,6 +18,7 @@
  */
 
 #include <rtl/ref.hxx>
+#include <iterator>
 #include <sal/macros.h>
 #include <sal/log.hxx>
 #include <comphelper/processfactory.hxx>
@@ -255,7 +256,7 @@ static EventInfoHash& getEventTransInfo()
         EventInfoHash tmp;
         OUString sEventInfo;
         const TranslatePropMap* pTransProp = aTranslatePropMap_Impl;
-        int nCount = SAL_N_ELEMENTS(aTranslatePropMap_Impl);
+        int nCount = static_cast<int>(std::size(aTranslatePropMap_Impl));
 
         int i = 0;
         while (i < nCount)
