@@ -1072,11 +1072,13 @@ void XclExpCFImpl::SaveXml( XclExpXmlStream& rStrm )
                     aText = OString::number(pTokenArray->FirstToken()->GetDouble());
                     break;
                 }
-                default:
+                case formula::svString:
                 {
                     aText = pTokenArray->FirstToken()->GetString().getString().toUtf8();
                     break;
                 }
+                default:
+                    break;
             }
         }
     }
