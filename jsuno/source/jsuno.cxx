@@ -219,6 +219,33 @@ RuntimeData* getRuntimeData(JSRuntime* rt)
 
 RuntimeData* getRuntimeData(JSContext* ctx) { return getRuntimeData(JS_GetRuntime(ctx)); }
 
+struct WrapperData
+{
+    WrapperData(JSContext* ctx, const css::uno::Reference<css::uno::XInterface>& obj)
+        : methodCache(ctx)
+        , interface(obj)
+    {
+    }
+
+    // A lazily-created object used as a hash table for caching methods
+    ValueRef methodCache;
+    css::uno::Reference<css::uno::XInterface> interface;
+};
+
+struct ModuleData
+{
+    ModuleData(JSContext* ctx, const OUString& name)
+        : memberCache(ctx)
+        , name(name)
+    {
+    }
+
+    // A lazily-created object used as a hash table for caching members of the module
+    ValueRef memberCache;
+    // The fully qualified name of the module
+    OUString name;
+};
+
 template <typename F> JSValue callFromJs(JSContext* ctx, F&& f)
 {
     try
@@ -312,10 +339,13 @@ JSValue enumerationIteratorNext(JSContext* ctx, JSValueConst, int, JSValueConst*
                                 JSValueConst* func_data)
 {
     return callFromJs(ctx, [ctx, func_data] {
-        css::uno::Reference<css::container::XEnumeration> en(
-            static_cast<css::uno::XInterface*>(
-                JS_GetOpaque(func_data[0], getRuntimeData(ctx)->wrapperClassId)),
-            css::uno::UNO_QUERY_THROW);
+        WrapperData* wrapperData = static_cast<WrapperData*>(
+            JS_GetOpaque2(ctx, func_data[0], getRuntimeData(ctx)->wrapperClassId));
+        if (wrapperData == nullptr)
+            return JS_EXCEPTION;
+
+        css::uno::Reference<css::container::XEnumeration> en(wrapperData->interface,
+                                                             css::uno::UNO_QUERY_THROW);
         ValueRef val(ctx, JS_NewObject(ctx));
         if (en->hasMoreElements())
         {
@@ -342,33 +372,69 @@ JSValue enumerationIterator(JSContext* ctx, JSValueConst this_val, int, JSValueC
     });
 }
 
-JSValue wrapperGetProperty(JSContext* ctx, JSValueConst obj, JSAtom atom, JSValueConst receiver)
+int cacheAndReturnWrapperMethod(JSContext* ctx, WrapperData* wrapperData,
+                                JSPropertyDescriptor* desc, JSAtom atom, ValueRef val)
 {
-    return callFromJs(ctx, [ctx, obj, atom, receiver] {
+    if (JS_IsUninitialized(wrapperData->methodCache))
+    {
+        wrapperData->methodCache = JS_NewObject(ctx);
+        if (JS_IsException(wrapperData->methodCache))
+            return -1;
+    }
+    if (JS_SetProperty(ctx, wrapperData->methodCache, atom, val.dup()) == -1)
+        return -1;
+
+    if (desc)
+    {
+        desc->flags = 0;
+        desc->value = val.release();
+        desc->getter = JS_UNDEFINED;
+        desc->setter = JS_UNDEFINED;
+    }
+    return int(true);
+}
+
+int wrapperGetOwnProperty(JSContext* ctx, JSPropertyDescriptor* desc, JSValueConst obj, JSAtom atom)
+{
+    try
+    {
+        WrapperData* wrapperData = static_cast<WrapperData*>(
+            JS_GetOpaque2(ctx, obj, getRuntimeData(ctx)->wrapperClassId));
+        if (wrapperData == nullptr)
+            return -1;
+
+        // Check if we already have a cached value for this atom
+        if (!JS_IsUninitialized(wrapperData->methodCache))
+        {
+            ValueRef cachedValue(ctx, JS_GetProperty(ctx, wrapperData->methodCache, atom));
+            if (!JS_IsUndefined(cachedValue))
+            {
+                if (desc)
+                {
+                    desc->flags = 0;
+                    desc->value = cachedValue.release();
+                    desc->getter = JS_UNDEFINED;
+                    desc->setter = JS_UNDEFINED;
+                }
+                return int(true);
+            }
+        }
+
         if (atom == getRuntimeData(ctx)->symbolIteratorAtom)
         {
-            css::uno::Reference<css::container::XEnumeration> en(
-                static_cast<css::uno::XInterface*>(
-                    JS_GetOpaque(obj, getRuntimeData(ctx)->wrapperClassId)),
-                css::uno::UNO_QUERY);
+            css::uno::Reference<css::container::XEnumeration> en(wrapperData->interface,
+                                                                 css::uno::UNO_QUERY);
             if (!en.is())
             {
-                return JS_UNDEFINED;
+                return int(false);
             }
             ValueRef val(ctx, JS_NewCFunction(ctx, enumerationIterator, "[Symbol.iterator]", 0));
-            JS_SetProperty(ctx, receiver, atom, val.dup());
-            return val.release();
+            return cacheAndReturnWrapperMethod(ctx, wrapperData, desc, atom, std::move(val));
         }
-        ValueRef const v(ctx, JS_AtomToString(ctx, atom));
-        if (!JS_IsString(v))
-        {
-            return JS_UNDEFINED;
-        }
+
         css::uno::Reference<css::script::XInvocation2> invoke(
             css::script::Invocation::create(comphelper::getProcessComponentContext())
-                ->createInstanceWithArguments(
-                    { css::uno::Any(css::uno::Reference(static_cast<css::uno::XInterface*>(
-                        JS_GetOpaque(obj, getRuntimeData(ctx)->wrapperClassId)))) }),
+                ->createInstanceWithArguments({ css::uno::Any(wrapperData->interface) }),
             css::uno::UNO_QUERY_THROW);
         css::script::InvocationInfo info;
         try
@@ -377,7 +443,7 @@ JSValue wrapperGetProperty(JSContext* ctx, JSValueConst obj, JSAtom atom, JSValu
         }
         catch (css::lang::IllegalArgumentException)
         {
-            return JS_UNDEFINED;
+            return int(false);
         }
         switch (info.eMemberType)
         {
@@ -392,15 +458,33 @@ JSValue wrapperGetProperty(JSContext* ctx, JSValueConst obj, JSAtom atom, JSValu
 #endif
                 ValueRef val(ctx, JS_NewCFunctionData(ctx, invokeUno, info.aParamTypes.getLength(),
                                                       0, 1, data.ptr()));
-                JS_SetProperty(ctx, receiver, atom, val.dup());
-                return val.release();
+
+                return cacheAndReturnWrapperMethod(ctx, wrapperData, desc, atom, std::move(val));
             }
             case css::script::MemberType_PROPERTY:
-                return toJs(ctx, invoke->getValue(info.aName)).release();
+                if (desc)
+                {
+                    desc->flags = 0;
+                    desc->value = toJs(ctx, invoke->getValue(info.aName)).release();
+                    desc->getter = JS_UNDEFINED;
+                    desc->setter = JS_UNDEFINED;
+                }
+                return int(true);
             default:
                 O3TL_UNREACHABLE;
         }
-    });
+    }
+    catch (JsException)
+    {
+        return -1;
+    }
+    catch (css::uno::Exception)
+    {
+        auto const e = cppu::getCaughtException();
+        ValueRef val = toJs(ctx, e);
+        JS_Throw(ctx, val.release());
+        return -1;
+    }
 }
 
 int wrapperSetProperty(JSContext* ctx, JSValueConst obj, JSAtom atom, JSValueConst value,
@@ -411,11 +495,14 @@ int wrapperSetProperty(JSContext* ctx, JSValueConst obj, JSAtom atom, JSValueCon
         ValueRef const v(ctx, JS_AtomToString(ctx, atom));
         if (JS_IsString(v))
         {
+            WrapperData* wrapperData = static_cast<WrapperData*>(
+                JS_GetOpaque2(ctx, obj, getRuntimeData(ctx)->wrapperClassId));
+            if (wrapperData == nullptr)
+                return -1;
+
             css::uno::Reference<css::script::XInvocation2> invoke(
                 css::script::Invocation::create(comphelper::getProcessComponentContext())
-                    ->createInstanceWithArguments(
-                        { css::uno::Any(css::uno::Reference(static_cast<css::uno::XInterface*>(
-                            JS_GetOpaque(obj, getRuntimeData(ctx)->wrapperClassId)))) }),
+                    ->createInstanceWithArguments({ css::uno::Any(wrapperData->interface) }),
                 css::uno::UNO_QUERY_THROW);
             css::script::InvocationInfo info;
             auto prop = false;
@@ -455,21 +542,35 @@ int wrapperSetProperty(JSContext* ctx, JSValueConst obj, JSAtom atom, JSValueCon
     }
 }
 
+void wrapperGCMark(JSRuntime* rt, JSValueConst val, JS_MarkFunc* markFunc)
+{
+    WrapperData* wrapperData
+        = static_cast<WrapperData*>(JS_GetOpaque(val, getRuntimeData(rt)->wrapperClassId));
+    if (wrapperData != nullptr)
+        JS_MarkValue(rt, wrapperData->methodCache, markFunc);
+}
+
 void wrapperFinalizer(JSRuntime* rt, JSValueConst val)
 {
 #if defined DBG_UTIL
     getRuntimeData(rt)->toFinalize.dec();
 #endif
-    static_cast<css::uno::XInterface*>(JS_GetOpaque(val, getRuntimeData(rt)->wrapperClassId))
-        ->release();
+    WrapperData* wrapperData
+        = static_cast<WrapperData*>(JS_GetOpaque(val, getRuntimeData(rt)->wrapperClassId));
+    assert(wrapperData);
+    delete wrapperData;
 }
 
 JSValue wrapperToString(JSContext* ctx, JSValueConst this_val, int, JSValueConst*)
 {
     return callFromJs(ctx, [ctx, this_val] {
+        WrapperData* wrapperData = static_cast<WrapperData*>(
+            JS_GetOpaque2(ctx, this_val, getRuntimeData(ctx)->wrapperClassId));
+        if (wrapperData == nullptr)
+            return JS_EXCEPTION;
+
         std::ostringstream s;
-        s << css::uno::Reference(static_cast<css::uno::XInterface*>(
-            JS_GetOpaque(this_val, getRuntimeData(ctx)->wrapperClassId)));
+        s << wrapperData->interface;
         return JS_NewString(ctx, s.str().c_str());
     });
 }
@@ -481,9 +582,8 @@ JSValue wrapUnoObject(JSContext* ctx, css::uno::Reference<css::uno::XInterface> 
         return JS_NULL;
     }
     auto const val = JS_NewObjectClass(ctx, getRuntimeData(ctx)->wrapperClassId);
-    [[maybe_unused]] auto const e = JS_SetOpaque(val, obj.get());
+    [[maybe_unused]] auto const e = JS_SetOpaque(val, new WrapperData(ctx, obj));
     assert(e == 0); //TODO
-    obj->acquire();
 #if defined DBG_UTIL
     getRuntimeData(ctx)->toFinalize.inc();
 #endif
@@ -1133,24 +1233,51 @@ JSValue getSingleton(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv,
     });
 }
 
+void moduleGCMark(JSRuntime* rt, JSValueConst val, JS_MarkFunc* markFunc)
+{
+    ModuleData* moduleData
+        = static_cast<ModuleData*>(JS_GetOpaque(val, getRuntimeData(rt)->moduleClassId));
+    if (moduleData != nullptr)
+        JS_MarkValue(rt, moduleData->memberCache, markFunc);
+}
+
 void moduleFinalizer(JSRuntime* rt, JSValueConst val)
 {
 #if defined DBG_UTIL
     getRuntimeData(rt)->toFinalize.dec();
 #endif
-    rtl_uString_release(
-        static_cast<rtl_uString*>(JS_GetOpaque(val, getRuntimeData(rt)->moduleClassId)));
+    ModuleData* moduleData
+        = static_cast<ModuleData*>(JS_GetOpaque(val, getRuntimeData(rt)->moduleClassId));
+    assert(moduleData);
+    delete moduleData;
 }
 
-JSValue moduleGetProperty(JSContext* ctx, JSValueConst obj, JSAtom atom, JSValueConst receiver)
+int moduleGetOwnProperty(JSContext* ctx, JSPropertyDescriptor* propertyDesc, JSValueConst obj,
+                         JSAtom atom)
 {
-    ValueRef const v(ctx, JS_AtomToString(ctx, atom));
-    if (!JS_IsString(v))
+    ModuleData* moduleData
+        = static_cast<ModuleData*>(JS_GetOpaque2(ctx, obj, getRuntimeData(ctx)->moduleClassId));
+    if (moduleData == nullptr)
+        return -1;
+
+    // Check if we already have a cached value for this atom
+    if (!JS_IsUninitialized(moduleData->memberCache))
     {
-        return JS_UNDEFINED;
+        ValueRef cachedValue(ctx, JS_GetProperty(ctx, moduleData->memberCache, atom));
+        if (!JS_IsUndefined(cachedValue))
+        {
+            if (propertyDesc)
+            {
+                propertyDesc->flags = 0;
+                propertyDesc->value = cachedValue.release();
+                propertyDesc->getter = JS_UNDEFINED;
+                propertyDesc->setter = JS_UNDEFINED;
+            }
+            return int(true);
+        }
     }
-    auto const s = static_cast<rtl_uString*>(JS_GetOpaque(obj, getRuntimeData(ctx)->moduleClassId));
-    OUStringBuffer buf(OUString::unacquired(&s));
+
+    OUStringBuffer buf(moduleData->name);
     if (!buf.isEmpty())
     {
         buf.append('.');
@@ -1163,8 +1290,9 @@ JSValue moduleGetProperty(JSContext* ctx, JSValueConst obj, JSAtom atom, JSValue
         css::uno::UNO_QUERY_THROW);
     if (!mgr->hasByHierarchicalName(id))
     {
-        return JS_UNDEFINED;
+        return int(false);
     }
+
     css::uno::Reference<css::reflection::XTypeDescription> td(mgr->getByHierarchicalName(id),
                                                               css::uno::UNO_QUERY_THROW);
     auto const tc = td->getTypeClass();
@@ -1250,7 +1378,7 @@ JSValue moduleGetProperty(JSContext* ctx, JSValueConst obj, JSAtom atom, JSValue
         case css::uno::TypeClass_MODULE:
         {
             val = JS_NewObjectClass(ctx, getRuntimeData(ctx)->moduleClassId);
-            [[maybe_unused]] auto const e = JS_SetOpaque(val, stringAcquire(id));
+            [[maybe_unused]] auto const e = JS_SetOpaque(val, new ModuleData(ctx, id));
             assert(e == 0); //TODO
 #if defined DBG_UTIL
             getRuntimeData(ctx)->toFinalize.inc();
@@ -1261,9 +1389,8 @@ JSValue moduleGetProperty(JSContext* ctx, JSValueConst obj, JSAtom atom, JSValue
         {
             val = JS_NewObject(ctx);
             if (JS_IsException(val))
-            {
-                throw JsException();
-            }
+                return -1;
+
             css::uno::Reference<css::reflection::XConstantsTypeDescription> cstd(
                 td, css::uno::UNO_QUERY_THROW);
             for (auto const& ctd : cstd->getConstants())
@@ -1274,7 +1401,7 @@ JSValue moduleGetProperty(JSContext* ctx, JSValueConst obj, JSAtom atom, JSValue
                 if (JS_SetPropertyStr(ctx, val, name.copy(n + 1).toUtf8().getStr(), con.release())
                     == -1)
                 {
-                    throw JsException();
+                    return -1;
                 }
             }
             break;
@@ -1285,12 +1412,13 @@ JSValue moduleGetProperty(JSContext* ctx, JSValueConst obj, JSAtom atom, JSValue
                 td, css::uno::UNO_QUERY_THROW);
             if (!std->isSingleInterfaceBased())
             {
-                return JS_UNDEFINED;
+                val = JS_UNDEFINED;
+                break;
             }
             val = JS_NewObject(ctx);
             if (JS_IsException(val))
             {
-                throw JsException();
+                return -1;
             }
             for (auto const& ctor : std->getConstructors())
             {
@@ -1305,7 +1433,7 @@ JSValue moduleGetProperty(JSContext* ctx, JSValueConst obj, JSAtom atom, JSValue
                                                       data.ptr()));
                 if (JS_IsException(fun))
                 {
-                    throw JsException();
+                    return -1;
                 }
                 if (JS_SetPropertyStr(
                         ctx, val,
@@ -1313,7 +1441,7 @@ JSValue moduleGetProperty(JSContext* ctx, JSValueConst obj, JSAtom atom, JSValue
                         fun.release())
                     == -1)
                 {
-                    throw JsException();
+                    return -1;
                 }
             }
             break;
@@ -1329,17 +1457,34 @@ JSValue moduleGetProperty(JSContext* ctx, JSValueConst obj, JSAtom atom, JSValue
             val = JS_NewCFunctionData(ctx, getSingleton, 1, 0, 1, data.ptr());
             if (JS_IsException(val))
             {
-                throw JsException();
+                return -1;
             }
             break;
         }
         case css::uno::TypeClass_TYPEDEF:
-            return JS_UNDEFINED;
+            val = JS_UNDEFINED;
+            break;
         default:
             O3TL_UNREACHABLE;
     }
-    JS_SetProperty(ctx, receiver, atom, val.dup());
-    return val.release();
+
+    if (JS_IsUninitialized(moduleData->memberCache))
+    {
+        moduleData->memberCache = JS_NewObject(ctx);
+        if (JS_IsException(moduleData->memberCache))
+            return -1;
+    }
+    if (JS_SetProperty(ctx, moduleData->memberCache, atom, val.dup()) == -1)
+        return -1;
+
+    if (propertyDesc)
+    {
+        propertyDesc->flags = 0;
+        propertyDesc->value = val.release();
+        propertyDesc->getter = JS_UNDEFINED;
+        propertyDesc->setter = JS_UNDEFINED;
+    }
+    return int(true);
 }
 
 ValueRef getUnoidlRepresentation(JSContext* ctx, std::u16string_view id)
@@ -1583,9 +1728,11 @@ css::uno::Any fromJsInterface(JSContext* ctx, css::uno::Type const& type, JSValu
         JS_ThrowTypeError(ctx, "TODO: BAD UNO ENUM VALUE");
         throw JsException();
     }
-    auto const a = css::uno::Reference(static_cast<css::uno::XInterface*>(
-                                           JS_GetOpaque(val, getRuntimeData(ctx)->wrapperClassId)))
-                       ->queryInterface(type);
+    WrapperData* wrapperData
+        = static_cast<WrapperData*>(JS_GetOpaque2(ctx, val, getRuntimeData(ctx)->wrapperClassId));
+    if (wrapperData == nullptr)
+        throw JsException();
+    auto const a = wrapperData->interface->queryInterface(type);
     if (!a.hasValue())
     {
         JS_ThrowTypeError(ctx, "TODO: BAD UNO INTERFACE VALUE");
@@ -2359,13 +2506,16 @@ JSValue invokeUno(JSContext* ctx, JSValueConst this_val, int argc, JSValueConst*
         ValueRef ret(ctx);
         try
         {
+            WrapperData* wrapperData = static_cast<WrapperData*>(
+                JS_GetOpaque2(ctx, this_val, getRuntimeData(ctx)->wrapperClassId));
+            if (wrapperData == nullptr)
+                throw JsException();
+
             ret = toJs(
                 ctx,
                 css::uno::Reference<css::script::XInvocation>(
                     css::script::Invocation::create(comphelper::getProcessComponentContext())
-                        ->createInstanceWithArguments(
-                            { css::uno::Any(css::uno::Reference(static_cast<css::uno::XInterface*>(
-                                JS_GetOpaque(this_val, getRuntimeData(ctx)->wrapperClassId)))) }),
+                        ->createInstanceWithArguments({ css::uno::Any(wrapperData->interface) }),
                     css::uno::UNO_QUERY_THROW)
                     ->invoke(info->aName, args, outParamIndex, outParam));
         }
@@ -2446,9 +2596,12 @@ OUString jsuno::execute(OUString const& script, VariableList aGlobalVariables)
     [[maybe_unused]] auto e = JS_NewClass(rt, getRuntimeData(rt)->pointerClassId, &pointerClass);
     assert(e == 0); //TODO
     JS_NewClassID(rt, &getRuntimeData(rt)->wrapperClassId);
-    JSClassExoticMethods wrapperMethods{ nullptr, nullptr /*TODO*/,   nullptr,           nullptr,
-                                         nullptr, wrapperGetProperty, wrapperSetProperty };
-    JSClassDef wrapperClass{ "UnoWrapper", wrapperFinalizer, nullptr, nullptr, &wrapperMethods };
+    JSClassExoticMethods wrapperMethods{
+        wrapperGetOwnProperty, nullptr /*TODO*/, nullptr, nullptr, nullptr, nullptr,
+        wrapperSetProperty
+    };
+    JSClassDef wrapperClass{ "UnoWrapper", wrapperFinalizer, wrapperGCMark, nullptr,
+                             &wrapperMethods };
     e = JS_NewClass(rt, getRuntimeData(rt)->wrapperClassId, &wrapperClass);
     assert(e == 0); //TODO
     JS_NewClassID(rt, &getRuntimeData(rt)->enumeratorClassId);
@@ -2491,9 +2644,11 @@ OUString jsuno::execute(OUString const& script, VariableList aGlobalVariables)
     e = JS_NewClass(rt, getRuntimeData(rt)->singletonClassId, &singletonClass);
     assert(e == 0); //TODO
     JS_NewClassID(rt, &getRuntimeData(rt)->moduleClassId);
-    JSClassExoticMethods moduleMethods{ nullptr, nullptr /*TODO*/,  nullptr, nullptr,
-                                        nullptr, moduleGetProperty, nullptr };
-    JSClassDef moduleClass{ "UnoidlModule", moduleFinalizer, nullptr, nullptr, &moduleMethods };
+    JSClassExoticMethods moduleMethods{
+        moduleGetOwnProperty, nullptr /*TODO*/, nullptr, nullptr, nullptr, nullptr, nullptr
+    };
+    JSClassDef moduleClass{ "UnoidlModule", moduleFinalizer, moduleGCMark, nullptr,
+                            &moduleMethods };
     e = JS_NewClass(rt, getRuntimeData(rt)->moduleClassId, &moduleClass);
     assert(e == 0); //TODO
     auto const ctx = JS_NewContext(rt);
@@ -2536,7 +2691,7 @@ OUString jsuno::execute(OUString const& script, VariableList aGlobalVariables)
                           JS_NewCFunction(ctx, unoTypeInterface, "interface", 1));
         JS_SetPropertyStr(ctx, uno, "type", type.release());
         ValueRef idl(ctx, JS_NewObjectClass(ctx, getRuntimeData(ctx)->moduleClassId));
-        e = JS_SetOpaque(idl, stringAcquire(u""_ustr));
+        e = JS_SetOpaque(idl, new ModuleData(ctx, u""_ustr));
 #if defined DBG_UTIL
         getRuntimeData(ctx)->toFinalize.inc();
 #endif
