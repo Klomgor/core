@@ -141,7 +141,8 @@ public:
     // get a specific fonts system dependent filename
     OString getFontFileSysPath( fontID nFontID ) const
     {
-        return getFont( nFontID )->m_aFontFile;
+        const PrintFont* pFont(getFont(nFontID));
+        return pFont ? pFont->m_aFontFile : OString();
     }
 
     // get the ttc face number
