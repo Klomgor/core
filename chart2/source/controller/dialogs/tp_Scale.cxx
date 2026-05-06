@@ -155,7 +155,7 @@ void ScaleTabPage::EnableControls()
     {
         //transport value from one to other control
         if( bWasDateAxis )
-            lcl_setValue( *m_xFmtFldStepMain, m_xMt_MainDateStep->get_value() );
+            lcl_setValue( *m_xFmtFldStepMain, static_cast<double>(m_xMt_MainDateStep->get_value()) );
         else
             m_xMt_MainDateStep->set_value(m_xFmtFldStepMain->GetFormatter().GetValue());
     }
