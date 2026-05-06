@@ -1031,6 +1031,21 @@ bool SfxDocumentPage::FillItemSet( SfxItemSet* rSet )
         }
     }
 
+    // tdf#116833 - don't overwrite deletion of document information
+    if (m_xUseThumbnailSaveCB->get_state_changed_from_saved())
+    {
+        const SfxItemSet* pExpSet = GetDialogExampleSet();
+        const SfxDocumentInfoItem* pInfoItem;
+
+        if (pExpSet && (pInfoItem = pExpSet->GetItemIfSet(SID_DOCINFO)))
+        {
+            bool bUseThumbnail = (TRISTATE_TRUE == m_xUseThumbnailSaveCB->get_state());
+            const_cast<SfxDocumentInfoItem*>(pInfoItem)->SetUseThumbnailSave(bUseThumbnail);
+            rSet->Put(*pInfoItem);
+            bRet = true;
+        }
+    }
+
     if ( bHandleDelete )
     {
         const SfxItemSet* pExpSet = GetDialogExampleSet();
@@ -1047,20 +1062,6 @@ bool SfxDocumentPage::FillItemSet( SfxItemSet* rSet )
 
             newItem.SetDeleteUserData( true );
             rSet->Put( newItem );
-            bRet = true;
-        }
-    }
-
-    if ( m_xUseThumbnailSaveCB->get_state_changed_from_saved() )
-    {
-        const SfxItemSet* pExpSet = GetDialogExampleSet();
-        const SfxDocumentInfoItem* pInfoItem;
-
-        if ( pExpSet && (pInfoItem = pExpSet->GetItemIfSet( SID_DOCINFO )) )
-        {
-            bool bUseThumbnail = ( TRISTATE_TRUE == m_xUseThumbnailSaveCB->get_state() );
-            const_cast<SfxDocumentInfoItem*>(pInfoItem)->SetUseThumbnailSave( bUseThumbnail );
-            rSet->Put( *pInfoItem );
             bRet = true;
         }
     }
