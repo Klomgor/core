@@ -59,7 +59,7 @@ private:
     std::vector<OUString> maLayoutNames;
 
     OUString            maName;          ///< layout name or file name
-    tools::Long                mnLayoutCount;   ///< number of master pages in the document
+    int                 mnLayoutCount;   ///< number of master pages in the document
     const OUString      maStrNone;
 
     std::unique_ptr<weld::CheckButton> m_xCbxMasterPage;

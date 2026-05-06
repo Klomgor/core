@@ -78,8 +78,6 @@ SdPresLayoutDlg::~SdPresLayoutDlg()
  */
 void SdPresLayoutDlg::Reset()
 {
-    tools::Long nName;
-
     // replace master page
     if( const SfxBoolItem* pPoolItem = mrOutAttrs.GetItemIfSet( ATTR_PRESLAYOUT_MASTER_PAGE, false ) )
     {
@@ -99,6 +97,7 @@ void SdPresLayoutDlg::Reset()
     FillIconView();
 
     mnLayoutCount = maLayoutNames.size();
+    int nName;
     for( nName = 0; nName < mnLayoutCount; nName++ )
     {
         if (maLayoutNames[nName] == maName)
