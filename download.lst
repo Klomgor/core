@@ -19,8 +19,8 @@ BOOST_TARBALL := boost_1_90_0.tar.xz
 # three static lines
 # so that git cherry-pick
 # will not run into conflicts
-BOX2D_SHA256SUM := 7fac19801485efb31ee3745b2284d9d4601f9e8138a3383a7b0df6d788ea5785
-BOX2D_TARBALL := box2d-3.1.0.tar.gz
+BOX2D_SHA256SUM := fb6ef914b50f4312d7d921a600eabc12318bb3c55a0b8c0b90608fa4488ef2e4
+BOX2D_TARBALL := box2d-3.1.1.tar.gz
 # three static lines
 # so that git cherry-pick
 # will not run into conflicts
