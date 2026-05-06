@@ -39,7 +39,7 @@ private:
     SwPageBreakWin& GetOrCreateWin();
 
 public:
-    SwBreakDashedLine(SwEditWin* pEditWin, const SwFrame *pFrame);
+    SwBreakDashedLine(SwEditWin* pEditWin, const SwFrame *pFrame, const OUString& rText = u""_ustr);
 
     virtual ~SwBreakDashedLine() override { disposeOnce(); }
     virtual void dispose() override { m_pWin.disposeAndClear(); m_pEditWin.reset(); SwDashedLine::dispose(); }

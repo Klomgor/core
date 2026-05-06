@@ -61,8 +61,9 @@
 using namespace basegfx;
 using namespace basegfx::utils;
 
-SwBreakDashedLine::SwBreakDashedLine(SwEditWin* pEditWin, const SwFrame *pFrame)
-    : SwDashedLine(pEditWin, &SwViewOption::GetPageBreakColor)
+SwBreakDashedLine::SwBreakDashedLine(SwEditWin* pEditWin, const SwFrame* pFrame,
+                                     const OUString& rText)
+    : SwDashedLine(pEditWin, &SwViewOption::GetPageBreakColor, rText)
     , m_pEditWin(pEditWin)
     , m_pFrame(pFrame)
 {

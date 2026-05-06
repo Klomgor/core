@@ -9,19 +9,26 @@
 
 #include <DashedLine.hxx>
 
+#include <basegfx/matrix/b2dhommatrixtools.hxx>
 #include <basegfx/color/bcolortools.hxx>
 #include <basegfx/polygon/b2dpolygon.hxx>
+#include <drawinglayer/attribute/fontattribute.hxx>
+#include <drawinglayer/primitive2d/textlayoutdevice.hxx>
 #include <drawinglayer/primitive2d/PolygonHairlinePrimitive2D.hxx>
 #include <drawinglayer/primitive2d/PolyPolygonStrokePrimitive2D.hxx>
 #include <drawinglayer/processor2d/baseprocessor2d.hxx>
 #include <drawinglayer/processor2d/processor2dtools.hxx>
+#include <drawinglayer/primitive2d/textprimitive2d.hxx>
+#include <vcl/metric.hxx>
 #include <vcl/svapp.hxx>
 #include <vcl/settings.hxx>
 #include <memory>
 
-SwDashedLine::SwDashedLine( vcl::Window* pParent, const Color& ( SwViewOption::* pColorFn )() const )
-    : Control( pParent, WB_DIALOGCONTROL | WB_HORZ )
-    , m_pColorFn( pColorFn )
+SwDashedLine::SwDashedLine(vcl::Window* pParent, const Color& (SwViewOption::*pColorFn)() const,
+                           const OUString& rText)
+    : Control(pParent, WB_DIALOGCONTROL | WB_HORZ)
+    , m_pColorFn(pColorFn)
+    , m_sText(rText)
 {
 }
 
@@ -84,6 +91,15 @@ void SwDashedLine::Paint(vcl::RenderContext& rRenderContext, const tools::Rectan
                 drawinglayer::attribute::StrokeAttribute(std::move(aStrokePattern))));
 
     pProcessor->process(aSeq);
+
+    if (!m_sText.isEmpty())
+    {
+        vcl::Font rFont(rRenderContext.GetFont());
+        rFont.SetFontHeight(aRect.GetHeight());
+        rRenderContext.SetFont(rFont);
+        rRenderContext.SetTextFillColor(rRenderContext.GetBackgroundColor());
+        rRenderContext.DrawText(aRect, m_sText, DrawTextFlags::Center | DrawTextFlags::VCenter);
+    };
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

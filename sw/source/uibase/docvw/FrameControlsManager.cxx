@@ -125,8 +125,9 @@ void SwFrameControlsManager::SetPageBreakControl( const SwPageFrame* pPageFrame 
         pControl = lb->second;
     else
     {
+        const OUString sPageStyleName = pPageFrame->GetPageDesc()->GetName().toString();
         SwFrameControlPtr pNewControl = std::make_shared<SwFrameControl>(
-                VclPtr<SwBreakDashedLine>::Create( m_pEditWin, pPageFrame ).get() );
+                VclPtr<SwBreakDashedLine>::Create( m_pEditWin, pPageFrame, sPageStyleName ).get() );
         const SwViewOption* pViewOpt = m_pEditWin->GetView().GetWrtShell().GetViewOptions();
         pNewControl->SetReadonly( pViewOpt->IsReadonly() );
 

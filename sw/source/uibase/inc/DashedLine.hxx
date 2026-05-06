@@ -17,11 +17,12 @@
 class SwDashedLine : public Control
 {
     const Color& (SwViewOption::*m_pColorFn)() const;
+    const OUString m_sText;
 
 public:
-    SwDashedLine(vcl::Window* pParent, const Color& (SwViewOption::*pColorFn)() const);
+    SwDashedLine(vcl::Window* pParent, const Color& (SwViewOption::*pColorFn)() const,
+                 const OUString& rText = u""_ustr);
     virtual ~SwDashedLine() override;
-
     virtual void Paint(vcl::RenderContext& rRenderContext, const tools::Rectangle& rRect) override;
 };
 
