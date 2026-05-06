@@ -1601,7 +1601,14 @@ namespace emfio
         UpdateClipRegion();
         UpdateLineStyle();
         UpdateFillStyle();
-        mpGDIMetaFile->AddAction( new MetaRoundRectAction( ImplMap( rRect ), std::abs( ImplMap( rSize ).Width() ), std::abs( ImplMap( rSize ).Height() ) ) );
+        if (maLatestFillStyle.aType == WinMtfFillStyleType::Pattern)
+        {
+            tools::Polygon aRoundRectPoly( rRect, rSize.Width(), rSize.Height() );
+            ImplMap( aRoundRectPoly );
+            ImplEmitPatternFill( tools::PolyPolygon( aRoundRectPoly ) );
+        }
+        else
+            mpGDIMetaFile->AddAction( new MetaRoundRectAction( ImplMap( rRect ), std::abs( ImplMap( rSize ).Width() ), std::abs( ImplMap( rSize ).Height() ) ) );
         // tdf#142139 Wrong line width during WMF import
         if ( maLineStyle.aLineInfo.GetWidth() || ( maLineStyle.aLineInfo.GetStyle() == LineStyle::Dash ) )
         {
@@ -1617,13 +1624,17 @@ namespace emfio
         UpdateClipRegion();
         UpdateFillStyle();
 
+        const bool bPattern = (maLatestFillStyle.aType == WinMtfFillStyleType::Pattern);
+        const Point aCenter( ImplMap( rRect.Center() ) );
+        const Size  aRad( ImplMap( Size( rRect.GetWidth() / 2, rRect.GetHeight() / 2 ) ) );
+
         if ( maLineStyle.aLineInfo.GetWidth() || ( maLineStyle.aLineInfo.GetStyle() == LineStyle::Dash ) )
         {
-            Point aCenter( ImplMap( rRect.Center() ) );
-            Size  aRad( ImplMap( Size( rRect.GetWidth() / 2, rRect.GetHeight() / 2 ) ) );
-
             ImplSetNonPersistentLineColorTransparenz();
-            mpGDIMetaFile->AddAction( new MetaEllipseAction( ImplMap( rRect ) ) );
+            if ( bPattern )
+                ImplEmitPatternFill( tools::PolyPolygon( tools::Polygon( aCenter, aRad.Width(), aRad.Height() ) ) );
+            else
+                mpGDIMetaFile->AddAction( new MetaEllipseAction( ImplMap( rRect ) ) );
             UpdateLineStyle();
             tools::Polygon aEllipsePoly( aCenter, aRad.Width(), aRad.Height() );
             if (!ImplEmitLineHatch( aEllipsePoly ))
@@ -1632,7 +1643,10 @@ namespace emfio
         else
         {
             UpdateLineStyle();
-            mpGDIMetaFile->AddAction( new MetaEllipseAction( ImplMap( rRect ) ) );
+            if ( bPattern )
+                ImplEmitPatternFill( tools::PolyPolygon( tools::Polygon( aCenter, aRad.Width(), aRad.Height() ) ) );
+            else
+                mpGDIMetaFile->AddAction( new MetaEllipseAction( ImplMap( rRect ) ) );
         }
     }
 
@@ -1678,11 +1692,15 @@ namespace emfio
         tools::Rectangle   aRect( ImplMap( rRect ) );
         Point       aStart( ImplMap( rStart ) );
         Point       aEnd( ImplMap( rEnd ) );
+        const bool bPattern = (maLatestFillStyle.aType == WinMtfFillStyleType::Pattern);
 
         if ( maLineStyle.aLineInfo.GetWidth() || ( maLineStyle.aLineInfo.GetStyle() == LineStyle::Dash ) )
         {
             ImplSetNonPersistentLineColorTransparenz();
-            mpGDIMetaFile->AddAction( new MetaPieAction( aRect, aStart, aEnd ) );
+            if ( bPattern )
+                ImplEmitPatternFill( tools::PolyPolygon( tools::Polygon( aRect, aStart, aEnd, PolyStyle::Pie ) ) );
+            else
+                mpGDIMetaFile->AddAction( new MetaPieAction( aRect, aStart, aEnd ) );
             UpdateLineStyle();
             {
                 tools::Polygon aPiePoly( aRect, aStart, aEnd, PolyStyle::Pie );
@@ -1693,7 +1711,10 @@ namespace emfio
         else
         {
             UpdateLineStyle();
-            mpGDIMetaFile->AddAction( new MetaPieAction( aRect, aStart, aEnd ) );
+            if ( bPattern )
+                ImplEmitPatternFill( tools::PolyPolygon( tools::Polygon( aRect, aStart, aEnd, PolyStyle::Pie ) ) );
+            else
+                mpGDIMetaFile->AddAction( new MetaPieAction( aRect, aStart, aEnd ) );
         }
     }
 
@@ -1705,11 +1726,15 @@ namespace emfio
         tools::Rectangle   aRect( ImplMap( rRect ) );
         Point       aStart( ImplMap( rStart ) );
         Point       aEnd( ImplMap( rEnd ) );
+        const bool bPattern = (maLatestFillStyle.aType == WinMtfFillStyleType::Pattern);
 
         if ( maLineStyle.aLineInfo.GetWidth() || ( maLineStyle.aLineInfo.GetStyle() == LineStyle::Dash ) )
         {
             ImplSetNonPersistentLineColorTransparenz();
-            mpGDIMetaFile->AddAction( new MetaChordAction( aRect, aStart, aEnd ) );
+            if ( bPattern )
+                ImplEmitPatternFill( tools::PolyPolygon( tools::Polygon( aRect, aStart, aEnd, PolyStyle::Chord ) ) );
+            else
+                mpGDIMetaFile->AddAction( new MetaChordAction( aRect, aStart, aEnd ) );
             UpdateLineStyle();
             {
                 tools::Polygon aChordPoly( aRect, aStart, aEnd, PolyStyle::Chord );
@@ -1720,7 +1745,10 @@ namespace emfio
         else
         {
             UpdateLineStyle();
-            mpGDIMetaFile->AddAction( new MetaChordAction( aRect, aStart, aEnd ) );
+            if ( bPattern )
+                ImplEmitPatternFill( tools::PolyPolygon( tools::Polygon( aRect, aStart, aEnd, PolyStyle::Chord ) ) );
+            else
+                mpGDIMetaFile->AddAction( new MetaChordAction( aRect, aStart, aEnd ) );
         }
     }
 
@@ -1852,7 +1880,10 @@ namespace emfio
                 }
                 else
                 {
-                    mpGDIMetaFile->AddAction( new MetaPolyPolygonAction( rPolyPolygon ) );
+                    if (maLatestFillStyle.aType == WinMtfFillStyleType::Pattern)
+                        ImplEmitPatternFill( rPolyPolygon );
+                    else
+                        mpGDIMetaFile->AddAction( new MetaPolyPolygonAction( rPolyPolygon ) );
                     if (maLatestFillStyle.aType == WinMtfFillStyleType::Hatch)
                         mpGDIMetaFile->AddAction( new MetaHatchAction( rPolyPolygon, maLatestFillStyle.aHatch ) );
                     if (maLineStyle.aLineInfo.GetWidth() > 0 || maLineStyle.aLineInfo.GetStyle() == LineStyle::Dash)
