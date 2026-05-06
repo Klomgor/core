@@ -144,8 +144,6 @@ Private _MouseMotionListener As Object		&apos; com.sun.star.awt.XMouseMotionList
 Private _OnMouseDragged		As String		&apos; Script to invoke when mouse is dragged from the dialog
 Private _OnMouseMoved		As String		&apos; Script to invoke when mouse is moved across the dialog
 Private _MouseMotionCounter	As Integer		&apos; Counts the number of events set on the listener
-&apos; ---
-Private _TopWindowListener	As Object		&apos; com.sun.star.awt.XTopWindowListener
 
 &apos;	Persistent storage for controls
 Private _ControlCache		As Variant		&apos; Array of control objects sorted like ElementNames of the Dialog model
@@ -2092,10 +2090,6 @@ Try:
 		&apos;	To make visible an on-the-fly designed dialog when macro triggered from Python
 		_DialogModel.DesktopAsParent = Not ( _BuiltFromScratch And _BuiltInPython )
 		If Not _DialogControl.IsVisible() Then _DialogControl.setVisible(True)
-		&apos;	Watch the window Close button
-		Set _TopWindowListener = CreateUnoListener(&quot;SFDialogs.SF_DialogListener._SFNONMODAL_&quot; _
-											, &quot;com.sun.star.awt.XTopWindowListener&quot;)
-		_DialogControl.addTopWindowListener(_TopWindowListener)
 		&apos;	Default return code
 		lExecute = 0
 	End If
@@ -3338,9 +3332,6 @@ Try:
 	Set _KeyListener = Nothing
 	Set _MouseListener = Nothing
 	Set _MouseMotionListener = Nothing
-
-	&apos;	Clean close listener for non-modal dialog
-	If Not IsNull(_TopWindowListener) Then _DialogControl.removeTopWindowListener(_TopWindowListener)
 
 Finally:
 	Exit Sub	
