@@ -989,7 +989,7 @@ void box2DBody::setAngle(const double fAngle)
     b2Body_SetTransform(*mpBox2DBody, b2Body_GetPosition(*mpBox2DBody),
                         b2MakeRot(::basegfx::deg2rad(-fAngle)));
 #else
-    mpBox2DBody->SetTransform(*mpBox2DBody->GetPosition(), ::basegfx::deg2rad(-fAngle));
+    mpBox2DBody->SetTransform(mpBox2DBody->GetPosition(), ::basegfx::deg2rad(-fAngle));
 #endif
 }
 
