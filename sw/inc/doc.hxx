@@ -1543,7 +1543,7 @@ public:
     // If no collection is given, use chapter styles for 1st level.
     bool GenerateGlobalDoc(
         const OUString& rPath, const SwTextFormatColl* pSplitColl,
-        const std::function<OUString(OUString, OUString)> rConcatFunc)
+        const std::function<OUString(OUString, OUString)>& rConcatFunc)
     {
         return SplitDoc(SPLITDOC_TO_GLOBALDOC, rPath, false, pSplitColl, 0, rConcatFunc);
     }
