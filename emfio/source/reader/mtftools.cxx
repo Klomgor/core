@@ -30,6 +30,8 @@
 #include <vcl/graphictools.hxx>
 #include <vcl/BitmapTools.hxx>
 #include <vcl/metaact.hxx>
+#include <vcl/wall.hxx>
+#include <vcl/region.hxx>
 #include <vcl/canvastools.hxx>
 #include <vcl/svapp.hxx>
 #include <tools/stream.hxx>
@@ -1303,6 +1305,23 @@ namespace emfio
         return true;
     }
 
+    void MtfTools::ImplEmitPatternFill(const tools::PolyPolygon& rPolyPoly)
+    {
+        const tools::Rectangle aBound = rPolyPoly.GetBoundRect();
+        if (aBound.IsEmpty() || maLatestFillStyle.aBmp.IsEmpty())
+            return;
+
+        Wallpaper aWallpaper(maLatestFillStyle.aBmp);
+        aWallpaper.SetStyle(WallpaperStyle::Tile);
+
+        // Clip the tiled wallpaper to the polypoly so non-rectangular fills
+        // (and edge-tile bleed at the bounds) stay inside the shape.
+        mpGDIMetaFile->AddAction(new MetaPushAction(vcl::PushFlags::CLIPREGION));
+        mpGDIMetaFile->AddAction(new MetaISectRegionClipRegionAction(vcl::Region(rPolyPoly)));
+        mpGDIMetaFile->AddAction(new MetaWallpaperAction(aBound, aWallpaper));
+        mpGDIMetaFile->AddAction(new MetaPopAction());
+    }
+
     void MtfTools::ImplSetNonPersistentLineColorTransparenz()
     {
         WinMtfLineStyle aTransparentLine( COL_TRANSPARENT, true );
@@ -1527,12 +1546,16 @@ namespace emfio
         }
         else
         {
+            const bool bPattern = (maLatestFillStyle.aType == WinMtfFillStyleType::Pattern);
             if ( bEdge )
             {
                 if ( maLineStyle.aLineInfo.GetWidth() || ( maLineStyle.aLineInfo.GetStyle() == LineStyle::Dash ) )
                 {
                     ImplSetNonPersistentLineColorTransparenz();
-                    mpGDIMetaFile->AddAction( new MetaRectAction( ImplMap( rRect ) ) );
+                    if ( bPattern )
+                        ImplEmitPatternFill( tools::PolyPolygon( tools::Polygon( ImplMap( rRect ) ) ) );
+                    else
+                        mpGDIMetaFile->AddAction( new MetaRectAction( ImplMap( rRect ) ) );
                     UpdateLineStyle();
                     tools::Polygon aEdgePoly( ImplMap( rRect ) );
                     if (!ImplEmitLineHatch( aEdgePoly ))
@@ -1541,13 +1564,19 @@ namespace emfio
                 else
                 {
                     UpdateLineStyle();
-                    mpGDIMetaFile->AddAction( new MetaRectAction( ImplMap( rRect ) ) );
+                    if ( bPattern )
+                        ImplEmitPatternFill( tools::PolyPolygon( tools::Polygon( ImplMap( rRect ) ) ) );
+                    else
+                        mpGDIMetaFile->AddAction( new MetaRectAction( ImplMap( rRect ) ) );
                 }
             }
             else
             {
                 ImplSetNonPersistentLineColorTransparenz();
-                mpGDIMetaFile->AddAction( new MetaRectAction( ImplMap( rRect ) ) );
+                if ( bPattern )
+                    ImplEmitPatternFill( tools::PolyPolygon( tools::Polygon( ImplMap( rRect ) ) ) );
+                else
+                    mpGDIMetaFile->AddAction( new MetaRectAction( ImplMap( rRect ) ) );
             }
 
             if (maLatestFillStyle.aType == WinMtfFillStyleType::Hatch)
@@ -1763,30 +1792,9 @@ namespace emfio
                         else
                             mpGDIMetaFile->AddAction( new MetaPolygonAction( std::move(rPolygon) ) );
                     }
-                    else {
-                        SvtGraphicFill aFill( tools::PolyPolygon( rPolygon ),
-                                              Color(),
-                                              0.0,
-                                              mnPolyFillMode == 2 ? SvtGraphicFill::fillNonZero : SvtGraphicFill::fillEvenOdd,
-                                              SvtGraphicFill::fillTexture,
-                                              SvtGraphicFill::Transform(),
-                                              true,
-                                              SvtGraphicFill::hatchSingle,
-                                              Color(),
-                                              SvtGraphicFill::GradientType::Linear,
-                                              Color(),
-                                              Color(),
-                                              0,
-                                              Graphic(maLatestFillStyle.aBmp));
-
-                        SvMemoryStream  aMemStm;
-
-                        WriteSvtGraphicFill( aMemStm, aFill );
-
-                        mpGDIMetaFile->AddAction( new MetaCommentAction( "XPATHFILL_SEQ_BEGIN"_ostr, 0,
-                                                                static_cast<const sal_uInt8*>(aMemStm.GetData()),
-                                                                aMemStm.TellEnd() ) );
-                        mpGDIMetaFile->AddAction( new MetaCommentAction( "XPATHFILL_SEQ_END"_ostr ) );
+                    else
+                    {
+                        ImplEmitPatternFill( tools::PolyPolygon( std::move(rPolygon) ) );
                     }
 
                 }
