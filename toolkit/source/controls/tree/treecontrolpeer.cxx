@@ -948,10 +948,6 @@ bool TreeControlPeer::onEditedEntry( UnoTreeListEntry const * pEntry, const OUSt
     return true;
 }
 
-
-// css::awt::tree::TreeDataModelListener
-
-
 void SAL_CALL TreeControlPeer::treeNodesChanged( const css::awt::tree::TreeDataModelEvent& rEvent )
 {
     SolarMutexGuard aGuard;
