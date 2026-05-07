@@ -265,10 +265,10 @@ void SvTabListBox::SetTabs()
     }
 }
 
-void SvTabListBox::InitEntry(SvTreeListEntry* pEntry, const OUString& rStr,
-    const Image& rColl, const Image& rExp)
+void SvTabListBox::InitEntry(SvTreeListEntry& rEntry, const OUString& rStr, const Image& rColl,
+                             const Image& rExp)
 {
-    SvTreeListBox::InitEntry(pEntry, rStr, rColl, rExp);
+    SvTreeListBox::InitEntry(rEntry, rStr, rColl, rExp);
 
     sal_Int32 nIndex = 0;
     // TODO: verify if nTabCount is always >0 here!
@@ -276,7 +276,7 @@ void SvTabListBox::InitEntry(SvTreeListEntry* pEntry, const OUString& rStr,
     for( sal_uInt16 nToken = 0; nToken < nCount; nToken++ )
     {
         const std::u16string_view aToken = GetToken(aCurEntry, nIndex);
-        pEntry->AddItem(std::make_unique<SvLBoxString>(OUString(aToken)));
+        rEntry.AddItem(std::make_unique<SvLBoxString>(OUString(aToken)));
     }
 }
 

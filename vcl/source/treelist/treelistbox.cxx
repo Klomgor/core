@@ -1802,17 +1802,18 @@ void SvTreeListBox::SetTabs()
     m_pImpl->NotifyTabsChanged();
 }
 
-void SvTreeListBox::InitEntry(SvTreeListEntry* pEntry,
-    const OUString& aStr, const Image& aCollEntryBmp, const Image& aExpEntryBmp)
+void SvTreeListBox::InitEntry(SvTreeListEntry& rEntry, const OUString& aStr,
+                              const Image& aCollEntryBmp, const Image& aExpEntryBmp)
 {
     if (m_nTreeFlags & SvTreeFlags::CHKBTN)
     {
-        pEntry->AddItem(std::make_unique<SvLBoxButton>(m_pCheckButtonData));
+        rEntry.AddItem(std::make_unique<SvLBoxButton>(m_pCheckButtonData));
     }
 
-    pEntry->AddItem(std::make_unique<SvLBoxContextBmp>( aCollEntryBmp,aExpEntryBmp, mbContextBmpExpanded));
+    rEntry.AddItem(
+        std::make_unique<SvLBoxContextBmp>(aCollEntryBmp, aExpEntryBmp, mbContextBmpExpanded));
 
-    pEntry->AddItem(std::make_unique<SvLBoxString>(aStr));
+    rEntry.AddItem(std::make_unique<SvLBoxString>(aStr));
 }
 
 OUString SvTreeListBox::GetEntryText(SvTreeListEntry* pEntry) const
@@ -1863,7 +1864,7 @@ SvTreeListEntry* SvTreeListBox::InsertEntry(
 
     SvTreeListEntry* pEntry = new SvTreeListEntry;
     pEntry->SetUserData( pUser );
-    InitEntry( pEntry, rText, rDefColBmp, rDefExpBmp );
+    InitEntry(*pEntry, rText, rDefColBmp, rDefExpBmp);
     pEntry->EnableChildrenOnDemand( bChildrenOnDemand );
 
     if( !pParent )
@@ -2053,7 +2054,7 @@ SvTreeListEntry* SvTreeListBox::CloneEntry( SvTreeListEntry* pSource )
         aExpEntryBmp  = pBmpItem->GetBitmap2( );
     }
     SvTreeListEntry* pClone = new SvTreeListEntry;
-    InitEntry( pClone, aStr, aCollEntryBmp, aExpEntryBmp );
+    InitEntry(*pClone, aStr, aCollEntryBmp, aExpEntryBmp);
     pClone->SvTreeListEntry::Clone( pSource );
     pClone->EnableChildrenOnDemand( pSource->HasChildrenOnDemand() );
     pClone->SetUserData( pSource->GetUserData() );

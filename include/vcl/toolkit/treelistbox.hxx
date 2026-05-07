@@ -602,7 +602,7 @@ protected:
     void            GetLastTab( SvLBoxTabFlags nFlagMask, sal_uInt16& rTabPos );
     SvLBoxTab* GetTab(const SvTreeListEntry&, const SvLBoxItem&) const;
 
-    virtual void    InitEntry(SvTreeListEntry*, const OUString&, const Image&, const Image&);
+    virtual void InitEntry(SvTreeListEntry& rEntry, const OUString&, const Image&, const Image&);
 
     void            NotifyScrolled();
     void SetScrolledHdl(const Link<SvTreeListBox*, void>& rLink) { m_aScrolledHdl = rLink; }
