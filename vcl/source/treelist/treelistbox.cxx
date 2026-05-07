@@ -894,7 +894,7 @@ bool SvTreeListBox::CopySelection( SvTreeListBox* pSource, SvTreeListEntry* pTar
             }
             else
             {
-                sal_uInt32 nListPos = m_pModel->Copy(pSourceEntry, pNewParent, nInsertionPos);
+                sal_uInt32 nListPos = m_pModel->Copy(*pSourceEntry, pNewParent, nInsertionPos);
                 pSourceEntry = GetEntry( pNewParent, nListPos );
             }
         }
@@ -950,7 +950,7 @@ bool SvTreeListBox::MoveSelectionCopyFallbackPossible( SvTreeListBox* pSource, S
                 if ( nOk )
                     m_pModel->Move(pSourceEntry, pNewParent, nInsertionPos);
                 else
-                    m_pModel->Copy(pSourceEntry, pNewParent, nInsertionPos);
+                    m_pModel->Copy(*pSourceEntry, pNewParent, nInsertionPos);
             }
         }
         else

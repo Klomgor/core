@@ -158,7 +158,7 @@ public:
 
     // Creates ChildList if needed
     sal_uInt32          Move( SvTreeListEntry* pSource, SvTreeListEntry* pTargetParent, sal_uInt32 nListPos);
-    sal_uInt32          Copy( SvTreeListEntry* pSource, SvTreeListEntry* pTargetParent, sal_uInt32 nListPos);
+    sal_uInt32 Copy(SvTreeListEntry& rSource, SvTreeListEntry* pTargetParent, sal_uInt32 nListPos);
 
     bool Remove( const SvTreeListEntry* pEntry );
     void                Clear();

@@ -231,17 +231,16 @@ sal_uInt32 SvTreeList::Move(SvTreeListEntry* pSrcEntry,SvTreeListEntry* pTargetP
     return nRetVal;
 }
 
-sal_uInt32 SvTreeList::Copy(SvTreeListEntry* pSrcEntry,SvTreeListEntry* pTargetParent,sal_uInt32 nListPos)
+sal_uInt32 SvTreeList::Copy(SvTreeListEntry& rSrcEntry, SvTreeListEntry* pTargetParent,
+                            sal_uInt32 nListPos)
 {
-    // pDest may be 0!
-    DBG_ASSERT(pSrcEntry,"Entry?");
     if ( !pTargetParent )
         pTargetParent = m_pRootItem.get();
 
     m_bAbsPositionsValid = false;
 
     sal_uInt32 nCloneCount = 0;
-    SvTreeListEntry* pClonedEntry = Clone( pSrcEntry, nCloneCount );
+    SvTreeListEntry* pClonedEntry = Clone(&rSrcEntry, nCloneCount);
     m_nEntryCount += nCloneCount;
 
     SvTreeListEntries& rDst = pTargetParent->m_Children;
