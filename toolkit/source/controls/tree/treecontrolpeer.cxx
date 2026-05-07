@@ -984,13 +984,7 @@ void TreeControlPeer::updateTree( const css::awt::tree::TreeDataModelEvent& rEve
     UnoTreeListBoxImpl& rTree = getTreeListBoxOrThrow();
 
     Reference< XTreeNode > xNode( rEvent.ParentNode );
-    if( xNode.is() )
-        updateNode( rTree, xNode );
-}
-
-void TreeControlPeer::updateNode( UnoTreeListBoxImpl const & rTree, const Reference< XTreeNode >& xNode )
-{
-    if( !xNode.is() )
+    if (!xNode.is())
         return;
 
     UnoTreeListEntry* pNodeEntry = getEntry( xNode, false );
