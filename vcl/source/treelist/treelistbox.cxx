@@ -2030,18 +2030,18 @@ void SvTreeListBox::CheckButtonHdl()
 // leads to us _not_ calling SvTreeListEntry::Clone, but only its base class
 // SvTreeListEntry.
 
-SvTreeListEntry* SvTreeListBox::CloneEntry(SvTreeListEntry& rSource)
+SvTreeListEntry* SvTreeListBox::CloneEntry(const SvTreeListEntry& rSource)
 {
     OUString aStr;
     Image aCollEntryBmp;
     Image aExpEntryBmp;
 
-    SvLBoxString* pStringItem
-        = static_cast<SvLBoxString*>(rSource.GetFirstItem(SvLBoxItemType::String));
+    const SvLBoxString* pStringItem
+        = static_cast<const SvLBoxString*>(rSource.GetFirstItem(SvLBoxItemType::String));
     if( pStringItem )
         aStr = pStringItem->GetText();
-    SvLBoxContextBmp* pBmpItem
-        = static_cast<SvLBoxContextBmp*>(rSource.GetFirstItem(SvLBoxItemType::ContextBmp));
+    const SvLBoxContextBmp* pBmpItem
+        = static_cast<const SvLBoxContextBmp*>(rSource.GetFirstItem(SvLBoxItemType::ContextBmp));
     if( pBmpItem )
     {
         aCollEntryBmp = pBmpItem->GetBitmap1( );

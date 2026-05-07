@@ -84,7 +84,7 @@ sal_uInt32 SvTreeListEntry::GetChildListPos() const
     return ( nListPos & 0x7fffffff );
 }
 
-void SvTreeListEntry::Clone(SvTreeListEntry& rSource)
+void SvTreeListEntry::Clone(const SvTreeListEntry& rSource)
 {
     nListPos &= 0x80000000;
     nListPos |= (rSource.nListPos & 0x7fffffff);

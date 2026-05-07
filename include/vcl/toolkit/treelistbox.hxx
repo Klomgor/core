@@ -539,7 +539,7 @@ public:
     virtual DragDropMode     NotifyStartDrag();
     virtual void             DragFinished( sal_Int8 nDropAction );
 
-    SvTreeListEntry* CloneEntry(SvTreeListEntry& rSource);
+    SvTreeListEntry* CloneEntry(const SvTreeListEntry& rSource);
 
     // Return value: TRISTATE_TRUE == Ok, TRISTATE_FALSE == Cancel, TRISTATE_INDET == Ok and Make visible moved entry
     TriState NotifyMoving(
