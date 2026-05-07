@@ -84,23 +84,22 @@ sal_uInt32 SvTreeListEntry::GetChildListPos() const
     return ( nListPos & 0x7fffffff );
 }
 
-
-void SvTreeListEntry::Clone(SvTreeListEntry* pSource)
+void SvTreeListEntry::Clone(SvTreeListEntry& rSource)
 {
     nListPos &= 0x80000000;
-    nListPos |= ( pSource->nListPos & 0x7fffffff);
-    nAbsPos = pSource->nAbsPos;
-    mnExtraIndent = pSource->mnExtraIndent;
+    nListPos |= (rSource.nListPos & 0x7fffffff);
+    nAbsPos = rSource.nAbsPos;
+    mnExtraIndent = rSource.mnExtraIndent;
 
     m_Items.clear();
-    for (const std::unique_ptr<SvLBoxItem>& rpItem : pSource->m_Items)
+    for (const std::unique_ptr<SvLBoxItem>& rpItem : rSource.m_Items)
     {
         std::unique_ptr<SvLBoxItem> pNewItem(rpItem->Clone(rpItem.get()));
         m_Items.push_back(std::move(pNewItem));
     }
 
-    pUserData = pSource->GetUserData();
-    nEntryFlags = pSource->nEntryFlags;
+    pUserData = rSource.GetUserData();
+    nEntryFlags = rSource.nEntryFlags;
 }
 
 size_t SvTreeListEntry::ItemCount() const

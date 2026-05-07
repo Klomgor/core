@@ -90,7 +90,7 @@ public:
 
     const SvTreeListEntries& GetChildEntries() const { return m_Children; }
 
-    void Clone(SvTreeListEntry* pSource);
+    void Clone(SvTreeListEntry& rSource);
 
     size_t ItemCount() const;
 
