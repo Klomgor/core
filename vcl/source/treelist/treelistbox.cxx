@@ -2049,7 +2049,7 @@ SvTreeListEntry* SvTreeListBox::CloneEntry(SvTreeListEntry& rSource)
     }
     SvTreeListEntry* pClone = new SvTreeListEntry;
     InitEntry(*pClone, aStr, aCollEntryBmp, aExpEntryBmp);
-    pClone->SvTreeListEntry::Clone(&rSource);
+    pClone->Clone(&rSource);
     pClone->EnableChildrenOnDemand(rSource.HasChildrenOnDemand());
     pClone->SetUserData(rSource.GetUserData());
 
