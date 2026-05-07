@@ -549,6 +549,10 @@ bool SwFieldFuncPage::FillItemSet(SfxItemSet* )
         case SwFieldTypesEnum::ConditionalText:
             aVal = OUString::Concat(m_xCond1ED->get_text())
                    + OUStringChar(CONDITIONAL_FIELD_SEPARATOR) + m_xCond2ED->get_text();
+            nSubType = static_cast<sal_uInt16>(nTypeId);
+            break;
+        case SwFieldTypesEnum::HiddenText:
+            nSubType = static_cast<sal_uInt16>(nTypeId);
             break;
         case SwFieldTypesEnum::Dropdown :
         {
