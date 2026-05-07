@@ -93,10 +93,9 @@ void SvTreeListEntry::Clone(SvTreeListEntry* pSource)
     mnExtraIndent = pSource->mnExtraIndent;
 
     m_Items.clear();
-    for (auto const& it : pSource->m_Items)
+    for (const std::unique_ptr<SvLBoxItem>& rpItem : pSource->m_Items)
     {
-        SvLBoxItem* pItem = &(*it);
-        std::unique_ptr<SvLBoxItem> pNewItem(pItem->Clone(pItem));
+        std::unique_ptr<SvLBoxItem> pNewItem(rpItem->Clone(rpItem.get()));
         m_Items.push_back(std::move(pNewItem));
     }
 
