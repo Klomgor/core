@@ -866,8 +866,6 @@ bool SvTreeListBox::CopySelection( SvTreeListBox* pSource, SvTreeListEntry* pTar
     bool bSuccess = true;
     std::vector<SvTreeListEntry*> aList;
     bool bClone = ( pSource->GetModel() != GetModel() );
-    Link<SvTreeListEntry*, SvTreeListEntry*> aCloneLink(m_pModel->GetCloneLink());
-    m_pModel->SetCloneLink(LINK(this, SvTreeListBox, CloneHdl_Impl));
 
     // cache selection to simplify iterating over the selection when doing a D&D
     // exchange within the same listbox
@@ -906,7 +904,6 @@ bool SvTreeListBox::CopySelection( SvTreeListBox* pSource, SvTreeListEntry* pTar
         if (nOk == TRISTATE_INDET)  // HACK: make visible moved entry
             MakeVisible( pSourceEntry );
     }
-    m_pModel->SetCloneLink(aCloneLink);
     return bSuccess;
 }
 
@@ -917,9 +914,6 @@ bool SvTreeListBox::MoveSelectionCopyFallbackPossible( SvTreeListBox* pSource, S
     bool bSuccess = true;
     std::vector<SvTreeListEntry*> aList;
     bool bClone = ( pSource->GetModel() != GetModel() );
-    Link<SvTreeListEntry*, SvTreeListEntry*> aCloneLink(m_pModel->GetCloneLink());
-    if ( bClone )
-        m_pModel->SetCloneLink(LINK(this, SvTreeListBox, CloneHdl_Impl));
 
     SvTreeListEntry* pSourceEntry = pSource->FirstSelected();
     while ( pSourceEntry )
@@ -965,7 +959,6 @@ bool SvTreeListBox::MoveSelectionCopyFallbackPossible( SvTreeListBox* pSource, S
         if (nOk == TRISTATE_INDET)  // HACK: make moved entry visible
             MakeVisible( pSourceEntry );
     }
-    m_pModel->SetCloneLink(aCloneLink);
     return bSuccess;
 }
 

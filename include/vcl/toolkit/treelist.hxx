@@ -190,8 +190,6 @@ public:
         m_aCloneLink = rLink;
     }
 
-    const Link<SvTreeListEntry*, SvTreeListEntry*>& GetCloneLink() const { return m_aCloneLink; }
-
     SvTreeListEntry*    CloneEntry( SvTreeListEntry* pSource ) const; // Calls the Clone Link
 
     void SetSortMode(SvSortMode eMode) { m_eSortMode = eMode; }
