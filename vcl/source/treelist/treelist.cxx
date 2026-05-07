@@ -316,18 +316,18 @@ void SvTreeList::InsertTree(SvTreeListEntry* pSrcEntry,
     Broadcast(SvListAction::INSERTED_TREE, pSrcEntry );
 }
 
-SvTreeListEntry* SvTreeList::CloneEntry( SvTreeListEntry* pSource ) const
+SvTreeListEntry* SvTreeList::CloneEntry(SvTreeListEntry& rSource) const
 {
     if (m_aCloneLink.IsSet())
-        return m_aCloneLink.Call(pSource);
+        return m_aCloneLink.Call(&rSource);
     SvTreeListEntry* pEntry = new SvTreeListEntry;
-    pEntry->Clone(pSource);
+    pEntry->Clone(&rSource);
     return pEntry;
 }
 
 SvTreeListEntry* SvTreeList::Clone(SvTreeListEntry& rEntry, sal_uInt32& nCloneCount) const
 {
-    SvTreeListEntry* pClonedEntry = CloneEntry(&rEntry);
+    SvTreeListEntry* pClonedEntry = CloneEntry(rEntry);
     nCloneCount = 1;
     if (!rEntry.m_Children.empty())
         // Clone the child entries.
@@ -343,7 +343,7 @@ void SvTreeList::CloneChildren(
     for (auto const& elem : rSrc)
     {
         SvTreeListEntry& rEntry = *elem;
-        std::unique_ptr<SvTreeListEntry> pNewEntry(CloneEntry(&rEntry));
+        std::unique_ptr<SvTreeListEntry> pNewEntry(CloneEntry(rEntry));
         ++rCloneCount;
         pNewEntry->pParent = &rNewParent;
         if (!rEntry.m_Children.empty())
