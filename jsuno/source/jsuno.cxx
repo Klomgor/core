@@ -1232,45 +1232,15 @@ void moduleFinalizer(JSRuntime* rt, JSValueConst val)
     delete moduleData;
 }
 
-int moduleGetOwnProperty(JSContext* ctx, JSPropertyDescriptor* propertyDesc, JSValueConst obj,
-                         JSAtom atom)
+ValueRef moduleGetOwnPropertyUncached(JSContext* ctx, const OUString& id)
 {
-    ModuleData* moduleData
-        = static_cast<ModuleData*>(JS_GetOpaque2(ctx, obj, getRuntimeData(ctx)->moduleClassId));
-    if (moduleData == nullptr)
-        return -1;
-
-    // Check if we already have a cached value for this atom
-    if (!JS_IsUninitialized(moduleData->memberCache))
-    {
-        ValueRef cachedValue(ctx, JS_GetProperty(ctx, moduleData->memberCache, atom));
-        if (!JS_IsUndefined(cachedValue))
-        {
-            if (propertyDesc)
-            {
-                propertyDesc->flags = 0;
-                propertyDesc->value = cachedValue.release();
-                propertyDesc->getter = JS_UNDEFINED;
-                propertyDesc->setter = JS_UNDEFINED;
-            }
-            return int(true);
-        }
-    }
-
-    OUStringBuffer buf(moduleData->name);
-    if (!buf.isEmpty())
-    {
-        buf.append('.');
-    }
-    buf.append(OUString::fromUtf8(JS_AtomToCString(ctx, atom)));
-    auto const id = buf.makeStringAndClear();
     css::uno::Reference<css::container::XHierarchicalNameAccess> mgr(
         comphelper::getProcessComponentContext()->getValueByName(
             u"/singletons/com.sun.star.reflection.theTypeDescriptionManager"_ustr),
         css::uno::UNO_QUERY_THROW);
     if (!mgr->hasByHierarchicalName(id))
     {
-        return int(false);
+        return ValueRef(ctx, JS_UNDEFINED);
     }
 
     css::uno::Reference<css::reflection::XTypeDescription> td(mgr->getByHierarchicalName(id),
@@ -1366,7 +1336,7 @@ int moduleGetOwnProperty(JSContext* ctx, JSPropertyDescriptor* propertyDesc, JSV
         {
             val = JS_NewObject(ctx);
             if (JS_IsException(val))
-                return -1;
+                return val;
 
             css::uno::Reference<css::reflection::XConstantsTypeDescription> cstd(
                 td, css::uno::UNO_QUERY_THROW);
@@ -1378,7 +1348,7 @@ int moduleGetOwnProperty(JSContext* ctx, JSPropertyDescriptor* propertyDesc, JSV
                 if (JS_SetPropertyStr(ctx, val, name.copy(n + 1).toUtf8().getStr(), con.release())
                     == -1)
                 {
-                    return -1;
+                    return ValueRef(ctx, JS_EXCEPTION);
                 }
             }
             break;
@@ -1395,7 +1365,7 @@ int moduleGetOwnProperty(JSContext* ctx, JSPropertyDescriptor* propertyDesc, JSV
             val = JS_NewObject(ctx);
             if (JS_IsException(val))
             {
-                return -1;
+                return val;
             }
             for (auto const& ctor : std->getConstructors())
             {
@@ -1410,7 +1380,7 @@ int moduleGetOwnProperty(JSContext* ctx, JSPropertyDescriptor* propertyDesc, JSV
                                                       data.ptr()));
                 if (JS_IsException(fun))
                 {
-                    return -1;
+                    return fun;
                 }
                 if (JS_SetPropertyStr(
                         ctx, val,
@@ -1418,7 +1388,7 @@ int moduleGetOwnProperty(JSContext* ctx, JSPropertyDescriptor* propertyDesc, JSV
                         fun.release())
                     == -1)
                 {
-                    return -1;
+                    return ValueRef(ctx, JS_EXCEPTION);
                 }
             }
             break;
@@ -1432,10 +1402,6 @@ int moduleGetOwnProperty(JSContext* ctx, JSPropertyDescriptor* propertyDesc, JSV
             getRuntimeData(ctx)->toFinalize.inc();
 #endif
             val = JS_NewCFunctionData(ctx, getSingleton, 1, 0, 1, data.ptr());
-            if (JS_IsException(val))
-            {
-                return -1;
-            }
             break;
         }
         case css::uno::TypeClass_TYPEDEF:
@@ -1444,6 +1410,49 @@ int moduleGetOwnProperty(JSContext* ctx, JSPropertyDescriptor* propertyDesc, JSV
         default:
             O3TL_UNREACHABLE;
     }
+
+    return val;
+}
+
+int moduleGetOwnProperty(JSContext* ctx, JSPropertyDescriptor* propertyDesc, JSValueConst obj,
+                         JSAtom atom)
+{
+    ModuleData* moduleData
+        = static_cast<ModuleData*>(JS_GetOpaque2(ctx, obj, getRuntimeData(ctx)->moduleClassId));
+    if (moduleData == nullptr)
+        return -1;
+
+    // Check if we already have a cached value for this atom
+    if (!JS_IsUninitialized(moduleData->memberCache))
+    {
+        ValueRef cachedValue(ctx, JS_GetProperty(ctx, moduleData->memberCache, atom));
+        if (!JS_IsUndefined(cachedValue))
+        {
+            if (propertyDesc)
+            {
+                propertyDesc->flags = 0;
+                propertyDesc->value = cachedValue.release();
+                propertyDesc->getter = JS_UNDEFINED;
+                propertyDesc->setter = JS_UNDEFINED;
+            }
+            return int(true);
+        }
+    }
+
+    OUStringBuffer buf(moduleData->name);
+    if (!buf.isEmpty())
+    {
+        buf.append('.');
+    }
+    buf.append(OUString::fromUtf8(JS_AtomToCString(ctx, atom)));
+    auto const id = buf.makeStringAndClear();
+
+    ValueRef val = moduleGetOwnPropertyUncached(ctx, id);
+
+    if (JS_IsUninitialized(val) || JS_IsUndefined(val))
+        return int(false);
+    if (JS_IsException(val))
+        return -1;
 
     if (JS_IsUninitialized(moduleData->memberCache))
     {
