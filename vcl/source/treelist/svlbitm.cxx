@@ -389,7 +389,7 @@ std::unique_ptr<SvLBoxItem> SvLBoxButton::Clone(SvLBoxItem const * pSource) cons
 {
     std::unique_ptr<SvLBoxButton> pNew(new SvLBoxButton);
     pNew->pData = static_cast<SvLBoxButton const *>(pSource)->pData;
-    return std::unique_ptr<SvLBoxItem>(pNew.release());
+    return pNew;
 }
 
 void SvLBoxButton::ImplAdjustBoxSize(Size& io_rSize, ControlType i_eType, vcl::RenderContext const & rRenderContext)
