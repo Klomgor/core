@@ -952,18 +952,12 @@ void SAL_CALL TreeControlPeer::treeNodesChanged( const css::awt::tree::TreeDataM
 {
     SolarMutexGuard aGuard;
 
-    if( mnEditLock != 0 )
-        return;
-
     updateTree( rEvent );
 }
 
 void SAL_CALL TreeControlPeer::treeNodesInserted( const css::awt::tree::TreeDataModelEvent& rEvent )
 {
     SolarMutexGuard aGuard;
-
-    if( mnEditLock != 0 )
-        return;
 
     updateTree( rEvent );
 }
@@ -972,9 +966,6 @@ void SAL_CALL TreeControlPeer::treeNodesRemoved( const css::awt::tree::TreeDataM
 {
     SolarMutexGuard aGuard;
 
-    if( mnEditLock != 0 )
-        return;
-
     updateTree( rEvent );
 }
 
@@ -982,14 +973,14 @@ void SAL_CALL TreeControlPeer::treeStructureChanged( const css::awt::tree::TreeD
 {
     SolarMutexGuard aGuard;
 
-    if( mnEditLock != 0 )
-        return;
-
     updateTree( rEvent );
 }
 
 void TreeControlPeer::updateTree( const css::awt::tree::TreeDataModelEvent& rEvent )
 {
+    if (mnEditLock != 0)
+        return;
+
     UnoTreeListBoxImpl& rTree = getTreeListBoxOrThrow();
 
     Sequence< Reference< XTreeNode > > Nodes;
