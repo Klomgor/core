@@ -17,8 +17,7 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#ifndef INCLUDED_SVX_ACTIONDESCRIPTIONPROVIDER_HXX
-#define INCLUDED_SVX_ACTIONDESCRIPTIONPROVIDER_HXX
+#pragma once
 
 #include <config_options.h>
 #include <rtl/ustring.hxx>
@@ -50,7 +49,5 @@ public:
     static OUString createDescription( ActionType eActionType
                         , std::u16string_view rObjectName );
 };
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
