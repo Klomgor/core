@@ -38,7 +38,13 @@ using namespace ::com::sun::star::lang;
 
 namespace {
 
-    enum broadcast_type { nodes_changed, nodes_inserted, nodes_removed, structure_changed };
+enum class BroadcastType
+{
+    NodesChanged,
+    NodesInserted,
+    NodesRemoved,
+    StructureChanged,
+};
 
 class MutableTreeNode;
 class MutableTreeDataModel;
@@ -50,7 +56,8 @@ class MutableTreeDataModel : public ::cppu::WeakImplHelper< XMutableTreeDataMode
 public:
     MutableTreeDataModel();
 
-    void broadcast( broadcast_type eType, const Reference< XTreeNode >& xParentNode, const Reference< XTreeNode >& rNode );
+    void broadcast(BroadcastType eType, const Reference<XTreeNode>& xParentNode,
+                   const Reference<XTreeNode>& rNode);
 
     // XMutableTreeDataModel
     virtual css::uno::Reference< css::awt::tree::XMutableTreeNode > SAL_CALL createNode( const css::uno::Any& DisplayValue, sal_Bool ChildrenOnDemand ) override;
@@ -72,7 +79,8 @@ public:
     virtual Sequence< OUString > SAL_CALL getSupportedServiceNames(  ) override;
 
 private:
-    void broadcastImpl( std::unique_lock<std::mutex>& rGuard, broadcast_type eType, const Reference< XTreeNode >& xParentNode, const Reference< XTreeNode >& rNode );
+    void broadcastImpl(std::unique_lock<std::mutex>& rGuard, BroadcastType eType,
+                       const Reference<XTreeNode>& xParentNode, const Reference<XTreeNode>& rNode);
 
     std::mutex m_aMutex;
     comphelper::OInterfaceContainerHelper4<XTreeDataModelListener> maTreeDataModelListeners;
@@ -141,13 +149,16 @@ MutableTreeDataModel::MutableTreeDataModel()
 {
 }
 
-void MutableTreeDataModel::broadcast( broadcast_type eType, const Reference< XTreeNode >& xParentNode, const Reference< XTreeNode >& rNode )
+void MutableTreeDataModel::broadcast(BroadcastType eType, const Reference<XTreeNode>& xParentNode,
+                                     const Reference<XTreeNode>& rNode)
 {
     std::unique_lock aGuard(m_aMutex);
     broadcastImpl(aGuard, eType, xParentNode, rNode);
 }
 
-void MutableTreeDataModel::broadcastImpl( std::unique_lock<std::mutex>& rGuard, broadcast_type eType, const Reference< XTreeNode >& xParentNode, const Reference< XTreeNode >& rNode )
+void MutableTreeDataModel::broadcastImpl(std::unique_lock<std::mutex>& rGuard, BroadcastType eType,
+                                         const Reference<XTreeNode>& xParentNode,
+                                         const Reference<XTreeNode>& rNode)
 {
     if( !maTreeDataModelListeners.getLength(rGuard) )
         return;
@@ -163,10 +174,18 @@ void MutableTreeDataModel::broadcastImpl( std::unique_lock<std::mutex>& rGuard, 
         XTreeDataModelListener* pListener = aListIter.next().get();
         switch( eType )
         {
-        case nodes_changed:     pListener->treeNodesChanged(aEvent); break;
-        case nodes_inserted:    pListener->treeNodesInserted(aEvent); break;
-        case nodes_removed:     pListener->treeNodesRemoved(aEvent); break;
-        case structure_changed: pListener->treeStructureChanged(aEvent); break;
+            case BroadcastType::NodesChanged:
+                pListener->treeNodesChanged(aEvent);
+                break;
+            case BroadcastType::NodesInserted:
+                pListener->treeNodesInserted(aEvent);
+                break;
+            case BroadcastType::NodesRemoved:
+                pListener->treeNodesRemoved(aEvent);
+                break;
+            case BroadcastType::StructureChanged:
+                pListener->treeStructureChanged(aEvent);
+                break;
         }
     }
 }
@@ -196,7 +215,7 @@ void SAL_CALL MutableTreeDataModel::setRoot( const Reference< XMutableTreeNode >
     mxRootNode = std::move(xImpl);
 
     Reference< XTreeNode > xParentNode;
-    broadcastImpl( aGuard, structure_changed, xParentNode, mxRootNode );
+    broadcastImpl(aGuard, BroadcastType::StructureChanged, xParentNode, mxRootNode);
 }
 
 Reference< XTreeNode > SAL_CALL MutableTreeDataModel::getRoot(  )
@@ -283,7 +302,7 @@ void MutableTreeNode::broadcast_changes()
 {
     if( mxModel.is() )
     {
-        mxModel->broadcast( nodes_changed, mpParent, this );
+        mxModel->broadcast(BroadcastType::NodesChanged, mpParent, this);
     }
 }
 
@@ -294,7 +313,8 @@ void MutableTreeNode::broadcast_changes(std::unique_lock<std::mutex> & rLock,
     rLock.unlock();
     if (xModel.is())
     {
-        xModel->broadcast(bNew ? nodes_inserted : nodes_removed, this, xNode);
+        xModel->broadcast(bNew ? BroadcastType::NodesInserted : BroadcastType::NodesRemoved, this,
+                          xNode);
     }
 }
 
