@@ -240,7 +240,7 @@ sal_uInt32 SvTreeList::Copy(SvTreeListEntry& rSrcEntry, SvTreeListEntry* pTarget
     m_bAbsPositionsValid = false;
 
     sal_uInt32 nCloneCount = 0;
-    SvTreeListEntry* pClonedEntry = Clone(&rSrcEntry, nCloneCount);
+    SvTreeListEntry* pClonedEntry = Clone(rSrcEntry, nCloneCount);
     m_nEntryCount += nCloneCount;
 
     SvTreeListEntries& rDst = pTargetParent->m_Children;
@@ -325,13 +325,13 @@ SvTreeListEntry* SvTreeList::CloneEntry( SvTreeListEntry* pSource ) const
     return pEntry;
 }
 
-SvTreeListEntry* SvTreeList::Clone( SvTreeListEntry* pEntry, sal_uInt32& nCloneCount ) const
+SvTreeListEntry* SvTreeList::Clone(SvTreeListEntry& rEntry, sal_uInt32& nCloneCount) const
 {
-    SvTreeListEntry* pClonedEntry = CloneEntry( pEntry );
+    SvTreeListEntry* pClonedEntry = CloneEntry(&rEntry);
     nCloneCount = 1;
-    if (!pEntry->m_Children.empty())
+    if (!rEntry.m_Children.empty())
         // Clone the child entries.
-        CloneChildren(pClonedEntry->m_Children, nCloneCount, pEntry->m_Children, *pClonedEntry);
+        CloneChildren(pClonedEntry->m_Children, nCloneCount, rEntry.m_Children, *pClonedEntry);
 
     return pClonedEntry;
 }

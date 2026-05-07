@@ -889,7 +889,7 @@ bool SvTreeListBox::CopySelection( SvTreeListBox* pSource, SvTreeListEntry* pTar
             if ( bClone )
             {
                 sal_uInt32 nCloneCount = 0;
-                pSourceEntry = m_pModel->Clone(pSourceEntry, nCloneCount);
+                pSourceEntry = m_pModel->Clone(*pSourceEntry, nCloneCount);
                 m_pModel->InsertTree(pSourceEntry, pNewParent, nInsertionPos);
             }
             else
@@ -942,7 +942,7 @@ bool SvTreeListBox::MoveSelectionCopyFallbackPossible( SvTreeListBox* pSource, S
             if ( bClone )
             {
                 sal_uInt32 nCloneCount = 0;
-                pSourceEntry = m_pModel->Clone(pSourceEntry, nCloneCount);
+                pSourceEntry = m_pModel->Clone(*pSourceEntry, nCloneCount);
                 m_pModel->InsertTree(pSourceEntry, pNewParent, nInsertionPos);
             }
             else

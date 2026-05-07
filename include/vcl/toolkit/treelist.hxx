@@ -184,7 +184,7 @@ public:
     // The Model calls the Clone Link to clone Entries.
     // Thus we do not need to derive from the Model if we derive from SvTreeListEntry.
     // The Handler needs to return a SvTreeListEntry*
-    SvTreeListEntry*    Clone( SvTreeListEntry* pEntry, sal_uInt32& nCloneCount ) const;
+    SvTreeListEntry* Clone(SvTreeListEntry& rEntry, sal_uInt32& nCloneCount) const;
     void                SetCloneLink( const Link<SvTreeListEntry*,SvTreeListEntry*>& rLink )
     {
         m_aCloneLink = rLink;
