@@ -319,7 +319,7 @@ void SvTreeList::InsertTree(SvTreeListEntry* pSrcEntry,
 SvTreeListEntry* SvTreeList::CloneEntry(SvTreeListEntry& rSource) const
 {
     if (m_aCloneLink.IsSet())
-        return m_aCloneLink.Call(&rSource);
+        return m_aCloneLink.Call(rSource);
     SvTreeListEntry* pEntry = new SvTreeListEntry;
     pEntry->Clone(&rSource);
     return pEntry;

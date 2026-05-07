@@ -460,9 +460,9 @@ void SvTreeListBox::Clear()
         m_pModel->Clear(); // Model calls SvTreeListBox::ModelHasCleared()
 }
 
-IMPL_LINK( SvTreeListBox, CloneHdl_Impl, SvTreeListEntry*, pEntry, SvTreeListEntry* )
+IMPL_LINK(SvTreeListBox, CloneHdl_Impl, SvTreeListEntry&, rEntry, SvTreeListEntry*)
 {
-    return CloneEntry(pEntry);
+    return CloneEntry(rEntry);
 }
 
 void SvTreeListBox::Insert(SvTreeListEntry* pEntry, SvTreeListEntry* pParent, sal_uInt32 nPos)
@@ -2030,17 +2030,18 @@ void SvTreeListBox::CheckButtonHdl()
 // leads to us _not_ calling SvTreeListEntry::Clone, but only its base class
 // SvTreeListEntry.
 
-
-SvTreeListEntry* SvTreeListBox::CloneEntry( SvTreeListEntry* pSource )
+SvTreeListEntry* SvTreeListBox::CloneEntry(SvTreeListEntry& rSource)
 {
     OUString aStr;
     Image aCollEntryBmp;
     Image aExpEntryBmp;
 
-    SvLBoxString* pStringItem = static_cast<SvLBoxString*>(pSource->GetFirstItem(SvLBoxItemType::String));
+    SvLBoxString* pStringItem
+        = static_cast<SvLBoxString*>(rSource.GetFirstItem(SvLBoxItemType::String));
     if( pStringItem )
         aStr = pStringItem->GetText();
-    SvLBoxContextBmp* pBmpItem = static_cast<SvLBoxContextBmp*>(pSource->GetFirstItem(SvLBoxItemType::ContextBmp));
+    SvLBoxContextBmp* pBmpItem
+        = static_cast<SvLBoxContextBmp*>(rSource.GetFirstItem(SvLBoxItemType::ContextBmp));
     if( pBmpItem )
     {
         aCollEntryBmp = pBmpItem->GetBitmap1( );
@@ -2048,9 +2049,9 @@ SvTreeListEntry* SvTreeListBox::CloneEntry( SvTreeListEntry* pSource )
     }
     SvTreeListEntry* pClone = new SvTreeListEntry;
     InitEntry(*pClone, aStr, aCollEntryBmp, aExpEntryBmp);
-    pClone->SvTreeListEntry::Clone( pSource );
-    pClone->EnableChildrenOnDemand( pSource->HasChildrenOnDemand() );
-    pClone->SetUserData( pSource->GetUserData() );
+    pClone->SvTreeListEntry::Clone(&rSource);
+    pClone->EnableChildrenOnDemand(rSource.HasChildrenOnDemand());
+    pClone->SetUserData(rSource.GetUserData());
 
     return pClone;
 }

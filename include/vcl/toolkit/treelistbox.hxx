@@ -281,7 +281,7 @@ private:
     DECL_DLLPRIVATE_LINK( CheckButtonClick, SvLBoxButtonData *, void );
     DECL_DLLPRIVATE_LINK( TextEditEndedHdl_Impl, SvInplaceEdit2&, void );
     // Handler that is called by TreeList to clone an Entry
-    DECL_DLLPRIVATE_LINK( CloneHdl_Impl, SvTreeListEntry*, SvTreeListEntry* );
+    DECL_DLLPRIVATE_LINK(CloneHdl_Impl, SvTreeListEntry&, SvTreeListEntry*);
 
     void ExpandListEntry(SvTreeListEntry* pParent);
     void CollapseListEntry(SvTreeListEntry* pParent);
@@ -539,7 +539,7 @@ public:
     virtual DragDropMode     NotifyStartDrag();
     virtual void             DragFinished( sal_Int8 nDropAction );
 
-    SvTreeListEntry*         CloneEntry( SvTreeListEntry* pSource );
+    SvTreeListEntry* CloneEntry(SvTreeListEntry& rSource);
 
     // Return value: TRISTATE_TRUE == Ok, TRISTATE_FALSE == Cancel, TRISTATE_INDET == Ok and Make visible moved entry
     TriState NotifyMoving(

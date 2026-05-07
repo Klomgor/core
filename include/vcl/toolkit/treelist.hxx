@@ -70,7 +70,7 @@ class UNLESS_MERGELIBS_MORE(VCL_DLLPUBLIC) SvTreeList final
     SvTreeListBox& mrOwnerListView;
     sal_uInt32 m_nEntryCount;
 
-    Link<SvTreeListEntry*, SvTreeListEntry*> m_aCloneLink;
+    Link<SvTreeListEntry&, SvTreeListEntry*> m_aCloneLink;
     Link<const SvSortData&, sal_Int32> m_aCompareLink;
     SvSortMode m_eSortMode;
 
@@ -185,7 +185,7 @@ public:
     // Thus we do not need to derive from the Model if we derive from SvTreeListEntry.
     // The Handler needs to return a SvTreeListEntry*
     SvTreeListEntry* Clone(SvTreeListEntry& rEntry, sal_uInt32& nCloneCount) const;
-    void                SetCloneLink( const Link<SvTreeListEntry*,SvTreeListEntry*>& rLink )
+    void SetCloneLink(const Link<SvTreeListEntry&, SvTreeListEntry*>& rLink)
     {
         m_aCloneLink = rLink;
     }
