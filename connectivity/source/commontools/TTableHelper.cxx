@@ -79,7 +79,7 @@ public:
 
         OUString sName;
         Event.Accessor  >>= sName;
-        if ( m_aRefNames.find(sName) != m_aRefNames.end() )
+        if ( m_aRefNames.contains(sName) )
             m_pComponent->refreshKeys();
     }
     virtual void SAL_CALL elementReplaced( const css::container::ContainerEvent& Event ) override
@@ -87,7 +87,7 @@ public:
         OUString sOldComposedName,sNewComposedName;
         Event.ReplacedElement   >>= sOldComposedName;
         Event.Accessor          >>= sNewComposedName;
-        if ( sOldComposedName != sNewComposedName && m_aRefNames.find(sOldComposedName) != m_aRefNames.end() )
+        if ( sOldComposedName != sNewComposedName && m_aRefNames.contains(sOldComposedName) )
             m_pComponent->refreshKeys();
     }
     // XEventListener
