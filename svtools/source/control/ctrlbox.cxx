@@ -1461,10 +1461,19 @@ namespace
     }
 }
 
-void SvtLineListBox::ImpGetLine( tools::Long nLine1, tools::Long nLine2, tools::Long nDistance,
-                            Color aColor1, Color aColor2, Color aColorDist,
-                            SvxBorderLineStyle nStyle, Bitmap& rBmp )
+Image SvtLineListBox::GetLineImage(const ImpLineListData& rLineListData)
 {
+    const StyleSettings& rSettings = Application::GetSettings().GetStyleSettings();
+    const Color aFieldColor = rSettings.GetFieldColor();
+
+    tools::Long nLine1 = rLineListData.GetLine1ForWidth(m_nWidth);
+    tools::Long nLine2 = rLineListData.GetLine2ForWidth(m_nWidth);
+    tools::Long nDistance = rLineListData.GetDistForWidth(m_nWidth);
+    const Color aColor1 = rLineListData.GetColorLine1(aColor);
+    const Color aColor2 = rLineListData.GetColorLine2(aColor);
+    const Color aColorDist = rLineListData.GetColorDist(aColor, aFieldColor);
+    const SvxBorderLineStyle nStyle = rLineListData.GetStyle();
+
     Size aSize(getPreviewSize(*m_xControl));
 
     // SourceUnit to Twips
@@ -1495,7 +1504,7 @@ void SvtLineListBox::ImpGetLine( tools::Long nLine1, tools::Long nLine2, tools::
         aSize.setHeight( nVirHeight );
     // negative width should not be drawn
     if ( aSize.Width() <= 0 )
-        return;
+        return {};
 
     Size aVirSize = aVirDev->LogicToPixel( aSize );
     if ( aVirDev->GetOutputSizePixel() != aVirSize )
@@ -1514,7 +1523,7 @@ void SvtLineListBox::ImpGetLine( tools::Long nLine1, tools::Long nLine2, tools::
         aVirDev->SetFillColor( aColor2 );
         svtools::DrawLine( *aVirDev, basegfx::B2DPoint( 0, y2 ), basegfx::B2DPoint( aSize.Width(), y2 ), n2, SvxBorderLineStyle::SOLID );
     }
-    rBmp = aVirDev->GetBitmap( Point(), Size( aSize.Width(), n1+nDist+n2 ) );
+    return Image(aVirDev->GetBitmap(Point(), Size(aSize.Width(), n1 + nDist + n2)));
 }
 
 SvtLineListBox::SvtLineListBox(std::unique_ptr<weld::MenuButton> pControl)
@@ -1623,25 +1632,15 @@ void SvtLineListBox::UpdateEntries()
     // Remove the old entries
     m_xLineSet->Clear();
 
-    const StyleSettings& rSettings = Application::GetSettings().GetStyleSettings();
-    Color aFieldColor = rSettings.GetFieldColor();
-
     // Add the new entries based on the defined width
     sal_uInt16 n = 0;
     sal_uInt16 nCount = m_vLineList.size( );
     while ( n < nCount )
     {
         auto& pData = m_vLineList[ n ];
-        Bitmap aBmp;
-        ImpGetLine( pData->GetLine1ForWidth( m_nWidth ),
-                pData->GetLine2ForWidth( m_nWidth ),
-                pData->GetDistForWidth( m_nWidth ),
-                pData->GetColorLine1(aColor),
-                pData->GetColorLine2(aColor),
-                pData->GetColorDist(aColor, aFieldColor),
-                pData->GetStyle(), aBmp );
+        const Image aLineImage = GetLineImage(*pData);
         sal_Int16 nItemId = static_cast<sal_Int16>(pData->GetStyle()) + 1;
-        m_xLineSet->InsertItem(nItemId, Image(aBmp), GetLineStyleName(pData->GetStyle()));
+        m_xLineSet->InsertItem(nItemId, aLineImage, GetLineStyleName(pData->GetStyle()));
         if (pData->GetStyle() == eSelected)
             m_xLineSet->SelectItem(nItemId);
         n++;

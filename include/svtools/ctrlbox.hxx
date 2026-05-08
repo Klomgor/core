@@ -252,10 +252,7 @@ public:
     virtual void    GrabFocus() override;
 
 private:
-
-    SVT_DLLPRIVATE void         ImpGetLine( tools::Long nLine1, tools::Long nLine2, tools::Long nDistance,
-                                    Color nColor1, Color nColor2, Color nColorDist,
-                                    SvxBorderLineStyle nStyle, Bitmap& rBmp );
+    SVT_DLLPRIVATE Image GetLineImage(const ImpLineListData& rLineListData);
 
     DECL_DLLPRIVATE_LINK(ValueSelectHdl, ValueSet*, void);
     DECL_DLLPRIVATE_LINK(ToggleHdl, weld::Toggleable&, void);
