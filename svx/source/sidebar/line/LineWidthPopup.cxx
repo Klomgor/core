@@ -50,15 +50,9 @@ LineWidthPopup::LineWidthPopup(weld::Widget* pParent, LinePropertyPanelBase& rPa
 {
     m_xVSWidth->SetStyle(m_xVSWidth->GetStyle() | WB_3DLOOK | WB_NO_DIRECTSELECT);
 
-    maStrUnits[0] = "0.5";
-    maStrUnits[1] = "0.8";
-    maStrUnits[2] = "1.0";
-    maStrUnits[3] = "1.5";
-    maStrUnits[4] = "2.3";
-    maStrUnits[5] = "3.0";
-    maStrUnits[6] = "4.5";
-    maStrUnits[7] = "6.0";
-    maStrUnits[8] = SvxResId(RID_SVXSTR_WIDTH_LAST_CUSTOM);
+    maStrUnits = { u"0.5"_ustr, u"0.8"_ustr, u"1.0"_ustr,
+                   u"1.5"_ustr, u"2.3"_ustr, u"3.0"_ustr,
+                   u"4.5"_ustr, u"6.0"_ustr, SvxResId(RID_SVXSTR_WIDTH_LAST_CUSTOM) };
 
     const LocaleDataWrapper& rLocaleWrapper(Application::GetSettings().GetLocaleDataWrapper());
     const sal_Unicode cSep = rLocaleWrapper.getNumDecimalSep()[0];
