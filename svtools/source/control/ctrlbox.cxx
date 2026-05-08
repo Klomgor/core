@@ -1676,7 +1676,10 @@ void SvtLineListBox::UpdatePreview()
     }
     else
     {
-        Image aImage(m_xLineSet->GetItemImage(m_xLineSet->GetSelectedItemId()));
+        const size_t nSelectedIndex = m_xLineSet->GetItemPos(m_xLineSet->GetSelectedItemId());
+        const Image aImage = nSelectedIndex != VALUESET_ITEM_NOTFOUND
+                                 ? GetLineImage(*m_vLineList.at(nSelectedIndex))
+                                 : Image();
         m_xControl->set_label(u""_ustr);
         const auto nPos = (aVirDev->GetOutputSizePixel().Height() - aImage.GetSizePixel().Height()) / 2;
         auto popIt = aVirDev->ScopedPush(vcl::PushFlags::MAPMODE);
