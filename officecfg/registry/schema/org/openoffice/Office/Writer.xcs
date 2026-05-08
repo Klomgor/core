@@ -4098,6 +4098,14 @@
             </info>
             <value>true</value>
           </prop>
+          <prop oor:name="EsperantoHats" oor:type="xs:boolean" oor:nillable="false">
+            <!-- UIHints: Tools  AutoCorrect/AutoFormat  Options - Replace x’s with circumflexes in Esperanto text -->
+            <info>
+              <desc>Specifies if x’s in Esperanto text should become circumflexes, for example “cxu” becomes “ĉu”.</desc>
+              <label>X to circumflex in Esperanto</label>
+            </info>
+            <value>true</value>
+          </prop>
           <prop oor:name="DelEmptyParagraphs" oor:type="xs:boolean" oor:nillable="false">
             <!-- UIHints: Tools  AutoCorrect/AutoFormat  Options  Remove blank paragraphs -->
             <info>

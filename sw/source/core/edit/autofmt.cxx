@@ -287,6 +287,7 @@ void SwAutoFormat::SetRedlineText_( sal_uInt16 nActionId )
         case STR_AUTOFMTREDL_TRANSLITERATE_RTL:
         case STR_AUTOFMTREDL_ITALIC:
         case STR_AUTOFMTREDL_STRIKETHROUGH:
+        case STR_AUTOFMTREDL_ESPERANTOHAT:
             nSeqNo = ++m_nRedlAutoFormatSeqId;
             break;
         }
@@ -1956,7 +1957,8 @@ void SwAutoFormat::AutoCorrect(TextFrameIndex nPos)
         !m_aFlags.bCapitalStartSentence && !m_aFlags.bCapitalStartWord &&
         !m_aFlags.bChgOrdinalNumber && !m_aFlags.bTransliterateRTL &&
         !m_aFlags.bChgToEnEmDash && !m_aFlags.bSetINetAttr &&
-        !m_aFlags.bChgWeightUnderl && !m_aFlags.bAddNonBrkSpace) )
+        !m_aFlags.bChgWeightUnderl && !m_aFlags.bAddNonBrkSpace &&
+        !m_aFlags.bEsperantoHats ) )
         return;
 
     const OUString* pText = &m_pCurTextFrame->GetText();
@@ -1966,7 +1968,7 @@ void SwAutoFormat::AutoCorrect(TextFrameIndex nPos)
     bool bGetLanguage = m_aFlags.bChgOrdinalNumber || m_aFlags.bTransliterateRTL ||
                         m_aFlags.bChgToEnEmDash || m_aFlags.bSetINetAttr ||
                         m_aFlags.bCapitalStartWord || m_aFlags.bCapitalStartSentence ||
-                        m_aFlags.bAddNonBrkSpace;
+                        m_aFlags.bAddNonBrkSpace || m_aFlags.bEsperantoHats;
 
     m_aDelPam.DeleteMark();
     *m_aDelPam.GetPoint() = m_pCurTextFrame->MapViewToModelPos(TextFrameIndex(0));
@@ -2286,6 +2288,21 @@ void SwAutoFormat::AutoCorrect(TextFrameIndex nPos)
             }
             else
             {
+                // convert X’s to circumflexes in Esperanto text
+                if( m_aFlags.bEsperantoHats && eLang == LANGUAGE_USER_ESPERANTO )
+                {
+                    SetRedlineText( STR_AUTOFMTREDL_ESPERANTOHAT );
+                    sal_Int32 nOldTextLength = pText->getLength();
+                    sal_Int32 nEnd = sal_Int32(nPos);
+                    pATst->FnAddEsperantoHats(aACorrDoc, *pText, sal_Int32(nSttPos), nEnd);
+                    // If red lining is being applied then any replacements will increase the length
+                    // of the text instead of reducing it because both the X version and the
+                    // circumflex version will appear in it.
+                    if( m_aFlags.bWithRedlining )
+                        nPos += TextFrameIndex(pText->getLength() - nOldTextLength);
+                    else
+                        nPos = TextFrameIndex(nEnd);
+                }
                 // two capital letters at the beginning of a word?
                 if( m_aFlags.bCapitalStartWord )
                 {
@@ -2920,7 +2937,7 @@ void SwEditShell::AutoFormatBySplitNode()
         if( pACorr && !pACorr->IsAutoCorrFlag( ACFlags::CapitalStartSentence | ACFlags::CapitalStartWord |
                                 ACFlags::AddNonBrkSpace | ACFlags::ChgOrdinalNumber | ACFlags::TransliterateRTL |
                                 ACFlags::ChgToEnEmDash | ACFlags::SetINetAttr | ACFlags::Autocorrect |
-                                ACFlags::SetDOIAttr ))
+                                ACFlags::SetDOIAttr | ACFlags::EsperantoHats ))
             pACorr = nullptr;
 
         if( pACorr )

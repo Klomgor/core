@@ -77,12 +77,13 @@ enum class ACFlags : sal_uInt32 {
     TransliterateRTL     = 0x00004000,   // Transliterate RTL text
     ChgAngleQuotes       = 0x00008000,   // >>, << -> angle quotes in some languages
     SetDOIAttr           = 0x00010000,   // Set DOIAttribute
+    EsperantoHats        = 0x00020000,   // Cxapelo -> ĉapelo
 
     ChgWordLstLoad       = 0x20000000,   // Replacement list loaded
     CplSttLstLoad        = 0x40000000,   // Exception list for Capital letters Start loaded
     WordStartLstLoad        = 0x80000000,   // Exception list for Word Start loaded
 };
-constexpr sal_uInt32 AC_OPTION_MASK = 0x1ffff;
+constexpr sal_uInt32 AC_OPTION_MASK = 0x3ffff;
 constexpr sal_uInt32 AC_LOAD_MASK = 0xe0000000;
 namespace o3tl {
     template<> struct typed_flags<ACFlags> : is_typed_flags<ACFlags, AC_LOAD_MASK | AC_OPTION_MASK>
@@ -488,6 +489,8 @@ public:
     bool FnCorrectCapsLock( SvxAutoCorrDoc&, const OUString&,
                             sal_Int32 nSttPos, sal_Int32 nEndPos,
                             LanguageType eLang );
+    void FnAddEsperantoHats( SvxAutoCorrDoc&, std::u16string_view, sal_Int32 nStartPos,
+                             sal_Int32& nEndPos );
 
     static ACFlags  GetDefaultFlags();
 

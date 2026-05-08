@@ -281,6 +281,7 @@ private:
     OUString        sOrdinal;
     OUString        sTransliterateRTL;
     OUString        sAngleQuotes;
+    OUString        sEsperantoHats;
 
     sal_UCS4    cSglStartQuote;
     sal_UCS4    cSglEndQuote;

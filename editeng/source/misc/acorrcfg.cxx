@@ -186,8 +186,9 @@ Sequence<OUString>  SvxBaseAutoCorrCfg::GetPropertyNames()
         u"TransliterateRTL"_ustr,                     // 18
         u"ChangeAngleQuotes"_ustr,                    // 19
         u"SetDOIAttribute"_ustr,                      // 20
+        u"EsperantoHats"_ustr,                        // 21
     };
-    const int nCount = 21;
+    const int nCount = 22;
     Sequence<OUString> aNames(nCount);
     OUString* pNames = aNames.getArray();
     for(int i = 0; i < nCount; i++)
@@ -299,6 +300,10 @@ void SvxBaseAutoCorrCfg::Load(bool bInit)
                 if (aValues[nProp] == true)
                     nFlags |= ACFlags::SetDOIAttr;
             break;//"SetDOIAttr",
+            case 21:
+                if (aValues[nProp] == true)
+                    nFlags |= ACFlags::EsperantoHats;
+            break;//"EsperantoHats"
         }
     }
     if( nFlags != ACFlags::NONE )
@@ -356,6 +361,7 @@ void SvxBaseAutoCorrCfg::ImplCommit()
          css::uno::Any(bool(nFlags & ACFlags::ChgAngleQuotes)),
             // "ChangeAngleQuotes"
          css::uno::Any(bool(nFlags & ACFlags::SetDOIAttr)), // "SetDOIAttribute"
+         css::uno::Any(bool(nFlags & ACFlags::EsperantoHats)), // "EsperantoHats"
         });
 }
 
@@ -418,8 +424,9 @@ Sequence<OUString>  SvxSwAutoCorrCfg::GetPropertyNames()
         u"Format/Option/SetDOIAttribute"_ustr,                                //47
         u"Format/ByInput/ApplyBulletsAfterSpace"_ustr,                        //48
         u"Format/Option/ReplaceStyle"_ustr,                                   //49
+        u"Format/Option/EsperantoHats"_ustr,                                  //50
     };
-    const int nCount = 50;
+    const int nCount = 51;
     Sequence<OUString> aNames(nCount);
     OUString* pNames = aNames.getArray();
     for(int i = 0; i < nCount; i++)
@@ -569,6 +576,7 @@ void SvxSwAutoCorrCfg::Load(bool bInit)
             case 47: rSwFlags.bSetDOIAttr = (aValues[nProp] == true); break; // "Format/Option/SetDOIAttribute",
             case 48: rSwFlags.bSetNumRuleAfterSpace = (aValues[nProp] == true); break; // "Format/ByInput/ApplyNumberingAfterSpace",
             case 49: rSwFlags.bReplaceStyles = (aValues[nProp] == true); break; // "Format/Option/ReplaceStyle",
+            case 50: rSwFlags.bEsperantoHats = (aValues[nProp] == true); break; // "Format/Option/EsperantoHats",
         }
     }
 }
@@ -674,6 +682,7 @@ void SvxSwAutoCorrCfg::ImplCommit()
          css::uno::Any(rSwFlags.bSetDOIAttr),
          css::uno::Any(rSwFlags.bSetNumRuleAfterSpace), // "Format/ByInput/ApplyNumberingAfterSpace"
          css::uno::Any(rSwFlags.bReplaceStyles), // "Format/Option/ReplaceStyle"
+         css::uno::Any(rSwFlags.bEsperantoHats), // "Format/Option/EsperantoHats"
         });
             // "Format/Option/SetDOIAttribute"
 }

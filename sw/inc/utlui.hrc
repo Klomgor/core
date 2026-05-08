@@ -53,6 +53,7 @@ const TranslateId RID_SHELLRES_AUTOFMTSTRS[] =
     NC_("RID_SHELLRES_AUTOFMTSTRS", "DOI citation recognition"),
     NC_("RID_SHELLRES_AUTOFMTSTRS", "Automatic /italic/"),
     NC_("RID_SHELLRES_AUTOFMTSTRS", "Automatic -strikethrough-"),
+    NC_("RID_SHELLRES_AUTOFMTSTRS", "Replace X with circumflex"),
 };
 
 #endif

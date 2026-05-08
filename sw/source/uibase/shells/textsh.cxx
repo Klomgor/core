@@ -173,7 +173,7 @@ void SwTextShell::ExecInsert(SfxRequest &rReq)
                     ACFlags::CapitalStartSentence | ACFlags::CapitalStartWord |
                     ACFlags::AddNonBrkSpace | ACFlags::ChgOrdinalNumber | ACFlags::TransliterateRTL |
                     ACFlags::ChgToEnEmDash | ACFlags::SetINetAttr | ACFlags::Autocorrect |
-                    ACFlags::SetDOIAttr ) )
+                    ACFlags::SetDOIAttr | ACFlags::EsperantoHats ) )
             {
                 rSh.AutoCorrect( *pACorr, cIns );
             }

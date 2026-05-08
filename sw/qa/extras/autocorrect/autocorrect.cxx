@@ -587,6 +587,40 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf162911_EmailAutolinkUndoCrash)
                                                          u"HyperLinkURL"_ustr));
 }
 
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, test_EsperantoHats)
+{
+    createSwDoc("eo.fodt");
+
+    emulateTyping(
+        u"ehxosxangxocxiujxauxde EHXOSXANGXOCXIUJXAUXDE xylophone exit LINUX linux euxska EUXROPO "
+        "UX cxu?");
+    CPPUNIT_ASSERT_EQUAL(
+        u"Eĥoŝanĝoĉiuĵaŭde EĤOŜANĜOĈIUĴAŬDE xylophone exit LINUX linux eŭska EŬROPO UX ĉu?"_ustr,
+        getParagraph(1)->getString());
+}
+
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, test_ApplyEsperantoHats)
+{
+    // Make sure that the esperanto hats aren’t applied for other languages.
+    createSwDoc("fr-FR.fodt");
+
+    emulateTyping(u"ehxosxangxocxiujxauxde?");
+    CPPUNIT_ASSERT_EQUAL(u"Ehxosxangxocxiujxauxde ?"_ustr, getParagraph(1)->getString());
+
+    dispatchCommand(mxComponent, u".uno:AutoFormatApply"_ustr, {});
+    CPPUNIT_ASSERT_EQUAL(u"Ehxosxangxocxiujxauxde ?"_ustr, getParagraph(1)->getString());
+
+    // Change the locale of the paragraph to Esperanto
+    css::lang::Locale sLocale(u"eo"_ustr, u""_ustr, u""_ustr);
+    css::uno::Reference<css::beans::XPropertySet> xPropSet(getParagraph(1),
+                                                           css::uno::UNO_QUERY_THROW);
+    xPropSet->setPropertyValue(u"CharLocale"_ustr, css::uno::Any(sLocale));
+
+    // Retry applying the autocorrection
+    dispatchCommand(mxComponent, u".uno:AutoFormatApply"_ustr, {});
+    CPPUNIT_ASSERT_EQUAL(u"Eĥoŝanĝoĉiuĵaŭde ?"_ustr, getParagraph(1)->getString());
+}
+
 CPPUNIT_PLUGIN_IMPLEMENT();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

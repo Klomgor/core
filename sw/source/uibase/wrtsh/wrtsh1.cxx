@@ -189,7 +189,7 @@ static SvxAutoCorrect* lcl_IsAutoCorr()
     if( pACorr && !pACorr->IsAutoCorrFlag( ACFlags::CapitalStartSentence | ACFlags::CapitalStartWord |
                             ACFlags::AddNonBrkSpace | ACFlags::ChgOrdinalNumber | ACFlags::TransliterateRTL |
                             ACFlags::ChgToEnEmDash | ACFlags::SetINetAttr | ACFlags::Autocorrect |
-                            ACFlags::SetDOIAttr ))
+                            ACFlags::SetDOIAttr | ACFlags::EsperantoHats ))
         pACorr = nullptr;
     return pACorr;
 }

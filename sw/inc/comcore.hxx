@@ -46,7 +46,8 @@
 #define STR_AUTOFMTREDL_DETECT_DOI              23
 #define STR_AUTOFMTREDL_ITALIC                  24
 #define STR_AUTOFMTREDL_STRIKETHROUGH           25
+#define STR_AUTOFMTREDL_ESPERANTOHAT            26
 // !!!!!!!!!!!!!!!!!!!!!!!!!!  always set the correct end !!!!!!!!!!!!
-#define STR_AUTOFMTREDL_END                     26
+#define STR_AUTOFMTREDL_END                     27
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

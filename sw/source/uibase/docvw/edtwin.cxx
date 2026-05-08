@@ -2668,7 +2668,7 @@ KEYINPUT_CHECKTABLE_INSDEL:
                                             ACFlags::ChgOrdinalNumber | ACFlags::AddNonBrkSpace |
                                             ACFlags::ChgToEnEmDash | ACFlags::SetINetAttr |
                                             ACFlags::Autocorrect | ACFlags::TransliterateRTL |
-                                            ACFlags::SetDOIAttr ) &&
+                                            ACFlags::SetDOIAttr | ACFlags::EsperantoHats ) &&
                     '\"' != aCh && '\'' != aCh && '*' != aCh && '_' != aCh
                     )
                 {

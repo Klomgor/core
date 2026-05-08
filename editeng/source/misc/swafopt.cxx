@@ -32,6 +32,7 @@ SvxSwAutoFormatFlags::SvxSwAutoFormatFlags()
     bChgOrdinalNumber =
     bTransliterateRTL =
     bChgAngleQuotes =
+    bEsperantoHats =
     bChgToEnEmDash =
     bChgWeightUnderl =
     bSetINetAttr =
