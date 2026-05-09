@@ -24,6 +24,8 @@
 #include <vcl/BitmapWriteAccess.hxx>
 #include <bitmap/bmpfast.hxx>
 
+#include <algorithm>
+
 BitmapWriteAccess::BitmapWriteAccess(Bitmap& rBitmap)
     : BitmapReadAccess(rBitmap, BitmapAccessMode::Write)
 {
@@ -47,7 +49,7 @@ void BitmapWriteAccess::CopyScanline(tools::Long nY, const BitmapReadAccess& rRe
     if ((GetScanlineFormat() == rReadAcc.GetScanlineFormat())
         && (GetScanlineSize() >= rReadAcc.GetScanlineSize()))
     {
-        memcpy(GetScanline(nY), rReadAcc.GetScanline(nY), rReadAcc.GetScanlineSize());
+        std::copy_n(rReadAcc.GetScanline(nY), rReadAcc.GetScanlineSize(), GetScanline(nY));
     }
     else
     {
@@ -78,7 +80,7 @@ void BitmapWriteAccess::CopyScanline(tools::Long nY, ConstScanline aSrcScanline,
         return;
 
     if (GetScanlineFormat() == eFormat)
-        memcpy(GetScanline(nY), aSrcScanline, nCount);
+        std::copy_n(aSrcScanline, nCount, GetScanline(nY));
     else
     {
         if (ImplFastCopyScanline(nY, *ImplGetBitmapBuffer(), aSrcScanline, nSrcScanlineFormat,
@@ -205,7 +207,7 @@ void BitmapWriteAccess::Erase(const Color& rColor)
     for (tools::Long nY = 1; nY <= nEndY; nY++)
     {
         Scanline pDestScanline = GetScanline(nY);
-        memcpy(pDestScanline, pFirstScanline, nScanlineSize);
+        std::copy_n(pFirstScanline, nScanlineSize, pDestScanline);
     }
 }
 

@@ -21,6 +21,7 @@
 #include <o3tl/enumarray.hxx>
 #include <vcl/BitmapColor.hxx>
 #include <rtl/crc.h>
+#include <algorithm>
 
 static BitmapChecksum scanlineChecksum(BitmapChecksum nCrc, const sal_uInt8* bits, int lineBitsCount, sal_uInt8 extraBitsMask)
 {
@@ -203,7 +204,7 @@ std::unique_ptr< sal_uInt8[] > SalBitmap::convertDataBitCount( const sal_uInt8* 
     if(type == BitConvert::A8 && bitCount == 8 && palette.IsGreyPalette8Bit())
     { // no actual data conversion
         for( int y = 0; y < height; ++y )
-            memcpy( data.get() + y * width, src + y * bytesPerRow, width );
+            std::copy_n(src + y * bytesPerRow, width, data.get() + y * width);
         return data;
     }
 

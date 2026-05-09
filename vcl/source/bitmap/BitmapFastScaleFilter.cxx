@@ -25,6 +25,8 @@
 
 #include <bitmap/BitmapFastScaleFilter.hxx>
 
+#include <algorithm>
+
 Bitmap BitmapFastScaleFilter::execute(Bitmap const& rBitmap) const
 {
     SAL_INFO("vcl.gdi", "BitmapFastScaleFilter::execute()");
@@ -86,8 +88,8 @@ Bitmap BitmapFastScaleFilter::execute(Bitmap const& rBitmap) const
 
                         while ((nActY < nNewHeight1) && (pLutY[nActY + 1] == nMapY))
                         {
-                            memcpy(pWriteAcc->GetScanline(nActY + 1), pWriteAcc->GetScanline(nActY),
-                                   nScanlineSize);
+                            std::copy_n(pWriteAcc->GetScanline(nActY), nScanlineSize,
+                                        pWriteAcc->GetScanline(nActY + 1));
                             nActY++;
                         }
                         nActY++;

@@ -142,9 +142,9 @@ void mirrorScanlines(Scanline scanline1, Scanline scanline2, tools::Long nWidth)
     sal_uInt8 tmp[byteCount];
     for (tools::Long i = 0; i < nWidth; ++i)
     {
-        memcpy(tmp, pos1, byteCount);
-        memcpy(pos1, pos2, byteCount);
-        memcpy(pos2, tmp, byteCount);
+        std::copy_n(pos1, byteCount, tmp);
+        std::copy_n(pos2, byteCount, pos1);
+        std::copy_n(tmp, byteCount, pos2);
         pos1 += byteCount;
         pos2 -= byteCount;
     }
@@ -220,9 +220,9 @@ bool Bitmap::Mirror(BmpMirrorFlags nMirrorFlags)
 
             for (tools::Long nY = 0, nOther = nHeight1; nY < nHeight_2; nY++, nOther--)
             {
-                memcpy(pBuffer.get(), pAcc->GetScanline(nY), nScanSize);
-                memcpy(pAcc->GetScanline(nY), pAcc->GetScanline(nOther), nScanSize);
-                memcpy(pAcc->GetScanline(nOther), pBuffer.get(), nScanSize);
+                std::copy_n(pAcc->GetScanline(nY), nScanSize, pBuffer.get());
+                std::copy_n(pAcc->GetScanline(nOther), nScanSize, pAcc->GetScanline(nY));
+                std::copy_n(pBuffer.get(), nScanSize, pAcc->GetScanline(nOther));
             }
 
             pAcc.reset();
