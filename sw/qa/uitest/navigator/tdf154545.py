@@ -14,7 +14,6 @@ from uitest.uihelper.common import get_state_as_dict
 class tdf154545(UITestCase):
 
     def test_tdf154545(self):
-        global selectionChangedResult
         with self.ui_test.create_doc_in_start_center("writer") as xDoc:
 
             # click on the bookmark name in the Navigator
