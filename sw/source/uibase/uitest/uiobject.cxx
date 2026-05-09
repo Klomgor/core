@@ -126,9 +126,8 @@ void SwEditWinUIObject::execute(const OUString& rAction,
         SfxViewFrame* pViewFrm = SfxViewFrame::Current();
         assert(pViewFrm && "SwEditWinUIObject::execute: no viewframe");
         pViewFrm->ShowChildWindow(SID_SIDEBAR);
-        if (rParameters.contains(u"PANEL"_ustr))
+        if (auto itr = rParameters.find(u"PANEL"_ustr); itr != rParameters.end())
         {
-            auto itr = rParameters.find(u"PANEL"_ustr);
             OUString aVal = itr->second;
             ::sfx2::sidebar::Sidebar::ShowPanel(aVal, pViewFrm->GetFrame().GetFrameInterface());
         }
@@ -175,8 +174,13 @@ void CommentUIObject::execute(const OUString& rAction,
     {
         if (rParameters.contains(u"FROM"_ustr) && rParameters.contains(u"TO"_ustr))
         {
-                tools::Long nMin = rParameters.find(u"FROM"_ustr)->second.toInt32();
-                tools::Long nMax = rParameters.find(u"TO"_ustr)->second.toInt32();
+                auto itrMin = rParameters.find(u"FROM"_ustr);
+                assert(itrMin != rParameters.end());
+                tools::Long nMin = itrMin->second.toInt32();
+                auto itrMax = rParameters.find(u"TO"_ustr);
+                assert(itrMax != rParameters.end());
+                tools::Long nMax = itrMax->second.toInt32();
+
                 ESelection aNewSelection( 0 , nMin, mxCommentUIObject->GetOutliner()->GetParagraphCount()-1, nMax );
                 mxCommentUIObject->GetOutlinerView()->SetSelection( aNewSelection );
         }
