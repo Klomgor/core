@@ -943,7 +943,7 @@ weld::MessageDialog* QtInstance::CreateMessageDialog(weld::Widget* pParent,
     SolarMutexGuard g;
     if (!IsMainThread())
     {
-        weld::MessageDialog* pDialog;
+        weld::MessageDialog* pDialog = nullptr;
         RunInMainThread([&] {
             pDialog = CreateMessageDialog(pParent, eMessageType, eButtonsType, rPrimaryMessage);
         });
