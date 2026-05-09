@@ -18,8 +18,8 @@ QtTreeViewItemDelegate::QtTreeViewItemDelegate(
     QObject* pParent, std::function<bool(const QModelIndex& rIndex)> aStartEditingFunction,
     std::function<bool(const QModelIndex& rIndex, const QString& rNewText)> aFinishEditingFunction)
     : QStyledItemDelegate(pParent)
-    , m_aStartEditingFunction(aStartEditingFunction)
-    , m_aFinishEditingFunction(aFinishEditingFunction)
+    , m_aStartEditingFunction(std::move(aStartEditingFunction))
+    , m_aFinishEditingFunction(std::move(aFinishEditingFunction))
 {
 }
 

@@ -39,12 +39,12 @@ public:
 
     void setFormatValueFunction(std::function<std::optional<QString>(double)> aFunction)
     {
-        m_aFormatValueFunction = aFunction;
+        m_aFormatValueFunction = std::move(aFunction);
     }
 
     void setParseTextFunction(std::function<TriState(const QString&, double*)> aFunction)
     {
-        m_aParseTextFunction = aFunction;
+        m_aParseTextFunction = std::move(aFunction);
     }
 };
 

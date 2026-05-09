@@ -227,7 +227,7 @@ void QtInstance::RunInMainThread(std::function<void()> func)
     {
         std::scoped_lock<std::mutex> g(pMutex->m_RunInMainMutex);
         assert(!pMutex->m_Closure);
-        pMutex->m_Closure = func;
+        pMutex->m_Closure = std::move(func);
         // unblock main thread in case it is blocked on condition
         pMutex->m_isWakeUpMain = true;
         pMutex->m_InMainCondition.notify_all();
