@@ -31,7 +31,7 @@ void QtInstanceRadioButton::do_set_active(bool bActive)
 bool QtInstanceRadioButton::get_active() const
 {
     SolarMutexGuard g;
-    bool bActive;
+    bool bActive = false;
     GetQtInstance().RunInMainThread([&] { bActive = m_pRadioButton->isChecked(); });
     return bActive;
 }

@@ -93,7 +93,7 @@ void QtInstanceComboBox::insert_separator(int nPos, const OUString&)
 int QtInstanceComboBox::get_count() const
 {
     SolarMutexGuard g;
-    int nCount;
+    int nCount = 0;
     GetQtInstance().RunInMainThread([&] { nCount = m_pComboBox->count(); });
     return nCount;
 }
@@ -114,7 +114,7 @@ void QtInstanceComboBox::clear()
 int QtInstanceComboBox::get_active() const
 {
     SolarMutexGuard g;
-    int nCurrentIndex;
+    int nCurrentIndex = 0;
     GetQtInstance().RunInMainThread([&] { nCurrentIndex = m_pComboBox->currentIndex(); });
     return nCurrentIndex;
 }
@@ -150,7 +150,7 @@ OUString QtInstanceComboBox::get_text(int nPos) const
 int QtInstanceComboBox::find_text(const OUString& rStr) const
 {
     SolarMutexGuard g;
-    int nIndex;
+    int nIndex = 0;
     GetQtInstance().RunInMainThread([&] { nIndex = m_pComboBox->findText(toQString(rStr)); });
     return nIndex;
 }
@@ -207,7 +207,7 @@ int QtInstanceComboBox::find_id(const OUString& rId) const
 {
     SolarMutexGuard g;
 
-    int nIndex;
+    int nIndex = 0;
     GetQtInstance().RunInMainThread([&] {
         QVariant aUserData = toQString(rId);
         nIndex = m_pComboBox->findData(aUserData);
@@ -225,7 +225,7 @@ bool QtInstanceComboBox::changed_by_direct_pick() const
 bool QtInstanceComboBox::has_entry() const
 {
     SolarMutexGuard g;
-    bool bEditable;
+    bool bEditable = false;
     GetQtInstance().RunInMainThread([&] { bEditable = m_pComboBox->isEditable(); });
     return bEditable;
 }

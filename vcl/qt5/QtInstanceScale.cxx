@@ -31,7 +31,7 @@ int QtInstanceScale::get_value() const
 {
     SolarMutexGuard g;
 
-    int nValue;
+    int nValue = 0;
     GetQtInstance().RunInMainThread([&] { nValue = m_pSlider->value(); });
 
     return nValue;

@@ -190,7 +190,7 @@ sal_Int16 SAL_CALL QtFilePicker::execute()
     QtInstance& rQtInstance = GetQtInstance();
     if (!rQtInstance.IsMainThread())
     {
-        sal_uInt16 ret;
+        sal_uInt16 ret = 0;
         rQtInstance.RunInMainThread([&ret, this]() { ret = execute(); });
         return ret;
     }

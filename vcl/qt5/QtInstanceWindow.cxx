@@ -97,7 +97,7 @@ Point QtInstanceWindow::get_position() const
 bool QtInstanceWindow::has_toplevel_focus() const
 {
     SolarMutexGuard g;
-    bool bFocus;
+    bool bFocus = false;
     GetQtInstance().RunInMainThread([&] { bFocus = QApplication::activeWindow() == getQWidget(); });
     return bFocus;
 }

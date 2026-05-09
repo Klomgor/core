@@ -54,7 +54,7 @@ int QtInstanceItemView::get_iter_index_in_parent(const weld::TreeIter& rIter) co
 {
     SolarMutexGuard g;
 
-    int nIndex;
+    int nIndex = 0;
     GetQtInstance().RunInMainThread([&] {
         const QModelIndex aIndex = modelIndex(rIter);
         nIndex = aIndex.row();

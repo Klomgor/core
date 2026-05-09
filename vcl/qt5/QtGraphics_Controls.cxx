@@ -754,7 +754,7 @@ bool QtGraphics_Controls::getNativeControlRegion(
     QtInstance& rQtInstance = GetQtInstance();
     if (!rQtInstance.IsMainThread())
     {
-        bool bRet;
+        bool bRet = false;
         rQtInstance.RunInMainThread([&]() {
             bRet = getNativeControlRegion(type, part, controlRegion, controlState, val, rCaption,
                                           nativeBoundingRegion, nativeContentRegion);

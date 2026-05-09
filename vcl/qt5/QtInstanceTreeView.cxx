@@ -591,7 +591,7 @@ int QtInstanceTreeView::n_children() const
 {
     SolarMutexGuard g;
 
-    int nChildCount;
+    int nChildCount = 0;
     GetQtInstance().RunInMainThread([&] {
         const QModelIndex aRootIndex
             = m_pModel->mapFromSource(m_pSourceModel->invisibleRootItem()->index());

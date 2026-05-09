@@ -41,7 +41,7 @@ int QtInstanceGrid::get_child_left_attach(weld::Widget& rWidget) const
 {
     SolarMutexGuard g;
 
-    int nCol;
+    int nCol = 0;
     GetQtInstance().RunInMainThread([&] {
         QWidget* pWidget = dynamic_cast<QtInstanceWidget&>(rWidget).getQWidget();
         assert(pWidget && pWidget->parentWidget() == getQWidget()
@@ -97,7 +97,7 @@ int QtInstanceGrid::get_child_top_attach(weld::Widget& rWidget) const
 {
     SolarMutexGuard g;
 
-    int nRow;
+    int nRow = 0;
     GetQtInstance().RunInMainThread([&] {
         QWidget* pWidget = dynamic_cast<QtInstanceWidget&>(rWidget).getQWidget();
         assert(pWidget && pWidget->parentWidget() == getQWidget()

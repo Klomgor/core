@@ -65,7 +65,7 @@ bool QtInstanceDialog::runAsync(std::shared_ptr<Dialog> const& rxSelf,
     QtInstance& rQtInstance = GetQtInstance();
     if (!rQtInstance.IsMainThread())
     {
-        bool bRet;
+        bool bRet = false;
         rQtInstance.RunInMainThread([&] { bRet = runAsync(rxSelf, func); });
         return bRet;
     }

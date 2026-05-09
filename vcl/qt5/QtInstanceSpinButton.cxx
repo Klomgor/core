@@ -70,7 +70,7 @@ double QtInstanceSpinButton::get_floating_point_value() const
 {
     SolarMutexGuard g;
 
-    double fValue;
+    double fValue = 0.0;
     GetQtInstance().RunInMainThread([&] { fValue = m_pSpinBox->value(); });
     return fValue;
 }
