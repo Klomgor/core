@@ -10619,8 +10619,13 @@ bool PDFWriterImpl::setStructureAttribute( enum PDFWriter::StructAttribute eAttr
             case PDFWriter::Scope:
                 if (eVal == PDFWriter::Row || eVal == PDFWriter::Column || eVal == PDFWriter::Both)
                 {
+                    // The Scope attribute on TH was introduced in PDF 1.5, but it
+                    // is also mandatory for PDF/UA-1 (clause 7.5). When PDF/UA is
+                    // requested with a PDF/A-1 (PDF 1.4) target, accept Scope so
+                    // the resulting file can satisfy the PDF/UA structure rules.
                     if (eType == StructElement::TableHeader
-                        && PDFWriter::PDFVersion::PDF_1_5 <= m_aContext.Version)
+                        && (PDFWriter::PDFVersion::PDF_1_5 <= m_aContext.Version
+                            || m_aContext.UniversalAccessibilityCompliance))
                     {
                         bInsert = true;
                     }

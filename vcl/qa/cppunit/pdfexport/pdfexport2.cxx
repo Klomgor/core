@@ -2015,6 +2015,85 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest2, testTdf149140)
     CPPUNIT_ASSERT_EQUAL(6, nTH);
 }
 
+CPPUNIT_TEST_FIXTURE(PdfExportTest2, testTdf153935)
+{
+    // tdf#153935: PDF/A-1 + PDF/UA must still emit /Scope on TH and /Tabs on
+    // pages with annotations. Without the fix the version check rejects them
+    // because PDF/A-1 forces PDF version 1.4 (< 1.5).
+    uno::Sequence<beans::PropertyValue> aFilterData(comphelper::InitPropertySequence({
+        { "PDFUACompliance", uno::Any(true) },
+        { "SelectPdfVersion", uno::Any(sal_Int32(1)) }, // PDF/A-1b
+    }));
+    comphelper::SequenceAsHashMap aMediaDescriptor;
+    aMediaDescriptor[u"FilterData"_ustr] <<= aFilterData;
+    vcl::filter::PDFDocument aDocument;
+    loadFromFile(u"TableTH_test_LibreOfficeWriter7.3.3_HeaderRow-HeadersInTopRow.fodt");
+    save(TestFilter::PDF_WRITER, aMediaDescriptor.getAsConstPropertyValueList());
+
+    SvFileStream aStream(maTempFile.GetURL(), StreamMode::READ);
+    CPPUNIT_ASSERT(aDocument.Read(aStream));
+
+    // Each page should carry /Tabs /S (clause 7.18.3) regardless of PDF version
+    // when PDF/UA is requested, since PDF/UA mandates structural tab order on
+    // any page that holds annotations.
+    int nPagesWithTabs(0);
+    for (const auto& rDocElement : aDocument.GetElements())
+    {
+        auto pObject = dynamic_cast<vcl::filter::PDFObjectElement*>(rDocElement.get());
+        if (!pObject)
+            continue;
+        auto pType = dynamic_cast<vcl::filter::PDFNameElement*>(pObject->Lookup("Type"_ostr));
+        if (!pType || pType->GetValue() != "Page")
+            continue;
+        auto pTabs = dynamic_cast<vcl::filter::PDFNameElement*>(pObject->Lookup("Tabs"_ostr));
+        CPPUNIT_ASSERT_MESSAGE("Page is missing /Tabs entry under PDF/A-1 + PDF/UA",
+                               pTabs != nullptr);
+        CPPUNIT_ASSERT_EQUAL("S"_ostr, pTabs->GetValue());
+        ++nPagesWithTabs;
+    }
+    CPPUNIT_ASSERT_GREATEREQUAL(1, nPagesWithTabs);
+
+    // Each TH structure element must carry the /Scope /Column attribute under
+    // the /Table owner (clause 7.5), regardless of PDF version when PDF/UA is
+    // requested. The fixture has 6 TH cells.
+    int nTH(0);
+    for (const auto& rDocElement : aDocument.GetElements())
+    {
+        auto pObject = dynamic_cast<vcl::filter::PDFObjectElement*>(rDocElement.get());
+        if (!pObject)
+            continue;
+        auto pType = dynamic_cast<vcl::filter::PDFNameElement*>(pObject->Lookup("Type"_ostr));
+        if (!pType || pType->GetValue() != "StructElem")
+            continue;
+        auto pS = dynamic_cast<vcl::filter::PDFNameElement*>(pObject->Lookup("S"_ostr));
+        if (!pS || pS->GetValue() != "TH")
+            continue;
+        int nTable(0);
+        auto pAttrs = dynamic_cast<vcl::filter::PDFArrayElement*>(pObject->Lookup("A"_ostr));
+        CPPUNIT_ASSERT(pAttrs != nullptr);
+        for (const auto& rAttrRef : pAttrs->GetElements())
+        {
+            auto pAttrDict = dynamic_cast<vcl::filter::PDFDictionaryElement*>(rAttrRef);
+            CPPUNIT_ASSERT(pAttrDict != nullptr);
+            auto pOwner
+                = dynamic_cast<vcl::filter::PDFNameElement*>(pAttrDict->LookupElement("O"_ostr));
+            CPPUNIT_ASSERT(pOwner != nullptr);
+            if (pOwner->GetValue() == "Table")
+            {
+                auto pScope = dynamic_cast<vcl::filter::PDFNameElement*>(
+                    pAttrDict->LookupElement("Scope"_ostr));
+                CPPUNIT_ASSERT_MESSAGE("TH is missing /Scope attribute under PDF/A-1 + PDF/UA",
+                                       pScope != nullptr);
+                CPPUNIT_ASSERT_EQUAL("Column"_ostr, pScope->GetValue());
+                ++nTable;
+            }
+        }
+        CPPUNIT_ASSERT_EQUAL(1, nTable);
+        ++nTH;
+    }
+    CPPUNIT_ASSERT_EQUAL(6, nTH);
+}
+
 CPPUNIT_TEST_FIXTURE(PdfExportTest2, testNestedSection)
 {
     // Enable PDF/UA

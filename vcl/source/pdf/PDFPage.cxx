@@ -179,11 +179,15 @@ bool PDFPage::emit(sal_Int32 nParentObject )
         }
         aLine.append( "]\n" );
     }
-    if (PDFWriter::PDFVersion::PDF_1_5 <= m_pWriter->m_aContext.Version)
+    if (PDFWriter::PDFVersion::PDF_1_5 <= m_pWriter->m_aContext.Version
+        || m_pWriter->m_aContext.UniversalAccessibilityCompliance)
     {
         // ISO 14289-1:2014, Clause: 7.18.3 requires it if there are annotations
         // but Adobe Acrobat Pro complains if it is ever missing so just
         // write it always.
+        // PDF/UA-1 mandates structural tab order on every page that holds
+        // annotations, so emit /Tabs /S even when targeting PDF 1.4 (PDF/A-1)
+        // when PDF/UA compliance is also requested.
         aLine.append( "/Tabs/S\n" );
     }
     if( !m_aMCIDParents.empty() )
