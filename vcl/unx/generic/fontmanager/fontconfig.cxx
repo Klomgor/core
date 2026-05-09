@@ -751,7 +751,7 @@ void PrintFontManager::countFontconfigFonts()
             if (isPreviouslyDuplicateOrObsoleted(pFSet, i))
             {
                 FcChar8* file = nullptr;
-                FcPatternGetString(pFSet->fonts[i], FC_FILE, 0, &file);
+                (void)FcPatternGetString(pFSet->fonts[i], FC_FILE, 0, &file);
                 SAL_INFO("vcl.fonts.detail", "Ditching " << file << " as duplicate/obsolete");
                 continue;
             }
