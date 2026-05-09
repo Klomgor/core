@@ -184,6 +184,7 @@ css::uno::Sequence<OUString> SAL_CALL QtDragSource::getSupportedServiceNames()
 
 QtDropTarget::QtDropTarget()
     : m_nDropAction(datatransfer::dnd::DNDConstants::ACTION_NONE)
+    , m_bDropSuccessful(false)
 {
 }
 

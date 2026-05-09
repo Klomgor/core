@@ -73,6 +73,7 @@ QtFrame::QtFrame(QtFrame* pParent, SalFrameStyleFlags nStyle)
     , m_bDefaultPos(true)
     , m_bFullScreen(false)
     , m_bFullScreenSpanAll(false)
+    , m_nRestoreScreen(0)
 #if CHECK_ANY_QT_USING_X11
     , m_nKeyModifiers(ModKeyFlags::NONE)
 #endif
