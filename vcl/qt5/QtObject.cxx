@@ -31,6 +31,7 @@
 
 QtObject::QtObject(QtFrame* pParent, bool bShow)
     : m_pParent(pParent)
+    , m_pQWindow(nullptr)
     , m_pQWidget(nullptr)
     , m_bForwardKey(false)
 {
