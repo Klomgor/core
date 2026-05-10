@@ -2254,8 +2254,7 @@ Public Function Reduce(Optional ByVal Module As Variant _
 &apos;&apos;&apos;	The script must be written in Basic.
 &apos;&apos;&apos;	Reduce() returns the value returned by the last iteration.
 &apos;&apos;&apos;		Module: a Basic object referring either to a module, or to an instance of a Basic class.
-&apos;&apos;&apos;		Method: the method to execute, as a string
-&apos;&apos;&apos;			When Module is a ScriptForge object, Method may also be a property (get).
+&apos;&apos;&apos;		Method: the method to execute, as a string. The method must have two arguments.
 &apos;&apos;&apos;		Params: a 1D array where each item represents the argument to pass for a given iteration.
 &apos;&apos;&apos;		InitialValue: when present, the first argument of the first iteration.
 &apos;&apos;&apos;	Return:

@@ -18,7 +18,7 @@ Option Private Module
 
 REM ===================================================================== GLOBALS
 
-Global _SF_		As Variant		&apos;	SF_Root (Basic) object)
+Global _SF_		As Variant		&apos;	SF_Root (Basic) class singleton
 
 &apos;&apos;&apos;	ScriptForge version
 Const SF_Version = &quot;26.8&quot;
@@ -413,6 +413,11 @@ Dim oDefaultContext As Object
 					Set .Introspection = CreateUnoService(&quot;com.sun.star.beans.Introspection&quot;)
 				End If
 				Set _GetUNOService = .Introspection
+			Case &quot;Invocation&quot;
+				If IsEmpty(.Invocation) Or IsNull(.Invocation) Then
+					Set .Invocation = CreateUnoService(&quot;com.sun.star.script.Invocation&quot;)
+				End If
+				Set _GetUNOService = .Invocation
 			Case &quot;LocaleData&quot;
 				If IsEmpty(.LocaleData) Or IsNull(.LocaleData) Then
 					Set .LocaleData = CreateUnoService(&quot;com.sun.star.i18n.LocaleData&quot;)
@@ -746,7 +751,7 @@ Public Function _Validate(Optional ByRef pvArgument As Variant _
 &apos;&apos;&apos;		pvTypes: array of allowed VarTypes
 &apos;&apos;&apos;		pvValues: array of allowed values
 &apos;&apos;&apos;		pvCaseSensitive: when True the comparison between strings is done case-sensitively
-&apos;&apos;&apos;		pvObjectType: mandatory Basic class
+&apos;&apos;&apos;		pvObjectType: ScriptForge class, may be &quot;ANY&quot;
 &apos;&apos;&apos;	Return: True if validation OK
 &apos;&apos;&apos;			Otherwise an error is raised
 &apos;&apos;&apos;	Exceptions:
@@ -786,10 +791,9 @@ Try:
 		End If
 		&apos;	Check instance types
 		If bValid And Len(pvObjectType) &gt; 0 And iVarType = V_OBJECT Then
-			&apos;Set oArgument = pvArgument
 			Set oObjectDescriptor = SF_Utils._VarTypeObj(pvArgument)
 			bValid = ( oObjectDescriptor.iVarType = V_SFOBJECT )
-			If bValid Then bValid = ( oObjectDescriptor.sObjectType = pvObjectType )
+			If bValid And pvObjectType &lt;&gt; &quot;ANY&quot; Then bValid = ( oObjectDescriptor.sObjectType = pvObjectType )
 		End If
 	End If
 
@@ -1102,10 +1106,12 @@ Try:
 				If .sObjectType = cstBasicClass Then
 					bUno = False
 					&apos;	Try if the Basic object has an ObjectType property
-					If Left(oValue.Name, 3) = &quot;SF_&quot; Then
+					On Local Error GoTo NotSF	&apos;If Left(oValue.Name, 3) = &quot;SF_&quot; Then
 						.sObjectType = oValue.ObjectType
 						.sServiceName = oValue.ServiceName
-					End If
+					&apos;End If
+			NotSF:
+					On Local Error GoTo 0
 				End If
 				&apos;	Derive the return value from the object type
 				Select Case True

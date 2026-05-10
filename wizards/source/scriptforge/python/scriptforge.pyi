@@ -1869,30 +1869,6 @@ class SFScriptForge:
                 """
             ...
 
-        def GetRangeFromCalc(self, filename: FILE, range: RANGE):
-	        """
-	            Extract the content of a range of adjacent cells stored in a Calc file. The file may be open
-	            or closed. If the file is open in the actual LibreOffice session, its actual content will be read.
-	            Otherwise, the content will be read from the file on disk.
-	                Args
-	                    ``filename``: the full file name, given in ``FileSystem.FileNaming`` notation.
-
-	                    ``range``: either
-	                        - "sheet.cells", where "sheet" is the mandatory sheet name, eventually surrounded with
-	                        single quotes when it contains special characters, and "cells" is the single cell
-	                        or the range of cells to be considered, in A1 notation with or without dollar signs
-
-	                        - a defined name at document-global level.
-	                Note
-	                    Current selection shortcuts ("~") are forbidden in this context.
-	                Returns
-	                    Either a scalar, or a tuple when the range is located in a single row or column,
-	                    or a tuple of tuples. The returned values are either strings or numbers. No dates, booleans, ...
-	                    To convert doubles to dates, use the ``basic.CDate()`` method.
-	                    Empty cells are returned as empty strings.
-	            """
-	        ...
-
         def GetPDFExportOptions(self) -> DICTIONARY:
             """
                 Returns the current PDF export settings defined in the ``PDF Options`` dialog, which can be accessed
@@ -1900,6 +1876,64 @@ class SFScriptForge:
                     Returns
                         A ``Dictionary`` object wherein each key represents an export option and the corresponding
                         value is the current PDF export setting.
+                """
+            ...
+
+        def GetPropertyByName(self,
+                              basicobject: SERVICE,
+                              propertyname: str,
+                              arg: Any = ...,
+                              ) -> Any:
+            """
+                Return the actual value of the given property related to the given ``ScriptForge`` service instance.
+                    Args
+                        ``basicobject``: an instance of a class implemented in the Basic world.
+
+                        ``propertyname``: the name of the property, as a ProperCased string.
+
+                        ``arg``: some properties require an argument.
+                    Returns
+                        The actual value of the property.
+                """
+            ...
+
+        def GetRangeFromCalc(self, filename: FILE, range: RANGE):
+            """
+                Extract the content of a range of adjacent cells stored in a Calc file. The file may be open
+                or closed. If the file is open in the actual LibreOffice session, its actual content will be read.
+                Otherwise, the content will be read from the file on disk.
+                    Args
+                        ``filename``: the full file name, given in ``FileSystem.FileNaming`` notation.
+
+                        ``range``: either
+                            - "sheet.cells", where "sheet" is the mandatory sheet name, eventually surrounded with
+                            single quotes when it contains special characters, and "cells" is the single cell
+                            or the range of cells to be considered, in A1 notation with or without dollar signs
+
+                            - a defined name at document-global level.
+                    Note
+                        Current selection shortcuts ("~") are forbidden in this context.
+                    Returns
+                        Either a scalar, or a tuple when the range is located in a single row or column,
+                        or a tuple of tuples. The returned values are either strings or numbers. No dates, booleans, ...
+                        To convert doubles to dates, use the ``basic.CDate()`` method.
+                        Empty cells are returned as empty strings.
+                """
+            ...
+
+        def GetUnoProperty(self,
+                              unoobject: UNO,
+                              propertyname: str,
+                              ) -> Any:
+            """
+                Return the actual value of the given property related to the given ``UNO`` object.
+                    Args
+                        ``unoobject``: the.considered ``UNO`` object.
+
+                        ``propertyname``: the name of the property, as a string.
+                    Returns
+                        The actual value of the property or None if the method failed to find the property
+                        or to catch its value.
                 """
             ...
 

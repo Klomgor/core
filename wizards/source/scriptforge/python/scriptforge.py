@@ -380,7 +380,7 @@ class ScriptForge(object, metaclass = _Singleton):
                 pass
             elif returntuple[cstClass] == cls.objDICT:
                 dico = CreateScriptService('ScriptForge.Dictionary')
-                if not isinstance(returnvalue, uno.ByteSequence):   # if array not empty
+                if len(returnvalue) > 0:   # if array not empty
                     dico.ImportFromPropertyValues(returnvalue, overwrite = True)
                 return dico
             else:
@@ -393,10 +393,10 @@ class ScriptForge(object, metaclass = _Singleton):
                 if subcls is not None:
                     return subcls(returnvalue, returntuple[cstType], returntuple[cstClass], returntuple[cstName])
         elif returntuple[cstVarType] >= cls.V_ARRAY:
-            # Intercept empty array
-            if isinstance(returnvalue, uno.ByteSequence):
-                return ()
-            if flag & SFServices.flgDateRet == SFServices.flgDateRet:  # Bits comparison
+            # Ignore empty array
+            if len(returnvalue) == 0:
+                pass
+            elif flag & SFServices.flgDateRet == SFServices.flgDateRet:  # Bits comparison
                 # Intercept all UNO dates in the 1D or 2D array
                 if isinstance(returnvalue[0], tuple):   # tuple of tuples
                     arr = []
@@ -647,7 +647,7 @@ class SFServices(object):
             """
         if self.serviceimplementation == 'basic':
             # Conventionally properties starting with X (and only them) may return a UNO object
-            calltype = self.vbGet + (self.flgUno if propertyname[0] == 'X' else 0)
+            calltype = self.vbGet + self.flgDateRet + (self.flgUno if propertyname[0] == 'X' else 0)
             if arg is None:
                 return self.EXEC(self.objectreference, calltype, propertyname)
             else:  # There are a few cases (Calc ...) where GetProperty accepts an argument
@@ -1575,11 +1575,28 @@ class SFScriptForge:
         def ExecutePythonScript(cls, scope = '', script = '', *args):
             return cls.SIMPLEEXEC(scope + '#' + script, *args)
 
+        def GetPDFExportOptions(self):
+            return self.ExecMethod(self.vbMethod, 'GetPDFExportOptions')
+
+        def GetPropertyByName(self, basicobject, propertyname, arg = None):
+            if isinstance(basicobject, SFServices) is False:
+                return None
+            if basicobject.serviceimplementation == 'basic':
+                # Conventionally properties starting with X (and only them) may return a UNO object
+                calltype = (self.vbMethod + self.flgObject + self.flgDateRet +
+                            (self.flgUno if propertyname[0] == 'X' else 0))
+                if arg is None:
+                    return self.ExecMethod(calltype, 'GetPropertyByName', basicobject.objectreference, propertyname)
+                else:  # There are a few cases (Calc ...) where GetProperty accepts an argument
+                    return self.ExecMethod(calltype, 'GetPropertyByName',
+                                           basicobject.objectreference, propertyname, arg)
+            return None
+
         def GetRangeFromCalc(self, filename, range):
             return self.ExecMethod(self.vbMethod, 'GetRangeFromCalc', filename, range)
 
-        def GetPDFExportOptions(self):
-            return self.ExecMethod(self.vbMethod, 'GetPDFExportOptions')
+        def GetUnoProperty(self, unoobject, propertyname):
+            return self.ExecMethod(self.vbMethod, 'GetUnoProperty', unoobject, propertyname)
 
         def HasUnoMethod(self, unoobject, methodname):
             return self.ExecMethod(self.vbMethod, 'HasUnoMethod', unoobject, methodname)

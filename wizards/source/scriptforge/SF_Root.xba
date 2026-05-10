@@ -71,6 +71,7 @@ Private CharacterClass		As Object	&apos; com.sun.star.i18n.CharacterClassificati
 Private FileAccess			As Object	&apos; com.sun.star.ucb.SimpleFileAccess
 Private FilterFactory		As Object	&apos; com.sun.star.document.FilterFactory
 Private URLTransformer		As Object	&apos; com.sun.star.util.URLTransformer
+Private Invocation			As Object	&apos; com.sun.star.script.Invocation
 Private Introspection		As Object	&apos; com.sun.star.beans.Introspection
 Private BrowseNodeFactory	As Object	&apos; com.sun.star.script.browse.BrowseNodeFactory
 Private DatabaseContext		As Object	&apos; com.sun.star.sdb.DatabaseContext
@@ -142,6 +143,7 @@ Private Sub Class_Initialize()
 	Set FileAccess = Nothing
 	Set FilterFactory = Nothing
 	Set URLTransformer = Nothing
+	Set Invocation = Nothing
 	Set Introspection = Nothing
 	FileSystemNaming = &quot;ANY&quot;
 	PythonHelper = &quot;ScriptForgeHelper.py&quot;
@@ -659,12 +661,12 @@ Try:
 									&amp;	&quot;%4: An identifier\n&quot; _
 									&amp;	&quot;%5: A string&quot; _
 					)
-	&apos;	SF_Session.ExecuteBasicScript
+	&apos;	SF_Session.ExecuteBasicScript/ExecutePythonScript
 			.AddText(	Context := &quot;SCRIPTEXEC&quot; _
-						, MsgId := &quot;An exception occurred during the execution of the Basic script.\n&quot; _
+						, MsgId := &quot;An exception occurred during the execution of the script.\n&quot; _
 									&amp; &quot;Cause: %3\n&quot; _
 									&amp; &quot;« %1 » = %2&quot; _
-						, Comment :=	&quot;SF_Session.ExecuteBasicScript error message\n&quot; _
+						, Comment :=	&quot;SF_Session.ExecuteBasicScript/ExecutePythonScript error message\n&quot; _
 									&amp;	&quot;%1: An identifier\n&quot; _
 									&amp;	&quot;%2: A string\n&quot; _
 									&amp;	&quot;%3: A (long) string&quot; _
