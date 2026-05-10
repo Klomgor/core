@@ -85,6 +85,8 @@ void VBAMacroTest::testMacro(std::u16string_view aFileName, const OUString& rScr
         if (!sFileUrl.isEmpty())
             osl::File::remove(sFileUrl);
     }
+
+    Scheduler::ProcessEventsToIdle();
 }
 
 CPPUNIT_TEST_FIXTURE(VBAMacroTest, testSimpleCopyAndPaste)
