@@ -109,6 +109,15 @@ Sub verify_testIsMissingCompatible()
     TestUtil.AssertEqual(TestOptArrayByRefByVal(, aB), IsMissingA, "TestOptArrayByRefByVal(, B)")
     TestUtil.AssertEqual(TestOptArrayByRefByVal(aA, aB), IsMissingNone, "TestOptArrayByRefByVal(A, B)")
 
+    ' tdf#143706 - optionals with named arguments (:= syntax)
+    ' Without the fix in place, this test would have failed with:
+    ' - Expected: 0  (IsMissingA)
+    ' - Actual  : -1 (IsMissingNone)
+    TestUtil.AssertEqual(TestOptVariant(B := 456), IsMissingA, "TestOptVariant(B := 456)")
+    TestUtil.AssertEqual(TestOptVariant(A := 123), IsMissingNone, "TestOptVariant(A := 123)")
+    TestUtil.AssertEqual(TestOptVariant(A := 123, B := 456), IsMissingNone, "TestOptVariant(A := 123, B := 456)")
+    TestUtil.AssertEqual(TestOptVariant(B := 456, A := 123), IsMissingNone, "TestOptVariant(B := 456, A := 123)")
+
     Exit Sub
 errorHandler:
     TestUtil.ReportErrorHandler("verify_testIsMissingCompatible", Err, Error$, Erl)

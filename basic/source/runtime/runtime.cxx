@@ -3923,6 +3923,27 @@ void SbiRuntime::SetupArgs( SbxVariable* p, sal_uInt32 nOp1 )
                     }
                     pArg->Put(pVar, nCurPar++);
                 }
+                // tdf#143706 - mark skipped named optional parameters as missing/empty
+                SbxMethod* pSbxMeth = dynamic_cast<SbxMethod*>(p);
+                const bool bIsRuntimeFunction = pSbxMeth && pSbxMeth->IsRuntimeFunction();
+                for (sal_uInt32 j = 1; j < pArg->Count(); j++)
+                {
+                    if (!pArg->GetRef(j))
+                    {
+                        SbxVariableRef xVar;
+                        if (bIsRuntimeFunction)
+                            xVar = new SbxVariable(SbxEMPTY);
+                        else
+                        {
+                            // Same as in SbiRuntime::StepEMPTY(), because the compiler does not
+                            // generate a StepEMPTY for StepPARAM when there is no COMMA token
+                            xVar = new SbxVariable(SbxVARIANT);
+                            xVar->PutErr(448);
+                            SetIsMissing(xVar.get());
+                        }
+                        pArg->Put(xVar.get(), j);
+                    }
+                }
                 refArgv = pArg;
             }
         }
