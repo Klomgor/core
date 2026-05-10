@@ -26,9 +26,6 @@ class tdf167023(UITestCase):
 
         with self.ui_test.load_empty_file("impress") as document:
 
-            xDoc = self.xUITest.getTopFocusWindow()
-            xEditWin = xDoc.getChild("impress_win")
-
             # tdf#167018: Without the fix in place, this test would have crashed here
             self.xUITest.executeCommand(".uno:Paste")
 

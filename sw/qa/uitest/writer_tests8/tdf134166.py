@@ -41,8 +41,6 @@ def GetCommandStatus(xContext, xModel, url):
 class tdf134166(UITestCase):
     def test_tdf134166(self):
         with self.ui_test.load_file(get_url_for_data_file("tdf134166.fodt")) as document:
-            xWriterDoc = self.xUITest.getTopFocusWindow()
-            xWriterEdit = xWriterDoc.getChild("writer_edit")
 
             # Document should open with LTR page
             self.assertEqual(0, document.StyleFamilies.PageStyles.Standard.WritingMode);

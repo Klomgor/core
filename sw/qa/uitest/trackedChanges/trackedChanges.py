@@ -611,8 +611,6 @@ class trackedchanges(UITestCase):
     def test_accept_all_deletes_all_redlines(self):
         # Given a document with overlapping changes:
         with self.ui_test.load_file(get_url_for_data_file("accept-all-overlap.docx")) as document:
-            xWriterDoc = self.xUITest.getTopFocusWindow()
-            xWriterEdit = xWriterDoc.getChild("writer_edit")
 
             # When accepting all changes using the manage changes dialog:
             with self.ui_test.execute_modeless_dialog_through_command(".uno:AcceptTrackedChanges", close_button="close") as xTrackDlg:
@@ -628,8 +626,6 @@ class trackedchanges(UITestCase):
     def test_reject_all_deletes_all_redlines(self):
         # Given a document with overlapping changes:
         with self.ui_test.load_file(get_url_for_data_file("reject-all-overlap.docx")) as document:
-            xWriterDoc = self.xUITest.getTopFocusWindow()
-            xWriterEdit = xWriterDoc.getChild("writer_edit")
 
             # When rejecting all changes using the manage changes dialog:
             with self.ui_test.execute_modeless_dialog_through_command(".uno:AcceptTrackedChanges", close_button="close") as xTrackDlg:
