@@ -352,7 +352,7 @@ ContextHandlerRef Transform2DContext::onCreateContext( sal_Int32 aElementToken, 
 
                     if (!aXfrmCenter.equal(aPresetCenter))
                     {
-                        double fAngleRad = basegfx::deg2rad(nAngleDiff / 60000.0);
+                        double fAngleRad = basegfx::deg2rad<60000>(nAngleDiff);
                         basegfx::B2DHomMatrix aRotMatrix(
                             basegfx::utils::createRotateAroundPoint(aPresetCenter, -fAngleRad));
                         basegfx::B2DPoint aNewCenter(aRotMatrix * aXfrmCenter);
