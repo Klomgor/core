@@ -743,7 +743,7 @@ void PrintFontManager::countFontconfigFonts()
             if (bMinimalFontset)
             {
                 FcChar8* family = nullptr;
-                FcPatternGetString(pFSet->fonts[i], FC_FAMILY, 0, &family);
+                (void)FcPatternGetString(pFSet->fonts[i], FC_FAMILY, 0, &family);
                 if (family && strncmp(reinterpret_cast<char*>(family), "Liberation", strlen("Liberation")))
                     continue;
             }
