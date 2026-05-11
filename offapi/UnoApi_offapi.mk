@@ -45,6 +45,7 @@ $(eval $(call gb_UnoApi_add_idlfiles_nohdl,offapi,com/sun/star/awt,\
 	ContainerWindowProvider \
 	DialogProvider \
 	DialogProvider2 \
+	FontVariations \
 	MenuBar \
 	Pointer \
 	PopupMenu \
@@ -1678,6 +1679,7 @@ $(eval $(call gb_UnoApi_add_idlfiles,offapi,com/sun/star/awt,\
 	FocusChangeReason \
 	FocusEvent \
 	FontDescriptor \
+	FontVariationAxis \
 	FontEmphasisMark \
 	FontFamily \
 	FontPitch \
@@ -1780,6 +1782,7 @@ $(eval $(call gb_UnoApi_add_idlfiles,offapi,com/sun/star/awt,\
 	XFont \
 	XFont2 \
 	XFontMappingUse \
+	XFontVariations \
 	XFontMappingUseItem \
 	XGraphics \
 	XGraphics2 \

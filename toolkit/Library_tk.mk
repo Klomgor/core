@@ -59,6 +59,7 @@ $(eval $(call gb_Library_add_exception_objects,tk,\
     toolkit/source/awt/vclxcontainer \
     toolkit/source/awt/vclxdevice \
     toolkit/source/awt/vclxfont \
+    toolkit/source/awt/vclxfontvariations \
     toolkit/source/awt/vclxgraphics \
     toolkit/source/awt/vclxmenu \
     toolkit/source/awt/vclxpointer \

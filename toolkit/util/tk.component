@@ -342,6 +342,10 @@
     <service name="com.sun.star.awt.UnoControlTimeField"/>
     <service name="stardiv.vcl.control.TimeField"/>
   </implementation>
+  <implementation name="stardiv.Toolkit.VCLXFontVariations"
+      constructor="stardiv_Toolkit_VCLXFontVariations_get_implementation">
+    <service name="com.sun.star.awt.FontVariations"/>
+  </implementation>
   <implementation name="stardiv.Toolkit.VCLXMenuBar"
       constructor="stardiv_Toolkit_VCLXMenuBar_get_implementation">
     <service name="com.sun.star.awt.MenuBar"/>

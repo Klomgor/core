@@ -12,6 +12,7 @@ $(eval $(call gb_CppunitTest_CppunitTest,toolkit))
 $(eval $(call gb_CppunitTest_add_exception_objects,toolkit, \
 	toolkit/qa/cppunit/Dialog \
 	toolkit/qa/cppunit/EventContainer \
+	toolkit/qa/cppunit/FontVariations \
 	toolkit/qa/cppunit/UnitConversion \
 ))
 
@@ -43,6 +44,8 @@ $(eval $(call gb_CppunitTest_use_ure,toolkit))
 $(eval $(call gb_CppunitTest_use_configuration,toolkit))
 
 $(eval $(call gb_CppunitTest_use_vcl,toolkit))
+
+$(eval $(call gb_CppunitTest_use_more_fonts,toolkit))
 
 $(eval $(call gb_CppunitTest_use_components,toolkit,\
 	comphelper/util/comphelp \
