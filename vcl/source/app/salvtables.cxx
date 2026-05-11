@@ -4190,35 +4190,35 @@ OUString SalInstanceTreeView::get_text(SvTreeListEntry* pEntry, int col) const
     return static_cast<SvLBoxString&>(rItem).GetText();
 }
 
-void SalInstanceTreeView::set_text(SvTreeListEntry* pEntry, const OUString& rText, int col)
+void SalInstanceTreeView::set_text(SvTreeListEntry& rEntry, const OUString& rText, int col)
 {
     if (col == -1)
     {
-        m_xTreeView->SetEntryText(pEntry, rText);
+        m_xTreeView->SetEntryText(&rEntry, rText);
         return;
     }
 
     col = to_internal_model(col);
 
     // blank out missing entries
-    for (int i = pEntry->ItemCount(); i < col; ++i)
-        AddStringItem(pEntry, u""_ustr, i - 1);
+    for (int i = rEntry.ItemCount(); i < col; ++i)
+        AddStringItem(&rEntry, u""_ustr, i - 1);
 
-    if (static_cast<size_t>(col) == pEntry->ItemCount())
+    if (static_cast<size_t>(col) == rEntry.ItemCount())
     {
-        AddStringItem(pEntry, rText, col - 1);
-        SvViewDataEntry* pViewData = m_xTreeView->GetViewDataEntry(pEntry);
-        m_xTreeView->InitViewData(pViewData, pEntry);
+        AddStringItem(&rEntry, rText, col - 1);
+        SvViewDataEntry* pViewData = m_xTreeView->GetViewDataEntry(&rEntry);
+        m_xTreeView->InitViewData(pViewData, &rEntry);
     }
     else
     {
-        assert(col >= 0 && o3tl::make_unsigned(col) < pEntry->ItemCount());
-        SvLBoxItem& rItem = pEntry->GetItem(col);
+        assert(col >= 0 && o3tl::make_unsigned(col) < rEntry.ItemCount());
+        SvLBoxItem& rItem = rEntry.GetItem(col);
         assert(dynamic_cast<SvLBoxString*>(&rItem));
         static_cast<SvLBoxString&>(rItem).SetText(rText);
     }
 
-    InvalidateModelEntry(pEntry);
+    InvalidateModelEntry(&rEntry);
 }
 
 void SalInstanceTreeView::set_sensitive(SvTreeListEntry* pEntry, bool bSensitive, int col)
@@ -4569,7 +4569,8 @@ OUString SalInstanceTreeView::get_text(const weld::TreeIter& rIter, int col) con
 void SalInstanceTreeView::set_text(const weld::TreeIter& rIter, const OUString& rText, int col)
 {
     const SalInstanceTreeIter& rVclIter = static_cast<const SalInstanceTreeIter&>(rIter);
-    set_text(rVclIter.iter, rText, col);
+    assert(rVclIter.iter && "Invalid iter");
+    set_text(*rVclIter.iter, rText, col);
 }
 
 void SalInstanceTreeView::enable_drag_source(rtl::Reference<TransferDataContainer>& rHelper,

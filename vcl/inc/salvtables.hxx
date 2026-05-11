@@ -1677,7 +1677,7 @@ public:
 
     OUString get_text(SvTreeListEntry* pEntry, int col) const;
 
-    void set_text(SvTreeListEntry* pEntry, const OUString& rText, int col);
+    void set_text(SvTreeListEntry& rEntry, const OUString& rText, int col);
 
     using SalInstanceWidget::set_sensitive;
     using SalInstanceWidget::get_sensitive;
