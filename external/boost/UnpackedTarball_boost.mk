@@ -26,8 +26,6 @@ boost_patches += clang-cl.patch.0
 boost_patches += boost_1_63_0.undef.warning.patch.1
 boost_patches += windows-no-utf8-locales.patch.0
 
-boost_patches += msvc2017.patch.0
-
 boost_patches += boost-ios.patch.0
 
 boost_patches += boost.file_iterator.sharing_win.patch
