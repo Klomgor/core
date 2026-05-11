@@ -1597,7 +1597,7 @@ protected:
                    const VirtualDevice* pImageSurface, bool bChildrenOnDemand, weld::TreeIter* pRet,
                    bool bIsSeparator);
 
-    void update_checkbutton_column_width(SvTreeListEntry* pEntry);
+    void update_checkbutton_column_width(SvTreeListEntry& rEntry);
 
     void InvalidateModelEntry(SvTreeListEntry* pEntry);
 

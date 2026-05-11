@@ -3706,11 +3706,11 @@ void SalInstanceTreeView::do_insert(const weld::TreeIter* pParent, int pos, cons
     }
 }
 
-void SalInstanceTreeView::update_checkbutton_column_width(SvTreeListEntry* pEntry)
+void SalInstanceTreeView::update_checkbutton_column_width(SvTreeListEntry& rEntry)
 {
-    SvViewDataEntry* pViewData = m_xTreeView->GetViewDataEntry(pEntry);
-    m_xTreeView->InitViewData(pViewData, pEntry);
-    m_xTreeView->CheckBoxInserted(pEntry);
+    SvViewDataEntry* pViewData = m_xTreeView->GetViewDataEntry(&rEntry);
+    m_xTreeView->InitViewData(pViewData, &rEntry);
+    m_xTreeView->CheckBoxInserted(&rEntry);
 }
 
 void SalInstanceTreeView::InvalidateModelEntry(SvTreeListEntry* pEntry)
@@ -3728,7 +3728,7 @@ void SalInstanceTreeView::do_set_toggle(SvTreeListEntry& rEntry, TriState eState
     {
         SvLBoxButtonData* pData = m_bTogglesAsRadio ? &m_aRadioButtonData : &m_aCheckButtonData;
         rEntry.ReplaceItem(std::make_unique<SvLBoxButton>(pData), 0);
-        update_checkbutton_column_width(&rEntry);
+        update_checkbutton_column_width(rEntry);
     }
     SvLBoxItem& rItem = rEntry.GetItem(col);
     assert(dynamic_cast<SvLBoxButton*>(&rItem));
@@ -3794,7 +3794,7 @@ void SalInstanceTreeView::set_toggle(SvTreeListEntry& rEntry, TriState eState, i
     {
         SvLBoxButtonData* pData = m_bTogglesAsRadio ? &m_aRadioButtonData : &m_aCheckButtonData;
         rEntry.AddItem(std::make_unique<SvLBoxButton>(pData));
-        update_checkbutton_column_width(&rEntry);
+        update_checkbutton_column_width(rEntry);
     }
 
     do_set_toggle(rEntry, eState, col);
