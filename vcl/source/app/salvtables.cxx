@@ -3720,17 +3720,17 @@ void SalInstanceTreeView::InvalidateModelEntry(SvTreeListEntry* pEntry)
     m_xTreeView->ModelHasEntryInvalidated(pEntry);
 }
 
-void SalInstanceTreeView::do_set_toggle(SvTreeListEntry* pEntry, TriState eState, int col)
+void SalInstanceTreeView::do_set_toggle(SvTreeListEntry& rEntry, TriState eState, int col)
 {
-    assert(col >= 0 && o3tl::make_unsigned(col) < pEntry->ItemCount());
+    assert(col >= 0 && o3tl::make_unsigned(col) < rEntry.ItemCount());
     // if it's the placeholder to allow a blank column, replace it now
-    if (pEntry->GetItem(col).GetType() != SvLBoxItemType::Button)
+    if (rEntry.GetItem(col).GetType() != SvLBoxItemType::Button)
     {
         SvLBoxButtonData* pData = m_bTogglesAsRadio ? &m_aRadioButtonData : &m_aCheckButtonData;
-        pEntry->ReplaceItem(std::make_unique<SvLBoxButton>(pData), 0);
-        update_checkbutton_column_width(pEntry);
+        rEntry.ReplaceItem(std::make_unique<SvLBoxButton>(pData), 0);
+        update_checkbutton_column_width(&rEntry);
     }
-    SvLBoxItem& rItem = pEntry->GetItem(col);
+    SvLBoxItem& rItem = rEntry.GetItem(col);
     assert(dynamic_cast<SvLBoxButton*>(&rItem));
     switch (eState)
     {
@@ -3745,7 +3745,7 @@ void SalInstanceTreeView::do_set_toggle(SvTreeListEntry* pEntry, TriState eState
             break;
     }
 
-    InvalidateModelEntry(pEntry);
+    InvalidateModelEntry(&rEntry);
 }
 
 TriState SalInstanceTreeView::do_get_toggle(SvTreeListEntry* pEntry, int col)
@@ -3780,7 +3780,7 @@ void SalInstanceTreeView::set_toggle(SvTreeListEntry& rEntry, TriState eState, i
     if (col == -1)
     {
         assert(m_xTreeView->m_nTreeFlags & SvTreeFlags::CHKBTN);
-        do_set_toggle(&rEntry, eState, 0);
+        do_set_toggle(rEntry, eState, 0);
         return;
     }
 
@@ -3797,7 +3797,7 @@ void SalInstanceTreeView::set_toggle(SvTreeListEntry& rEntry, TriState eState, i
         update_checkbutton_column_width(&rEntry);
     }
 
-    do_set_toggle(&rEntry, eState, col);
+    do_set_toggle(rEntry, eState, col);
 }
 
 bool SalInstanceTreeView::get_text_emphasis(SvTreeListEntry* pEntry, int col) const
