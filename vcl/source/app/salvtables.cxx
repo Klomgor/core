@@ -3775,29 +3775,29 @@ TriState SalInstanceTreeView::get_toggle(SvTreeListEntry* pEntry, int col) const
     return do_get_toggle(pEntry, col);
 }
 
-void SalInstanceTreeView::set_toggle(SvTreeListEntry* pEntry, TriState eState, int col)
+void SalInstanceTreeView::set_toggle(SvTreeListEntry& rEntry, TriState eState, int col)
 {
     if (col == -1)
     {
         assert(m_xTreeView->m_nTreeFlags & SvTreeFlags::CHKBTN);
-        do_set_toggle(pEntry, eState, 0);
+        do_set_toggle(&rEntry, eState, 0);
         return;
     }
 
     col = to_internal_model(col);
 
     // blank out missing entries
-    for (int i = pEntry->ItemCount(); i < col; ++i)
-        AddStringItem(pEntry, u""_ustr, i - 1);
+    for (int i = rEntry.ItemCount(); i < col; ++i)
+        AddStringItem(&rEntry, u""_ustr, i - 1);
 
-    if (static_cast<size_t>(col) == pEntry->ItemCount())
+    if (static_cast<size_t>(col) == rEntry.ItemCount())
     {
         SvLBoxButtonData* pData = m_bTogglesAsRadio ? &m_aRadioButtonData : &m_aCheckButtonData;
-        pEntry->AddItem(std::make_unique<SvLBoxButton>(pData));
-        update_checkbutton_column_width(pEntry);
+        rEntry.AddItem(std::make_unique<SvLBoxButton>(pData));
+        update_checkbutton_column_width(&rEntry);
     }
 
-    do_set_toggle(pEntry, eState, col);
+    do_set_toggle(&rEntry, eState, col);
 }
 
 bool SalInstanceTreeView::get_text_emphasis(SvTreeListEntry* pEntry, int col) const
@@ -4301,7 +4301,8 @@ void SalInstanceTreeView::enable_toggle_buttons(weld::ColumnToggleType eType)
 void SalInstanceTreeView::set_toggle(const weld::TreeIter& rIter, TriState eState, int col)
 {
     const SalInstanceTreeIter& rVclIter = static_cast<const SalInstanceTreeIter&>(rIter);
-    set_toggle(rVclIter.iter, eState, col);
+    assert(rVclIter.iter && "Invalid iter");
+    set_toggle(*rVclIter.iter, eState, col);
 }
 
 void SalInstanceTreeView::set_clicks_to_toggle(int nToggleBehavior)
