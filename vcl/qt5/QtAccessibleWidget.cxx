@@ -260,18 +260,18 @@ QAccessible::Relation lcl_matchUnoRelation(AccessibleRelationType eRelationType)
 }
 
 void lcl_appendRelation(QVector<QPair<QAccessibleInterface*, QAccessible::Relation>>* relations,
-                        AccessibleRelation aRelation, QAccessible::Relation match)
+                        AccessibleRelation& rRelation, QAccessible::Relation match)
 {
-    QAccessible::Relation aQRelation = lcl_matchUnoRelation(aRelation.RelationType);
+    QAccessible::Relation aQRelation = lcl_matchUnoRelation(rRelation.RelationType);
     // skip in case there's no Qt relation matching the filter
     if (!(aQRelation & match))
         return;
 
-    sal_uInt32 nTargetCount = aRelation.TargetSet.getLength();
+    sal_uInt32 nTargetCount = rRelation.TargetSet.getLength();
 
     for (sal_uInt32 i = 0; i < nTargetCount; i++)
     {
-        Reference<XAccessible> xAccessible = aRelation.TargetSet[i];
+        Reference<XAccessible> xAccessible = rRelation.TargetSet[i];
         relations->append(
             { QAccessible::queryAccessibleInterface(QtAccessibleRegistry::getQObject(xAccessible)),
               aQRelation });
