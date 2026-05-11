@@ -2599,7 +2599,7 @@ void XclExpLinkManagerImpl8::SaveXml( XclExpXmlStream& rStrm )
             continue;
         // InsertExtName may push_back via getExternalFileId and pUrl then
         // becomes invalidated, which is ok on first loop, but on the next
-        // its a potential crash
+        // it's a potential crash
         const OUString aUrl = *pUrl;
         for (const OUString& rName : rNames)
         {
