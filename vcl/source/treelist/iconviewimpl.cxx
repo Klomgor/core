@@ -575,7 +575,7 @@ bool IconViewImpl::KeyInput( const KeyEvent& rKEvt )
             do
             {
                 pNewCursor = m_rView.PrevVisible(pNewCursor);
-            } while( pNewCursor && !IsSelectable(pNewCursor) );
+            } while (pNewCursor && !IsSelectable(*pNewCursor));
 
             // if there is no next entry, take the current one
             // this ensures that in case of _one_ entry in the list, this entry is selected when pressing
@@ -597,7 +597,7 @@ bool IconViewImpl::KeyInput( const KeyEvent& rKEvt )
             do
             {
                 pNewCursor = m_rView.NextVisible(pNewCursor);
-            } while( pNewCursor && !IsSelectable(pNewCursor) );
+            } while (pNewCursor && !IsSelectable(*pNewCursor));
 
             // if there is no next entry, take the current one
             // this ensures that in case of _one_ entry in the list, this entry is selected when pressing
@@ -699,7 +699,7 @@ bool IconViewImpl::KeyInput( const KeyEvent& rKEvt )
         {
             pNewCursor = m_rView.GetModel()->Last();
 
-            while( pNewCursor && !IsSelectable(pNewCursor) )
+            while (pNewCursor && !IsSelectable(*pNewCursor))
             {
                 pNewCursor = m_rView.PrevVisible(pNewCursor);
             }

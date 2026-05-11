@@ -2049,7 +2049,7 @@ void SvImpLBox::MouseMove( const MouseEvent& rMEvt)
             pEntry = GetEntry(aPos);
         if (!pEntry)
             m_rView.SelectAll(false);
-        else if (!m_rView.IsSelected(pEntry) && IsSelectable(pEntry))
+        else if (!m_rView.IsSelected(pEntry) && IsSelectable(*pEntry))
         {
             m_rView.mbSelectingByHover = true;
             m_rView.Select(pEntry);
@@ -2138,7 +2138,7 @@ bool SvImpLBox::KeyInput( const KeyEvent& rKEvt)
             do
             {
                 pNewCursor = m_rView.PrevVisible(pNewCursor);
-            } while( pNewCursor && !IsSelectable(pNewCursor) );
+            } while (pNewCursor && !IsSelectable(*pNewCursor));
 
             // if there is no next entry, take the current one
             // this ensures that in case of _one_ entry in the list, this entry is selected when pressing
@@ -2160,7 +2160,7 @@ bool SvImpLBox::KeyInput( const KeyEvent& rKEvt)
             do
             {
                 pNewCursor = m_rView.NextVisible(pNewCursor);
-            } while( pNewCursor && !IsSelectable(pNewCursor) );
+            } while (pNewCursor && !IsSelectable(*pNewCursor));
 
             // if there is no next entry, take the current one
             // this ensures that in case of _one_ entry in the list, this entry is selected when pressing
@@ -2262,7 +2262,7 @@ bool SvImpLBox::KeyInput( const KeyEvent& rKEvt)
             {
                 pNewCursor = m_rView.PrevVisible(m_pCursor, nDelta);
 
-                while( nDelta && pNewCursor && !IsSelectable(pNewCursor) )
+                while (nDelta && pNewCursor && !IsSelectable(*pNewCursor))
                 {
                     pNewCursor = m_rView.NextVisible(pNewCursor);
                     nDelta--;
@@ -2290,7 +2290,7 @@ bool SvImpLBox::KeyInput( const KeyEvent& rKEvt)
             {
                 pNewCursor = m_rView.NextVisible(m_pCursor, nDelta);
 
-                while( nDelta && pNewCursor && !IsSelectable(pNewCursor) )
+                while (nDelta && pNewCursor && !IsSelectable(*pNewCursor))
                 {
                     pNewCursor = m_rView.PrevVisible(pNewCursor);
                     nDelta--;
@@ -2442,7 +2442,7 @@ bool SvImpLBox::KeyInput( const KeyEvent& rKEvt)
         case KEY_HOME :
             pNewCursor = m_rView.GetModel()->First();
 
-            while( pNewCursor && !IsSelectable(pNewCursor) )
+            while (pNewCursor && !IsSelectable(*pNewCursor))
             {
                 pNewCursor = m_rView.NextVisible(pNewCursor);
             }
@@ -2462,7 +2462,7 @@ bool SvImpLBox::KeyInput( const KeyEvent& rKEvt)
         case KEY_END :
             pNewCursor = m_rView.GetModel()->Last();
 
-            while( pNewCursor && !IsSelectable(pNewCursor) )
+            while (pNewCursor && !IsSelectable(*pNewCursor))
             {
                 pNewCursor = m_rView.PrevVisible(pNewCursor);
             }
@@ -3125,18 +3125,10 @@ void SvImpLBox::CallEventListeners( VclEventId nEvent, void* pData )
     m_rView.CallImplEventListeners(nEvent, pData);
 }
 
-
-bool SvImpLBox::IsSelectable( const SvTreeListEntry* pEntry ) const
+bool SvImpLBox::IsSelectable(const SvTreeListEntry& rEntry) const
 {
-    if( pEntry )
-    {
-        SvViewDataEntry* pViewDataNewCur = m_rView.GetViewDataEntry(pEntry);
-        return (pViewDataNewCur == nullptr) || pViewDataNewCur->IsSelectable();
-    }
-    else
-    {
-        return false;
-    }
+    SvViewDataEntry* pViewDataNewCur = m_rView.GetViewDataEntry(&rEntry);
+    return (pViewDataNewCur == nullptr) || pViewDataNewCur->IsSelectable();
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
