@@ -155,7 +155,10 @@ void ScaleTabPage::EnableControls()
     {
         //transport value from one to other control
         if( bWasDateAxis )
-            lcl_setValue( *m_xFmtFldStepMain, static_cast<double>(m_xMt_MainDateStep->get_value()) );
+        {
+            double nValue(static_cast<double>(m_xMt_MainDateStep->get_value()) / weld::SpinButton::Power10(m_xMt_MainDateStep->get_digits()));
+            lcl_setValue( *m_xFmtFldStepMain, nValue );
+        }
         else
             m_xMt_MainDateStep->set_value(m_xFmtFldStepMain->GetFormatter().GetValue());
     }
