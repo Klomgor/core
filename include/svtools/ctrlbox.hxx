@@ -253,6 +253,7 @@ public:
 
 private:
     SVT_DLLPRIVATE Image GetLineImage(const ImpLineListData& rLineListData);
+    SVT_DLLPRIVATE ScopedVclPtr<VirtualDevice> GetLineImage(const size_t nIndex);
 
     DECL_DLLPRIVATE_LINK(ValueSelectHdl, ValueSet*, void);
     DECL_DLLPRIVATE_LINK(ToggleHdl, weld::Toggleable&, void);

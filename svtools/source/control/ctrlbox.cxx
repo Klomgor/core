@@ -1658,6 +1658,24 @@ void SvtLineListBox::HandleEntrySelection()
         m_xControl->set_active(false);
 }
 
+ScopedVclPtr<VirtualDevice> SvtLineListBox::GetLineImage(const size_t nIndex)
+{
+    ScopedVclPtr<VirtualDevice> pVDev = VclPtr<VirtualDevice>::Create();
+    pVDev->SetOutputSizePixel(getPreviewSize(*m_xControl));
+
+    const Image aImage = nIndex != VALUESET_ITEM_NOTFOUND
+                             ? GetLineImage(*m_vLineList.at(nIndex))
+                             : Image();
+    const auto nPos = (pVDev->GetOutputSizePixel().Height() - aImage.GetSizePixel().Height()) / 2;
+    pVDev->SetMapMode(MapMode(MapUnit::MapPixel));
+    const StyleSettings& rSettings = Application::GetSettings().GetStyleSettings();
+    pVDev->SetBackground(rSettings.GetFieldColor());
+    pVDev->Erase();
+    pVDev->DrawImage(Point(0, nPos), aImage);
+
+    return pVDev;
+}
+
 void SvtLineListBox::UpdatePreview()
 {
     SvxBorderLineStyle eStyle = GetSelectEntryStyle();
@@ -1678,18 +1696,9 @@ void SvtLineListBox::UpdatePreview()
     else
     {
         const size_t nSelectedIndex = m_xLineSet->GetItemPos(m_xLineSet->GetSelectedItemId());
-        const Image aImage = nSelectedIndex != VALUESET_ITEM_NOTFOUND
-                                 ? GetLineImage(*m_vLineList.at(nSelectedIndex))
-                                 : Image();
+        ScopedVclPtr<VirtualDevice> pImageDev = GetLineImage(nSelectedIndex);
         m_xControl->set_label(u""_ustr);
-        const auto nPos = (aVirDev->GetOutputSizePixel().Height() - aImage.GetSizePixel().Height()) / 2;
-        auto popIt = aVirDev->ScopedPush(vcl::PushFlags::MAPMODE);
-        aVirDev->SetMapMode(MapMode(MapUnit::MapPixel));
-        const StyleSettings& rSettings = Application::GetSettings().GetStyleSettings();
-        aVirDev->SetBackground(rSettings.GetFieldColor());
-        aVirDev->Erase();
-        aVirDev->DrawImage(Point(0, nPos), aImage);
-        m_xControl->set_image(aVirDev.get());
+        m_xControl->set_image(pImageDev.get());
     }
 }
 
