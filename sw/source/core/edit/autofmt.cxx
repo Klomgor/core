@@ -1633,19 +1633,14 @@ void SwAutoFormat::BuildEnum( sal_uInt16 nLvl, sal_uInt16 nDigitLevel )
                                             &aPrefix, &aPostfix, &aNumTypes);
         if (USHRT_MAX != nDigitLevel)
         {
-            if (nDigitLevel > 0)
-            {
-                bChgEnum = false;
-            }
-            else
-            {
-                bChgEnum = true;
+            bChgEnum = true;
 
-                // Level 0 and Indentation, determine level by left indentation and default NumIndent
-                if( nLeftTextPos )
-                    nLvl = std::min( sal_uInt16( nLeftTextPos / lNumberIndent ),
-                                sal_uInt16( MAXLEVEL - 1 ) );
-            }
+            // Level 0 and Indentation, determine level by left indentation and default NumIndent
+            if( !nDigitLevel && nLeftTextPos )
+                nLvl = std::min( sal_uInt16( nLeftTextPos / lNumberIndent ),
+                            sal_uInt16( MAXLEVEL - 1 ) );
+            else
+                nLvl = nDigitLevel;
         }
 
         if( bChgEnum && m_aFlags.bSetNumRule )
