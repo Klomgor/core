@@ -1571,7 +1571,7 @@ protected:
     DECL_LINK(EditedEntryHdl, const EntryItemText&, bool);
     DECL_LINK(VisibleRangeChangedHdl, SvTreeListBox*, void);
     DECL_LINK(CompareHdl, const SvSortData&, sal_Int32);
-    DECL_LINK(TooltipHdl, SvTreeListEntry*, OUString);
+    DECL_LINK(TooltipHdl, SvTreeListEntry&, OUString);
     DECL_LINK(CustomRenderHdl, svtree_render_args, void);
     DECL_LINK(CustomMeasureHdl, svtree_measure_args, Size);
 
@@ -1871,7 +1871,7 @@ private:
 
     DECL_LINK(SelectHdl, SvTreeListBox*, void);
     DECL_LINK(DeSelectHdl, SvTreeListBox*, void);
-    DECL_LINK(TooltipHdl, SvTreeListEntry*, OUString);
+    DECL_LINK(TooltipHdl, SvTreeListEntry&, OUString);
     DECL_LINK(DumpImageHdl, const ::IconView::encoded_image_query&, bool);
 
     void do_insert(int pos, const OUString* pStr, const OUString* pId, const Image& rImage,

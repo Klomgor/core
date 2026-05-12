@@ -4876,12 +4876,9 @@ SalInstanceTreeView::~SalInstanceTreeView()
     m_xTreeView->SetCustomMeasureHdl(Link<svtree_measure_args, Size>());
 }
 
-IMPL_LINK(SalInstanceTreeView, TooltipHdl, SvTreeListEntry*, pEntry, OUString)
+IMPL_LINK(SalInstanceTreeView, TooltipHdl, SvTreeListEntry&, rEntry, OUString)
 {
-    if (pEntry)
-        return signal_query_tooltip(SalInstanceTreeIter(*this, pEntry));
-
-    return {};
+    return signal_query_tooltip(SalInstanceTreeIter(*this, &rEntry));
 }
 
 IMPL_LINK(SalInstanceTreeView, CustomRenderHdl, svtree_render_args, payload, void)
@@ -5181,12 +5178,9 @@ void SalInstanceIconView::insert_separator(int pos, const OUString* /* pId */)
     pViewData->SetSelectable(false);
 }
 
-IMPL_LINK(SalInstanceIconView, TooltipHdl, SvTreeListEntry*, pEntry, OUString)
+IMPL_LINK(SalInstanceIconView, TooltipHdl, SvTreeListEntry&, rEntry, OUString)
 {
-    if (pEntry)
-        return signal_query_tooltip(SalInstanceTreeIter(*this, pEntry));
-
-    return {};
+    return signal_query_tooltip(SalInstanceTreeIter(*this, &rEntry));
 }
 
 void SalInstanceIconView::connect_query_tooltip(const Link<const weld::TreeIter&, OUString>& rLink)

@@ -1124,7 +1124,7 @@ const SvViewDataItem& SvTreeListBox::GetViewDataItem(const SvTreeListEntry* pEnt
 
 OUString SvTreeListBox::GetEntryTooltip(SvTreeListEntry& rEntry) const
 {
-    const OUString sToolTip = m_aTooltipHdl.Call(&rEntry);
+    const OUString sToolTip = m_aTooltipHdl.Call(rEntry);
     if (!sToolTip.isEmpty())
         return sToolTip;
 

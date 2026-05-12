@@ -219,7 +219,7 @@ class UNLESS_MERGELIBS_MORE(VCL_DLLPUBLIC) SvTreeListBox : public Control,
     Link<SvTreeListBox*, bool> m_aExpandingHdl;
     Link<SvTreeListBox*, void> m_aSelectHdl;
     Link<SvTreeListBox*, void> m_aDeselectHdl;
-    Link<SvTreeListEntry*, OUString> m_aTooltipHdl;
+    Link<SvTreeListEntry&, OUString> m_aTooltipHdl;
     Link<svtree_render_args, void> m_aCustomRenderHdl;
     Link<svtree_measure_args, Size> m_aCustomMeasureHdl;
 
@@ -510,7 +510,7 @@ public:
     }
     void SetExpandingHdl(const Link<SvTreeListBox*, bool>& rNewHdl) { m_aExpandingHdl = rNewHdl; }
     void SetExpandedHdl(const Link<SvTreeListBox*, void>& rNewHdl) { m_aExpandedHdl = rNewHdl; }
-    void SetTooltipHdl(const Link<SvTreeListEntry*, OUString>& rLink) { m_aTooltipHdl = rLink; }
+    void SetTooltipHdl(const Link<SvTreeListEntry&, OUString>& rLink) { m_aTooltipHdl = rLink; }
     void SetCustomRenderHdl(const Link<svtree_render_args, void>& rLink)
     {
         m_aCustomRenderHdl = rLink;
