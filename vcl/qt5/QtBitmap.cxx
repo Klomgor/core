@@ -49,7 +49,7 @@ bool QtBitmap::Create(const Size& rSize, vcl::PixelFormat ePixelFormat, const Bi
     m_aPalette = rPal;
 
     auto count = rPal.GetEntryCount();
-    if (count && m_pImage)
+    if (count)
     {
         QVector<QRgb> aColorTable(count);
         for (unsigned i = 0; i < count; ++i)
