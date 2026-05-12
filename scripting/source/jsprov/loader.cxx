@@ -15,14 +15,17 @@
 
 #include <singleprov/scriptprovider.hxx>
 #include <singleprov/singlescriptfactory.hxx>
+#include <util/ScriptContext.hxx>
 
 namespace
 {
 class ScriptWrapper : public cppu::WeakImplHelper<css::script::provider::XScript>
 {
 public:
-    ScriptWrapper(const OUString& sScript)
-        : m_sScript(sScript)
+    ScriptWrapper(const css::uno::Reference<css::uno::XComponentContext>& xContext,
+                  const OUString& sScript)
+        : m_xScriptContext(new sf_misc::ScriptContext(xContext))
+        , m_sScript(sScript)
     {
     }
 
@@ -32,6 +35,7 @@ public:
                                   css::uno::Sequence<css::uno::Any>& aOutParam) override;
 
 private:
+    css::uno::Reference<css::script::provider::XScriptContext> m_xScriptContext;
     OUString m_sScript;
 };
 
@@ -51,10 +55,10 @@ OUString JsProvScriptFactory::getLanguageName() const { return "JavaScript"; }
 OUString JsProvScriptFactory::getExtension() const { return ".js"; }
 
 css::uno::Reference<css::script::provider::XScript>
-JsProvScriptFactory::getScript(css::uno::Reference<css::uno::XComponentContext>, const OUString&,
-                               std::string_view sSource) const
+JsProvScriptFactory::getScript(css::uno::Reference<css::uno::XComponentContext> xContext,
+                               const OUString&, std::string_view sSource) const
 {
-    return new ScriptWrapper(OStringToOUString(sSource, RTL_TEXTENCODING_UTF8));
+    return new ScriptWrapper(xContext, OStringToOUString(sSource, RTL_TEXTENCODING_UTF8));
 }
 
 bool JsProvScriptFactory::appMightExecute(const OUString& sAppName) const
@@ -64,12 +68,7 @@ bool JsProvScriptFactory::appMightExecute(const OUString& sAppName) const
 
 OUString JsProvScriptFactory::getExampleMacro() const
 {
-    return u"let context = uno.componentContext;\n"
-           "let desktop = uno.idl.com.sun.star.frame.theDesktop(context);\n"
-           "let frame = desktop.getCurrentFrame();\n"
-           "let controller = frame.getController();\n"
-           "let model = controller.getModel();\n"
-           "let text = model.getText();\n"
+    return u"let text = XSCRIPTCONTEXT.getDocument().getText();\n"
            "\n"
            "text.getEnd().setString(\"Hello, world!\");\n"_ustr;
 }
@@ -78,7 +77,11 @@ css::uno::Any SAL_CALL ScriptWrapper::invoke(const css::uno::Sequence<css::uno::
                                              css::uno::Sequence<sal_Int16>&,
                                              css::uno::Sequence<css::uno::Any>&)
 {
-    jsuno::execute(m_sScript);
+    std::pair<const char*, css::uno::Reference<css::uno::XInterface>> aGlobalVariables[] = {
+        { "XSCRIPTCONTEXT", m_xScriptContext },
+    };
+
+    jsuno::execute(m_sScript, aGlobalVariables);
 
     return css::uno::Any();
 }
