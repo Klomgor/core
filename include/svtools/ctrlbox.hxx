@@ -261,6 +261,7 @@ private:
 
     void            UpdateEntries();
 
+    void HandleEntrySelection();
     void UpdatePreview();
 
                     SvtLineListBox( const SvtLineListBox& ) = delete;

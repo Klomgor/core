@@ -1587,7 +1587,7 @@ IMPL_LINK_NOARG(SvtLineListBox, StyleUpdatedHdl, weld::Widget&, void)
 IMPL_LINK_NOARG(SvtLineListBox, NoneHdl, weld::Button&, void)
 {
     SelectEntry(SvxBorderLineStyle::NONE);
-    ValueSelectHdl(nullptr);
+    HandleEntrySelection();
 }
 
 SvtLineListBox::~SvtLineListBox()
@@ -1646,6 +1646,11 @@ void SvtLineListBox::UpdateEntries()
 }
 
 IMPL_LINK_NOARG(SvtLineListBox, ValueSelectHdl, ValueSet*, void)
+{
+    HandleEntrySelection();
+}
+
+void SvtLineListBox::HandleEntrySelection()
 {
     maSelectHdl.Call(*this);
     UpdatePreview();
