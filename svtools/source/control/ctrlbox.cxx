@@ -1536,9 +1536,7 @@ SvtLineListBox::SvtLineListBox(std::unique_ptr<weld::MenuButton> pControl)
     , aVirDev(VclPtr<VirtualDevice>::Create())
     , aColor(COL_BLACK)
 {
-    const StyleSettings& rStyleSettings = Application::GetSettings().GetStyleSettings();
     m_xLineSet->SetStyle(WinBits(WB_FLATVALUESET | WB_NO_DIRECTSELECT | WB_TABSTOP));
-    m_xLineSet->SetItemHeight(rStyleSettings.GetListBoxPreviewDefaultPixelSize().Height() + 1);
     m_xLineSet->SetColCount(1);
     m_xLineSet->SetSelectHdl(LINK(this, SvtLineListBox, ValueSelectHdl));
 
@@ -1633,10 +1631,12 @@ void SvtLineListBox::UpdateEntries()
     m_xLineSet->Clear();
 
     // Add the new entries based on the defined width
-    for (const std::unique_ptr<ImpLineListData>& pData : m_vLineList)
+    for (size_t i = 0; i < m_vLineList.size(); ++i)
     {
-        const Image aLineImage = GetLineImage(*pData);
+        ScopedVclPtr<VirtualDevice> pImage = GetLineImage(i);
+        const std::unique_ptr<ImpLineListData>& pData = m_vLineList.at(i);
         sal_Int16 nItemId = static_cast<sal_Int16>(pData->GetStyle()) + 1;
+        const Image aLineImage(pImage->GetBitmap(Point(), pImage->GetOutputSizePixel()));
         m_xLineSet->InsertItem(nItemId, aLineImage, GetLineStyleName(pData->GetStyle()));
         if (pData->GetStyle() == eSelected)
             m_xLineSet->SelectItem(nItemId);
