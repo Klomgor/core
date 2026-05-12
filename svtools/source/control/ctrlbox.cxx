@@ -1633,17 +1633,13 @@ void SvtLineListBox::UpdateEntries()
     m_xLineSet->Clear();
 
     // Add the new entries based on the defined width
-    sal_uInt16 n = 0;
-    sal_uInt16 nCount = m_vLineList.size( );
-    while ( n < nCount )
+    for (const std::unique_ptr<ImpLineListData>& pData : m_vLineList)
     {
-        auto& pData = m_vLineList[ n ];
         const Image aLineImage = GetLineImage(*pData);
         sal_Int16 nItemId = static_cast<sal_Int16>(pData->GetStyle()) + 1;
         m_xLineSet->InsertItem(nItemId, aLineImage, GetLineStyleName(pData->GetStyle()));
         if (pData->GetStyle() == eSelected)
             m_xLineSet->SelectItem(nItemId);
-        n++;
     }
 
     m_xLineSet->SetOptimalSize();
