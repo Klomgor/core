@@ -41,26 +41,26 @@
 #include <cppuhelper/exc_hlp.hxx>
 #include <comphelper/multicontainer2.hxx>
 #include <comphelper/lok.hxx>
+#include <osl/file.hxx>
 #include <sal/log.hxx>
 #include <officecfg/Office/Common.hxx>
-#include <vcl/svapp.hxx>
-
 #if HAVE_FEATURE_MULTIUSER_ENVIRONMENT
+#include <svl/documentlockfile.hxx>
+#include <svl/msodocumentlockfile.hxx>
+#endif
 #include <com/sun/star/awt/XTopWindow.hpp>
 #include <com/sun/star/beans/XPropertySet.hpp>
 #include <com/sun/star/container/XIndexAccess.hpp>
 #include <com/sun/star/frame/Desktop.hpp>
-#include <osl/file.hxx>
-#include <svl/documentlockfile.hxx>
-#include <svl/msodocumentlockfile.hxx>
 #include <tools/urlobj.hxx>
 #include <unotools/resmgr.hxx>
 #include <unotools/ucbhelper.hxx>
+
 #include <strings.hrc>
+#include <vcl/svapp.hxx>
 #include <vcl/vclenum.hxx>
 #include <vcl/weld/MessageDialog.hxx>
 #include <vcl/weld/weld.hxx>
-#endif
 
 #include <targetstatecontrol.hxx>
 
@@ -69,7 +69,6 @@
 #include <specialobject.hxx>
 #include <array>
 
-#if HAVE_FEATURE_MULTIUSER_ENVIRONMENT
 namespace {
 
 // tdf#157943 / tdf#126742: locate the visible top-level frame loaded from
@@ -173,11 +172,15 @@ void switchToExistingFrame( const css::uno::Reference< css::frame::XFrame >& xFr
 // tdf#157943: any lock - foreign, hidden own frame, or stale own lock -
 // would fail the OLE writeback at save time, so the caller refuses on
 // any non-empty result. Visible-own-frame is filtered out earlier.
+// On non-multiuser builds (Android/iOS) the svt::*DocumentLockFile
+// symbols aren't linked, so the body short-circuits to "" - the caller
+// just skips case 2 naturally without needing a separate gate.
 OUString getSourceLockOwner( std::u16string_view sLinkURL )
 {
     if ( sLinkURL.empty() || INetURLObject( sLinkURL ).IsExoticProtocol() )
         return u""_ustr;
 
+#if HAVE_FEATURE_MULTIUSER_ENVIRONMENT
     auto formatOwner = []( const LockFileEntry& aData, bool bMSO )
     {
         OUString sOwner = aData[LockFileComponent::OOOUSERNAME];
@@ -216,6 +219,7 @@ OUString getSourceLockOwner( std::u16string_view sLinkURL )
         {
         }
     }
+#endif
 
     return u""_ustr;
 }
@@ -241,7 +245,6 @@ void showLinkSourceLockedDialog( const css::uno::Reference< css::awt::XWindow >&
 }
 
 } // anonymous namespace
-#endif
 
 using namespace ::com::sun::star;
 
@@ -795,7 +798,6 @@ void SAL_CALL OCommonEmbeddedObject::doVerb( sal_Int32 nVerbID )
     }
     else
     {
-#if HAVE_FEATURE_MULTIUSER_ENVIRONMENT
         // tdf#157943 / tdf#126742: refuse user-initiated activation of an
         // OLE link whose source is in use - either navigate to the visible
         // frame (matches MSO) or warn on any lock (foreign, hidden own
@@ -825,6 +827,8 @@ void SAL_CALL OCommonEmbeddedObject::doVerb( sal_Int32 nVerbID )
 
             // 2. Lock file present (foreign, hidden own frame, or stale
             // own lock from a crash) - all fail writeback at save time.
+            // On non-multiuser builds getSourceLockOwner returns "" and
+            // this branch is naturally skipped - no #if needed here.
             if ( OUString sLockOwner = getSourceLockOwner( aLinkURL );
                  !sLockOwner.isEmpty() )
             {
@@ -836,9 +840,6 @@ void SAL_CALL OCommonEmbeddedObject::doVerb( sal_Int32 nVerbID )
         {
             aGuard.clear();
         }
-#else
-        aGuard.clear();
-#endif
 
         changeState( nNewState );
     }
