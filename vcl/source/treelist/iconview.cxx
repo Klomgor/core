@@ -357,7 +357,7 @@ void IconView::DumpEntryAndSiblings(tools::JsonWriter& rJsonWriter, SvTreeListEn
             }
         }
 
-        if (const OUString tooltip = GetEntryTooltip(pEntry); !tooltip.isEmpty())
+        if (const OUString tooltip = GetEntryTooltip(*pEntry); !tooltip.isEmpty())
             rJsonWriter.put("tooltip", tooltip);
 
         if (IsSelected(pEntry))

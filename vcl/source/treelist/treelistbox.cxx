@@ -1122,13 +1122,13 @@ const SvViewDataItem& SvTreeListBox::GetViewDataItem(const SvTreeListEntry* pEnt
     return pEntryData->GetItem(nItemPos);
 }
 
-OUString SvTreeListBox::GetEntryTooltip(SvTreeListEntry* pEntry) const
+OUString SvTreeListBox::GetEntryTooltip(SvTreeListEntry& rEntry) const
 {
-    const OUString sToolTip = m_aTooltipHdl.Call(pEntry);
+    const OUString sToolTip = m_aTooltipHdl.Call(&rEntry);
     if (!sToolTip.isEmpty())
         return sToolTip;
 
-    return pEntry->GetToolTip();
+    return rEntry.GetToolTip();
 }
 
 void SvTreeListBox::InitViewData( SvViewDataEntry* pData, SvTreeListEntry* pEntry )
@@ -3597,7 +3597,7 @@ void SvTreeListBox::RequestHelp( const HelpEvent& rHEvt )
     const Point pos(ScreenToOutputPixel(rHEvt.GetMousePosPixel()));
     if (SvTreeListEntry* entry = GetEntry(pos))
     {
-        const OUString tooltip = GetEntryTooltip(entry);
+        const OUString tooltip = GetEntryTooltip(*entry);
         if (!tooltip.isEmpty())
         {
             const Size size(GetOutputSizePixel().Width(), GetEntryHeight());

@@ -41,7 +41,7 @@ StringMap TreeListUIObject::get_state()
     aMap[u"CheckBoxList"_ustr] = OUString::boolean(isCheckBoxList(mxTreeList));
     SvTreeListEntry* pEntry = mxTreeList->FirstSelected();
     aMap[u"SelectEntryText"_ustr] = pEntry ? mxTreeList->GetEntryText(pEntry) : OUString();
-    aMap[u"SelectedEntryTooltip"_ustr] = pEntry ? mxTreeList->GetEntryTooltip(pEntry) : OUString();
+    aMap[u"SelectedEntryTooltip"_ustr] = pEntry ? mxTreeList->GetEntryTooltip(*pEntry) : OUString();
 
     return aMap;
 }
