@@ -29,6 +29,9 @@ public:
 
     virtual void set_label(const OUString& rText) override;
 
+    virtual void do_set_active(bool active) override;
+    virtual bool get_active() const override;
+
     virtual void insert_item(int nPos, const OUString& rId, const OUString& rStr,
                              const OUString* pIconName, VirtualDevice* pImageSurface,
                              TriState eCheckRadioFalse) override;
@@ -52,7 +55,7 @@ private:
     void insertAction(QAction* pAction, int nPos);
 
 private Q_SLOTS:
-    void handleButtonClicked();
+    void showPopupOrMenu();
     void handleMenuItemTriggered(QAction* pAction);
 };
 

@@ -28,7 +28,7 @@ QtInstanceMenuButton::QtInstanceMenuButton(QToolButton* pButton)
         connect(m_pToolButton->menu(), &QMenu::triggered, this,
                 &QtInstanceMenuButton::handleMenuItemTriggered);
 
-    connect(m_pToolButton, &QToolButton::clicked, this, &QtInstanceMenuButton::handleButtonClicked);
+    connect(m_pToolButton, &QToolButton::clicked, this, &QtInstanceMenuButton::showPopupOrMenu);
 }
 
 void QtInstanceMenuButton::set_label(const OUString& rText)
@@ -36,6 +36,40 @@ void QtInstanceMenuButton::set_label(const OUString& rText)
     QtInstanceToggleButton::set_label(rText);
     updateToolButtonStyle(*m_pToolButton);
 }
+
+void QtInstanceMenuButton::do_set_active(bool bActive)
+{
+    SolarMutexGuard g;
+
+    GetQtInstance().RunInMainThread([&] {
+        if (bActive)
+        {
+            showPopupOrMenu();
+        }
+        else
+        {
+            if (m_pPopover)
+                m_pPopover->hide();
+            else if (m_pToolButton->menu())
+                m_pToolButton->menu()->hide();
+        }
+    });
+}
+
+bool QtInstanceMenuButton::get_active() const
+{
+    SolarMutexGuard g;
+
+    bool bActive = false;
+    GetQtInstance().RunInMainThread([&] {
+        if (m_pPopover)
+            bActive = m_pPopover->isVisible();
+        else if (m_pToolButton->menu())
+            m_pToolButton->menu()->isVisible();
+    });
+
+    return bActive;
+};
 
 void QtInstanceMenuButton::insert_item(int nPos, const OUString& rId, const OUString& rStr,
                                        const OUString* pIconName, VirtualDevice* pImageSurface,
@@ -193,7 +227,7 @@ void QtInstanceMenuButton::insertAction(QAction* pAction, int nPos)
     });
 }
 
-void QtInstanceMenuButton::handleButtonClicked()
+void QtInstanceMenuButton::showPopupOrMenu()
 {
     if (m_pPopover)
     {
