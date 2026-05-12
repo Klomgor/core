@@ -2020,8 +2020,8 @@ bool SvTreeListBox::GetCheckButtonEnabled(SvTreeListEntry* pEntry) const
 void SvTreeListBox::CheckButtonHdl()
 {
     if (m_pCheckButtonData)
-        m_pImpl->CallEventListeners(VclEventId::CheckboxToggle,
-                                    static_cast<void*>(m_pCheckButtonData->GetActEntry()));
+        CallEventListeners(VclEventId::CheckboxToggle,
+                           static_cast<void*>(m_pCheckButtonData->GetActEntry()));
 }
 
 
@@ -2173,7 +2173,7 @@ void SvTreeListBox::GetFocus()
             pEntry = m_pImpl->m_pCursor;
     }
     if ( pEntry )
-        m_pImpl->CallEventListeners(VclEventId::ListboxTreeFocus, pEntry);
+        CallEventListeners(VclEventId::ListboxTreeFocus, pEntry);
 }
 
 void SvTreeListBox::LoseFocus()
@@ -2370,7 +2370,7 @@ bool SvTreeListBox::Expand( SvTreeListEntry* pParent )
     // #i92103#
     if ( bExpanded )
     {
-        m_pImpl->CallEventListeners(VclEventId::ItemExpanded, pParent);
+        CallEventListeners(VclEventId::ItemExpanded, pParent);
     }
 
     return bExpanded;
@@ -2394,7 +2394,7 @@ bool SvTreeListBox::Collapse( SvTreeListEntry* pParent )
     // #i92103#
     if ( bCollapsed )
     {
-        m_pImpl->CallEventListeners(VclEventId::ItemCollapsed, pParent);
+        CallEventListeners(VclEventId::ItemCollapsed, pParent);
     }
 
     return bCollapsed;
