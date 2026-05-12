@@ -260,7 +260,7 @@ QAccessible::Relation lcl_matchUnoRelation(AccessibleRelationType eRelationType)
 }
 
 void lcl_appendRelation(QVector<QPair<QAccessibleInterface*, QAccessible::Relation>>* relations,
-                        AccessibleRelation& rRelation, QAccessible::Relation match)
+                        const AccessibleRelation& rRelation, QAccessible::Relation match)
 {
     QAccessible::Relation aQRelation = lcl_matchUnoRelation(rRelation.RelationType);
     // skip in case there's no Qt relation matching the filter
