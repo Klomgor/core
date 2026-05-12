@@ -40,6 +40,9 @@ public:
 
     QAbstractButton& getButton() const;
 
+private:
+    void setImage(const QPixmap& rPixmap);
+
 private slots:
     void buttonClicked();
 };

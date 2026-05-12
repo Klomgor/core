@@ -34,28 +34,27 @@ void QtInstanceButton::set_label(const OUString& rText)
         [&] { m_pButton->setText(vclToQtStringWithAccelerator(rText)); });
 }
 
-void QtInstanceButton::set_image(VirtualDevice* pDevice)
+void QtInstanceButton::setImage(const QPixmap& rPixmap)
 {
     SolarMutexGuard g;
-    GetQtInstance().RunInMainThread([&] {
-        if (pDevice)
-            m_pButton->setIcon(toQPixmap(*pDevice));
-    });
+
+    GetQtInstance().RunInMainThread([&] { m_pButton->setIcon(rPixmap); });
+}
+
+void QtInstanceButton::set_image(VirtualDevice* pDevice)
+{
+    if (pDevice)
+        setImage(toQPixmap(*pDevice));
 }
 
 void QtInstanceButton::set_image(const css::uno::Reference<css::graphic::XGraphic>& rImage)
 {
-    SolarMutexGuard g;
-    GetQtInstance().RunInMainThread([&] { m_pButton->setIcon(toQPixmap(rImage)); });
+    setImage(toQPixmap(rImage));
 }
 
 void QtInstanceButton::set_from_icon_name(const OUString& rIconName)
 {
-    SolarMutexGuard g;
-    GetQtInstance().RunInMainThread([&] {
-        QPixmap aIcon = loadQPixmapIcon(rIconName);
-        m_pButton->setIcon(aIcon);
-    });
+    setImage(loadQPixmapIcon(rIconName));
 }
 
 OUString QtInstanceButton::get_label() const
