@@ -2488,7 +2488,7 @@ ExceptionData extractExceptionData(JSContext* ctx, ValueRef const& err)
 }
 }
 
-OUString jsuno::execute(OUString const& script)
+OUString jsuno::execute(OUString const& script, VariableList aGlobalVariables)
 {
     auto const rt = JS_NewRuntime();
     JS_SetRuntimeOpaque(rt, new RuntimeData(rt));
@@ -2604,6 +2604,10 @@ OUString jsuno::execute(OUString const& script)
         JS_SetPropertyStr(ctx, uno, "componentContext",
                           wrapUnoObject(ctx, comphelper::getProcessComponentContext()));
         JS_SetPropertyStr(ctx, global, "uno", uno.release());
+
+        for (const auto& rVariable : aGlobalVariables)
+            JS_SetPropertyStr(ctx, global, rVariable.first, wrapUnoObject(ctx, rVariable.second));
+
         auto const input = script.toUtf8();
         ValueRef const evalRes(
             ctx, JS_Eval(ctx, input.getStr(), input.getLength(), "<input>", JS_EVAL_TYPE_GLOBAL));
