@@ -617,8 +617,6 @@ protected:
 
     virtual void    ApplySettings(vcl::RenderContext& rRenderContext) override;
 
-    void            CallImplEventListeners(VclEventId nEvent, void* pData);
-
     void            ImplEditEntry( SvTreeListEntry* pEntry );
 
     void            AdjustEntryHeightAndRecalc();

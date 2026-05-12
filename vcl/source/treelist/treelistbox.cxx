@@ -3810,11 +3810,6 @@ tools::Rectangle SvTreeListBox::GetBoundingRect(const SvTreeListEntry* pEntry)
     return aRect;
 }
 
-void SvTreeListBox::CallImplEventListeners(VclEventId nEvent, void* pData)
-{
-    CallEventListeners(nEvent, pData);
-}
-
 void SvTreeListBox::set_min_width_in_chars(sal_Int32 nChars)
 {
     m_nMinWidthInChars = nChars;

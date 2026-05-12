@@ -3122,7 +3122,7 @@ const Image& SvImpLBox::GetDefaultCollapsedNodeImage( )
 
 void SvImpLBox::CallEventListeners( VclEventId nEvent, void* pData )
 {
-    m_rView.CallImplEventListeners(nEvent, pData);
+    m_rView.CallEventListeners(nEvent, pData);
 }
 
 bool SvImpLBox::IsSelectable(const SvTreeListEntry& rEntry) const
