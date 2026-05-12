@@ -38,7 +38,10 @@ void QtInstanceButton::setImage(const QPixmap& rPixmap)
 {
     SolarMutexGuard g;
 
-    GetQtInstance().RunInMainThread([&] { m_pButton->setIcon(rPixmap); });
+    GetQtInstance().RunInMainThread([&] {
+        m_pButton->setIcon(rPixmap);
+        m_pButton->setIconSize(rPixmap.size());
+    });
 }
 
 void QtInstanceButton::set_image(VirtualDevice* pDevice)
