@@ -116,7 +116,7 @@ ContextHandlerRef ShapeGroupContext::onCreateContext( sal_Int32 aElementToken, c
         // DiagramHelper model changes
         pShape->setDiagramDataModelID(aModelID);
 
-        return new ShapeContext( *this, mpGroupShapePtr, pShape );
+        return new ShapeContext( *this, mpGroupShapePtr, std::move(pShape) );
     }
     case XML_pic:           // CT_Picture
         return new GraphicShapeContext( *this, mpGroupShapePtr, std::make_shared<Shape>( "com.sun.star.drawing.GraphicObjectShape" ) );
