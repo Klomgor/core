@@ -53,6 +53,8 @@ private:
     std::unique_ptr<weld::Widget> m_xCbxHandlesBezierImg;
     std::unique_ptr<weld::CheckButton> m_xCbxMoveOutline;
     std::unique_ptr<weld::Widget> m_xCbxMoveOutlineImg;
+    std::unique_ptr<weld::CheckButton> m_xCbxZoomWithWheel;
+    std::unique_ptr<weld::Widget> m_xCbxZoomWithWheelImg;
 
 public:
     SdTpOptionsContents(weld::Container* pPage, weld::DialogController* pController, const SfxItemSet& rInAttrs);

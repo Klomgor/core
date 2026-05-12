@@ -80,6 +80,8 @@
 
 #include <basegfx/utils/zoomtools.hxx>
 
+#include <officecfg/Office/Draw.hxx>
+
 #include <Window.hxx>
 #include <fupoor.hxx>
 #include <futext.hxx>
@@ -840,7 +842,12 @@ bool ViewShell::HandleScrollCommand(const CommandEvent& rCEvt, ::sd::Window* pWi
 
             if (pData != nullptr)
             {
-                if (pData->IsMod1())
+                const bool bZoomWithWheel = GetDoc() != nullptr
+                    && GetDoc()->GetDocumentType() == DocumentType::Draw
+                    && officecfg::Office::Draw::Layout::Display::ZoomWithMouseWheel::get();
+                const bool bShouldZoom = pData->IsMod1() != bZoomWithWheel;
+
+                if (bShouldZoom)
                 {
                     if( !GetDocSh()->IsUIActive() )
                     {
@@ -871,8 +878,12 @@ bool ViewShell::HandleScrollCommand(const CommandEvent& rCEvt, ::sd::Window* pWi
                         double nScrollLines = pData->GetScrollLines();
                         if(IsPageFlipMode())
                             nScrollLines = COMMAND_WHEEL_PAGESCROLL;
+                        const sal_uInt16 nScrollModifier
+                            = bZoomWithWheel ? (pData->GetModifier() & ~KEY_MOD1)
+                                             : pData->GetModifier();
+                        constexpr CommandWheelMode eScrollMode = CommandWheelMode::SCROLL;
                         CommandWheelData aWheelData( pData->GetDelta(),pData->GetNotchDelta(),
-                            nScrollLines,pData->GetMode(),pData->GetModifier(),pData->IsHorz() );
+                            nScrollLines,eScrollMode,nScrollModifier,pData->IsHorz() );
                         CommandEvent aReWrite( rCEvt.GetMousePosPixel(),rCEvt.GetCommand(),
                             rCEvt.IsMouseEvent(),static_cast<const void *>(&aWheelData) );
                         bDone = pWin->HandleScrollCommand( aReWrite,

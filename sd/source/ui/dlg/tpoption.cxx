@@ -237,8 +237,9 @@ SdTpOptionsContents::SdTpOptionsContents(weld::Container* pPage,
     , m_xCbxHandlesBezierImg(m_xBuilder->weld_widget(u"lockhandlesbezier"_ustr))
     , m_xCbxMoveOutline(m_xBuilder->weld_check_button(u"moveoutline"_ustr))
     , m_xCbxMoveOutlineImg(m_xBuilder->weld_widget(u"lockmoveoutline"_ustr))
-{
-}
+    , m_xCbxZoomWithWheel(m_xBuilder->weld_check_button(u"zoomwithwheel"_ustr))
+    , m_xCbxZoomWithWheelImg(m_xBuilder->weld_widget(u"lockzoomwithwheel"_ustr))
+{}
 
 SdTpOptionsContents::~SdTpOptionsContents() {}
 
@@ -253,8 +254,8 @@ OUString SdTpOptionsContents::GetAllStrings()
             sAllStrings.append(pString->get_label() + " ");
     }
 
-    OUString checkButton[]
-        = { u"ruler"_ustr, u"dragstripes"_ustr, u"handlesbezier"_ustr, u"moveoutline"_ustr };
+    OUString checkButton[] = { u"ruler"_ustr, u"dragstripes"_ustr, u"handlesbezier"_ustr,
+                               u"moveoutline"_ustr, u"zoomwithwheel"_ustr };
 
     for (const auto& check : checkButton)
     {
@@ -272,7 +273,8 @@ bool SdTpOptionsContents::FillItemSet(SfxItemSet*)
     if (m_xCbxRuler->get_state_changed_from_saved()
         || m_xCbxMoveOutline->get_state_changed_from_saved()
         || m_xCbxDragStripes->get_state_changed_from_saved()
-        || m_xCbxHandlesBezier->get_state_changed_from_saved())
+        || m_xCbxHandlesBezier->get_state_changed_from_saved()
+        || (m_bDrawMode && m_xCbxZoomWithWheel->get_state_changed_from_saved()))
     {
         std::shared_ptr<comphelper::ConfigurationChanges> batch(
             comphelper::ConfigurationChanges::create());
@@ -286,6 +288,8 @@ bool SdTpOptionsContents::FillItemSet(SfxItemSet*)
                                                                  batch);
             officecfg::Office::Draw::Layout::Display::Bezier::set(m_xCbxHandlesBezier->get_active(),
                                                                   batch);
+            officecfg::Office::Draw::Layout::Display::ZoomWithMouseWheel::set(
+                m_xCbxZoomWithWheel->get_active(), batch);
             batch->commit();
         }
         else
@@ -313,6 +317,9 @@ void SdTpOptionsContents::Reset(const SfxItemSet*)
         m_xCbxMoveOutline->set_active(officecfg::Office::Draw::Layout::Display::Contour::get());
         m_xCbxDragStripes->set_active(officecfg::Office::Draw::Layout::Display::Guide::get());
         m_xCbxHandlesBezier->set_active(officecfg::Office::Draw::Layout::Display::Bezier::get());
+        m_xCbxZoomWithWheel->show();
+        m_xCbxZoomWithWheel->set_active(
+            officecfg::Office::Draw::Layout::Display::ZoomWithMouseWheel::get());
     }
     else
     {
@@ -320,6 +327,8 @@ void SdTpOptionsContents::Reset(const SfxItemSet*)
         m_xCbxMoveOutline->set_active(officecfg::Office::Impress::Layout::Display::Contour::get());
         m_xCbxDragStripes->set_active(officecfg::Office::Impress::Layout::Display::Guide::get());
         m_xCbxHandlesBezier->set_active(officecfg::Office::Impress::Layout::Display::Bezier::get());
+        m_xCbxZoomWithWheel->hide();
+        m_xCbxZoomWithWheelImg->hide();
     }
 
     bool bReadOnly = m_bDrawMode ? officecfg::Office::Draw::Layout::Display::Ruler::isReadOnly()
@@ -342,10 +351,18 @@ void SdTpOptionsContents::Reset(const SfxItemSet*)
     m_xCbxHandlesBezier->set_sensitive(!bReadOnly);
     m_xCbxHandlesBezierImg->set_visible(bReadOnly);
 
+    if (m_bDrawMode)
+    {
+        bReadOnly = officecfg::Office::Draw::Layout::Display::ZoomWithMouseWheel::isReadOnly();
+        m_xCbxZoomWithWheel->set_sensitive(!bReadOnly);
+        m_xCbxZoomWithWheelImg->set_visible(bReadOnly);
+    }
+
     m_xCbxRuler->save_state();
     m_xCbxMoveOutline->save_state();
     m_xCbxDragStripes->save_state();
     m_xCbxHandlesBezier->save_state();
+    m_xCbxZoomWithWheel->save_state();
 }
 
 std::unique_ptr<SfxTabPage> SdTpOptionsContents::Create(weld::Container* pPage,

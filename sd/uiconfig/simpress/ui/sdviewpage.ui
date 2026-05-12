@@ -10,7 +10,7 @@
     <property name="label-xalign">0</property>
     <property name="shadow-type">none</property>
     <child>
-      <!-- n-columns=2 n-rows=4 -->
+      <!-- n-columns=2 n-rows=5 -->
       <object class="GtkGrid">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
@@ -94,6 +94,25 @@
           </packing>
         </child>
         <child>
+          <object class="GtkCheckButton" id="zoomwithwheel">
+            <property name="label" translatable="yes" context="sdviewpage|zoomwithwheel">_Swap mouse wheel zoom and scroll</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">False</property>
+            <property name="use-underline">True</property>
+            <property name="draw-indicator">True</property>
+            <child internal-child="accessible">
+              <object class="AtkObject" id="zoomwithwheel-atkobject">
+                <property name="AtkObject::accessible-description" translatable="yes" context="extended_tip|zoomwithwheel">When enabled in Draw, the mouse wheel zooms instead of scrolling, and Ctrl plus the mouse wheel scrolls instead of zooming.</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="left-attach">1</property>
+            <property name="top-attach">4</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkImage" id="lockruler">
             <property name="can-focus">False</property>
             <property name="no-show-all">True</property>
@@ -143,6 +162,19 @@
           <packing>
             <property name="left-attach">0</property>
             <property name="top-attach">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="lockzoomwithwheel">
+            <property name="can-focus">False</property>
+            <property name="no-show-all">True</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="icon-name">res/lock.png</property>
+          </object>
+          <packing>
+            <property name="left-attach">0</property>
+            <property name="top-attach">4</property>
           </packing>
         </child>
       </object>

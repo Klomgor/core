@@ -71,6 +71,14 @@
           </info>
           <value>true</value>
         </prop>
+        <prop oor:name="ZoomWithMouseWheel" oor:type="xs:boolean" oor:nillable="false">
+          <!-- UIHints: Tools - Options - Drawing - Layout - [Section] Display -->
+          <info>
+            <desc>Indicates whether the mouse wheel zooms instead of scrolling and Control plus the mouse wheel scrolls instead of zooming.</desc>
+            <label>Swap mouse wheel zoom and scroll</label>
+          </info>
+          <value>false</value>
+        </prop>
       </group>
       <group oor:name="Other">
         <info>
