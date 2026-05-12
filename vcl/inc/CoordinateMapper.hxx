@@ -26,9 +26,9 @@
 class CoordinateMapper
 {
 private:
-    sal_Int32 mnDPIX = 0;
-    sal_Int32 mnDPIY = 0;
-    sal_Int32 mnDPIScalePercentage = 100;
+    sal_Int32 mnDPIX;
+    sal_Int32 mnDPIY;
+    sal_Int32 mnDPIScalePercentage;
 
     /// Output offset for device output in pixel (pseudo window offset within window system's frames)
     tools::Long mnOutOffX;
@@ -36,6 +36,8 @@ private:
     tools::Long mnOutOffY;
 
 public:
+    CoordinateMapper();
+
     sal_Int32 GetDPIX() const;
     sal_Int32 GetDPIY() const;
 

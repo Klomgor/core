@@ -24,6 +24,15 @@
 
 #include <CoordinateMapper.hxx>
 
+CoordinateMapper::CoordinateMapper()
+    : mnDPIX(0)
+    , mnDPIY(0)
+    , mnDPIScalePercentage(100)
+    , mnOutOffX(0)
+    , mnOutOffY(0)
+{
+}
+
 sal_Int32 CoordinateMapper::GetDPIX() const { return mnDPIX; }
 
 sal_Int32 CoordinateMapper::GetDPIY() const { return mnDPIY; }
