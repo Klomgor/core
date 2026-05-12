@@ -29,6 +29,7 @@ class QOpenGLContext;
 class QtOpenGLContext final : public OpenGLContext
 {
 public:
+    QtOpenGLContext();
     virtual void initWindow() override;
 
 private:

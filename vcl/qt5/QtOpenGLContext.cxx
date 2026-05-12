@@ -34,6 +34,11 @@
 
 bool QtOpenGLContext::g_bAnyCurrent = false;
 
+QtOpenGLContext::QtOpenGLContext()
+    : m_pWindow(nullptr)
+{
+}
+
 void QtOpenGLContext::swapBuffers()
 {
     OpenGLZone aZone;
