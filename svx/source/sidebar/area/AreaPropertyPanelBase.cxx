@@ -405,6 +405,14 @@ void AreaPropertyPanelBase::SelectFillAttrHdl_Impl()
         m_pPanel->TriggerDeckLayouting();
 }
 
+void AreaPropertyPanelBase::ShowTransparency(const bool bDoShow)
+{
+    mxLBTransType->set_visible(bDoShow);
+    mxTrspTextFT->set_visible(bDoShow);
+    mxMTRTransparent->set_visible(bDoShow);
+    mxSldTransparent->set_visible(bDoShow);
+}
+
 void AreaPropertyPanelBase::FillStyleChanged(bool bUpdateModel)
 {
     sal_Int32 nPos = static_cast<eFillStyle>(mxLbFillType->get_active());
@@ -430,6 +438,8 @@ void AreaPropertyPanelBase::FillStyleChanged(bool bUpdateModel)
         default:
         case NONE:
         {
+            ShowTransparency(false);
+
             if (bUpdateModel)
             {
                 const XFillStyleItem aXFillStyleItem(drawing::FillStyle_NONE);
@@ -443,6 +453,7 @@ void AreaPropertyPanelBase::FillStyleChanged(bool bUpdateModel)
         case SOLID:
         {
             bShowToolBoxColor = true;
+            ShowTransparency(true);
 
             if (bUpdateModel)
             {
@@ -457,6 +468,8 @@ void AreaPropertyPanelBase::FillStyleChanged(bool bUpdateModel)
         }
         case GRADIENT:
         {
+            ShowTransparency(true);
+
             bShowLbFillGradFrom = true;
             bShowLbFillGradTo = true;
             bShowGradientStyle = true;
@@ -547,6 +560,7 @@ void AreaPropertyPanelBase::FillStyleChanged(bool bUpdateModel)
         case HATCH:
         {
             bShowLbFillAttr = true;
+            ShowTransparency(true);
 
             const SvxHatchListItem* pItem(pSh->GetItem(SID_HATCH_LIST));
             if (pItem)
@@ -584,6 +598,8 @@ void AreaPropertyPanelBase::FillStyleChanged(bool bUpdateModel)
         case PATTERN:
         {
             bShowLbFillAttr = true;
+            ShowTransparency(true);
+
             mxLbFillAttr->set_sensitive(true);
             mxLbFillAttr->clear();
 
@@ -652,10 +668,7 @@ void AreaPropertyPanelBase::FillStyleChanged(bool bUpdateModel)
         case USE_BACKGROUND:
         {
             // No transparencies here
-            mxLBTransType->hide();
-            mxTrspTextFT->hide();
-            mxMTRTransparent->hide();
-            mxSldTransparent->hide();
+            ShowTransparency(false);
             mxBTNGradient->hide();
             if (bUpdateModel)
             {

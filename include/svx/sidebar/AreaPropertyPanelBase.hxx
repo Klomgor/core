@@ -104,6 +104,7 @@ public:
 
 private:
     void Initialize();
+    void ShowTransparency(const bool bDoShow);
 
 protected:
     const css::uno::Reference<css::frame::XFrame>&      mxFrame;
