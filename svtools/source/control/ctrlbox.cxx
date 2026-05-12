@@ -1661,11 +1661,11 @@ void SvtLineListBox::HandleEntrySelection()
 void SvtLineListBox::UpdatePreview()
 {
     SvxBorderLineStyle eStyle = GetSelectEntryStyle();
-    for (sal_uInt32 i = 0; i < SAL_N_ELEMENTS(RID_SVXSTR_BORDERLINE); ++i)
+    for (const std::pair<TranslateId, SvxBorderLineStyle>& rItem : RID_SVXSTR_BORDERLINE)
     {
-        if (eStyle == RID_SVXSTR_BORDERLINE[i].second)
+        if (eStyle == rItem.second)
         {
-            m_xControl->set_label(SvtResId(RID_SVXSTR_BORDERLINE[i].first));
+            m_xControl->set_label(SvtResId(rItem.first));
             break;
         }
     }
