@@ -21,8 +21,7 @@
  * This file is part of LibreOffice published API.
  */
 
-#ifndef INCLUDED_CPPU_ENTERABLE_HXX
-#define INCLUDED_CPPU_ENTERABLE_HXX
+#pragma once
 
 #include "uno/Enterable.h"
 #include "rtl/ustring.hxx"
@@ -105,8 +104,5 @@ void Enterable::callOut(uno_EnvCallee * pCallee, ...)
 }
 
 }
-
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
