@@ -1595,11 +1595,11 @@ SvtLineListBox::~SvtLineListBox()
 OUString SvtLineListBox::GetLineStyleName(SvxBorderLineStyle eStyle)
 {
     OUString sRet;
-    for (sal_uInt32 i = 0; i < SAL_N_ELEMENTS(RID_SVXSTR_BORDERLINE); ++i)
+    for (const std::pair<TranslateId, SvxBorderLineStyle>& rItem : RID_SVXSTR_BORDERLINE)
     {
-        if (eStyle == RID_SVXSTR_BORDERLINE[i].second)
+        if (eStyle == rItem.second)
         {
-            sRet = SvtResId(RID_SVXSTR_BORDERLINE[i].first);
+            sRet = SvtResId(rItem.first);
             break;
         }
     }
