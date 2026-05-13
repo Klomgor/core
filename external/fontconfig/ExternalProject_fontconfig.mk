@@ -32,8 +32,8 @@ $(call gb_ExternalProject_get_state_target,fontconfig,build) :
 			$(if $(filter ANDROID,$(OS)),LIBS="-lm") \
 		$(if $(filter EMSCRIPTEN,$(OS)),LIBXML2_CFLAGS="$(LIBXML_CFLAGS)" LIBXML2_LIBS="$(LIBXML_LIBS)") \
 		$(gb_RUN_CONFIGURE) ./configure \
-			--includedir=${WORKDIR}/UnpackedTarball/fontconfig \
-			--libdir=${WORKDIR}/UnpackedTarball/fontconfig/src/.libs \
+			--includedir=$(gb_UnpackedTarball_workdir)/fontconfig \
+			--libdir=$(gb_UnpackedTarball_workdir)/fontconfig/src/.libs \
 			--disable-silent-rules \
 			--with-pic \
 			$(if $(filter ANDROID,$(OS)),--with-arch=arm) \
@@ -60,8 +60,13 @@ $(call gb_ExternalProject_get_state_target,fontconfig,build) :
 					--with-cache-dir=/usr/lib/fontconfig/cache \
 				) \
 			) \
-			$(if $(filter MACOSX,$(OS)),--prefix=/@.__________________________________________________OOO) \
 		&& $(MAKE) -C src && $(MAKE) fonts.conf \
+		$(if $(filter MACOSX,$(OS)), \
+			&& $(INSTALL_NAME_TOOL) -id @__________________________________________________OOO/libfontconfig.1.dylib \
+				$(gb_UnpackedTarball_workdir)/fontconfig/src/.libs/libfontconfig.1.dylib \
+			&& $(PERL) $(SRCDIR)/solenv/bin/macosx-change-install-names.pl shl OOO \
+				$(gb_UnpackedTarball_workdir)/fontconfig/src/.libs/libfontconfig.1.dylib \
+		) \
 	)
 	$(call gb_Trace_EndRange,fontconfig,EXTERNAL)
 
