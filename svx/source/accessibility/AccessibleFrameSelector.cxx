@@ -72,8 +72,7 @@ Reference< XAccessible > AccFrameSelector::getAccessibleParent(  )
 {
     SolarMutexGuard aGuard;
     IsValid();
-    Reference< XAccessible > xRet = mpFrameSel->getAccessibleParent();
-    return xRet;
+    return mpFrameSel->getAccessibleParent();
 }
 
 sal_Int16 AccFrameSelector::getAccessibleRole(  )
