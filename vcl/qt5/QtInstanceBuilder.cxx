@@ -268,6 +268,7 @@ constexpr auto SUPPORTED_UI_FILES = frozen::make_unordered_set<std::u16string_vi
     u"modules/swriter/ui/mmresultsavedialog.ui",
     u"modules/swriter/ui/newuserindexdialog.ui",
     u"modules/swriter/ui/numberingnamedialog.ui",
+    u"modules/swriter/ui/objectdialog.ui",
     u"modules/swriter/ui/outlinenumbering.ui",
     u"modules/swriter/ui/pagenumberdlg.ui",
     u"modules/swriter/ui/paradialog.ui",
