@@ -71,9 +71,8 @@ void SwEditWinUIObject::execute(const OUString& rAction,
 {
     if (rAction == "SET")
     {
-        if (rParameters.contains(u"ZOOM"_ustr))
+        if (auto itr = rParameters.find(u"ZOOM"_ustr); itr != rParameters.end())
         {
-            auto itr = rParameters.find(u"ZOOM"_ustr);
             OUString aVal = itr->second;
             sal_Int32 nVal = aVal.toInt32();
             mxEditWin->GetView().SetZoom(SvxZoomType::PERCENT, nVal);
@@ -81,9 +80,8 @@ void SwEditWinUIObject::execute(const OUString& rAction,
     }
     else if (rAction == "GOTO")
     {
-        if (rParameters.contains(u"PAGE"_ustr))
+        if (auto itr = rParameters.find(u"PAGE"_ustr); itr != rParameters.end())
         {
-            auto itr = rParameters.find(u"PAGE"_ustr);
             OUString aVal = itr->second;
             sal_Int32 nVal = aVal.toInt32();
             getWrtShell(mxEditWin).GotoPage(nVal, false);
@@ -91,9 +89,8 @@ void SwEditWinUIObject::execute(const OUString& rAction,
     }
     else if (rAction == "SELECT")
     {
-        if (rParameters.contains(u"START_POS"_ustr))
+        if (auto itr = rParameters.find(u"START_POS"_ustr); itr != rParameters.end())
         {
-            auto itr = rParameters.find(u"START_POS"_ustr);
             OUString aStartPos = itr->second;
             TextFrameIndex const nStartPos(aStartPos.toInt32());
 
