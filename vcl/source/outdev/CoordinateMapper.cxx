@@ -30,6 +30,8 @@ CoordinateMapper::CoordinateMapper()
     , mnDPIScalePercentage(100)
     , mnOutOffX(0)
     , mnOutOffY(0)
+    , mnOutWidth(0)
+    , mnOutHeight(0)
 {
 }
 
