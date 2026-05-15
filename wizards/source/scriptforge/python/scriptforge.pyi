@@ -236,7 +236,14 @@ class ScriptForge(object, metaclass = ...):
             - Dispatching of services
             - Coexistence with UNO
 
-        The class may be instantiated several times. Only the first instance will be retained ("Singleton").
+        The class has the singleton pattern. It creates an instance only if it does not exist.
+        Otherwise, it returns the already created instance.
+
+        The instance may be created explicitly in a user script. This must be done before any
+        invocation of CreateScriptService().
+        If not done yet, the CreateScriptService() will create it with the default arguments.
+        However, a connection with the default pipe will be tried in the first place. If successful,
+        the default pipe will be used. If failed, the usual interactive mode is selected.
         """
 
     def __init__(self, hostname: str = ..., port: int = ..., pipe: str = ...):
@@ -248,10 +255,12 @@ class ScriptForge(object, metaclass = ...):
                 - Dispatching of services
                 - Coexistence with UNO
 
-            The class may be instantiated several times. Only the first instance will be retained ("Singleton").
+            he class has the singleton pattern. It creates an instance only if it does not exist.
+            Otherwise, it returns the already created instance.
 
-            Both arguments are mandatory when Python and LibreOffice run in separate processes.
-            Otherwise, do not call this routine or leave both arguments out.
+            Either the first two arguments are mandatory when Python and LibreOffice run in separate processes,
+            or the the third one is required.
+            Otherwise, do not call this routine or leave all arguments out.
             To execute at most once by LibreOffice session.
                 Args
                     ``hostname``: probably 'localhost'

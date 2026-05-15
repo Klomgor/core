@@ -49,14 +49,23 @@
             from scriptforge import CreateScriptService
 
         When Python and LibreOffice are started in separate processes,
-        LibreOffice being started from console ... (example for Linux with port = 2024)
-            ./soffice --accept='socket,host=localhost,port=2024;urp;'
-        then use next statements:
+        LibreOffice being started from console ... (examples for Linux with port = 2026 or pipe = 'MYPIPE')
+        Either:
+            ./soffice --accept='socket,host=localhost,port=2026;urp;'
+        or:
+            ./soffice --accept='pipe,name=MYPIPE;urp;'
+        then use next statements: either
             from scriptforge import CreateScriptService, ScriptForge
-            ScriptForge(hostname = 'localhost', port = 2024)
+            ScriptForge(hostname = 'localhost', port = 2026)
+        or
+            from scriptforge import CreateScriptService, ScriptForge
+            ScriptForge(pipe = 'MYPIPE')
 
-        When the user uses an IDE like PyCharm or VSCode, (s)he might benefit from the typing
-        hints provided by them thanks to the twin scriptforge.pyi module.
+        To edit and debug a user script in a specialized Python IDE, and afterwards, when ready,
+        run it in the usual interactive mode without code change, write:
+            from scriptforge import CreateScriptService
+        and start LibreOffice with a dedicated pipe:
+            ./soffice --accept='pipe,name=PIPE2LIBREOFFICE;urp;'
 
     Specific documentation about the use of ScriptForge from Python scripts:
         https://help.libreoffice.org/latest/en-US/text/sbasic/shared/03/sf_intro.html?DbPAR=BASIC
@@ -96,9 +105,10 @@ class ScriptForge(object, metaclass = _Singleton):
             - Dispatching of services
             - Coexistence with UNO
 
-        The class may be instantiated several times. Only the first instance will be retained ("Singleton").
+        The class has the singleton pattern. It creates an instance only if it does not exist.
+        Otherwise, it returns the already created instance.
 
-        All its properties and methods are for INTERNAL / DEBUGGING use only.
+        All the properties and methods of the actual class are for INTERNAL / DEBUGGING use only.
         """
 
     # #########################################################################
@@ -148,6 +158,8 @@ class ScriptForge(object, metaclass = _Singleton):
                             ('ScriptForge.SharedMemory', 7),
                             ('ScriptForge.String', 8),
                             ('ScriptForge.UI', 9)])
+    # The default pipe name to connect to when debugging user scripts from external IDE's
+    defaultpipe = 'PIPE2LIBREOFFICE'
 
     def __init__(self, hostname = '', port = 0, pipe = ''):
         """
@@ -189,11 +201,12 @@ class ScriptForge(object, metaclass = _Singleton):
             :param pipe: pipe name or ''
             :return: the derived component context
             """
+        ctx = uno.getComponentContext()  # com.sun.star.uno.XComponentContext
+        resolver = ctx.ServiceManager.createInstanceWithContext(
+            'com.sun.star.bridge.UnoUrlResolver', ctx)  # com.sun.star.comp.bridge.UnoUrlResolver
+
         if (len(hostname) > 0 and port > 0 and len(pipe) == 0) \
                 or (len(hostname) == 0 and port == 0 and len(pipe) > 0):    # Explicit connection via socket or pipe
-            ctx = uno.getComponentContext()  # com.sun.star.uno.XComponentContext
-            resolver = ctx.ServiceManager.createInstanceWithContext(
-                'com.sun.star.bridge.UnoUrlResolver', ctx)  # com.sun.star.comp.bridge.UnoUrlResolver
             try:
                 if len(pipe) == 0:
                     conn = 'socket,host=%s,port=%d' % (hostname, port)
@@ -206,7 +219,15 @@ class ScriptForge(object, metaclass = _Singleton):
                     "Connection to LibreOffice failed (%s)" % conn)
             return ctx
         elif len(hostname) == 0 and port == 0 and len(pipe) == 0:  # Usual interactive mode
-            return uno.getComponentContext()
+            # Try a connection through the default pipe first
+            try:
+                conn = 'pipe,name=%s' % ScriptForge.defaultpipe
+                url = 'uno:%s;urp;StarOffice.ComponentContext' % conn
+                ctx = resolver.resolve(url)
+            except Exception:  # thrown when LibreOffice specified instance isn't started
+                print("Connection to LibreOffice failed (%s). Assuming interactive mode." % conn)
+            finally:  # Ignore exception
+                return ctx
         else:
             raise SystemExit('The creation of the ScriptForge() instance got invalid arguments: '
                              + "(host = '" + hostname + "', port = " + str(port) + ", pipe = '" + pipe + "')")
